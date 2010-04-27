@@ -1,0 +1,288 @@
+Design
+------
+
+Classes:
+
+- Document (top level container object)
+- Canvas (one instance for each of the three drawing canvases)
+- Annotation
+- Circle 
+
+
+Document
+{
+    var station;  // e.g. "KDOX"
+    var date;     // e.g. "2009-10-01" (date of first scan)
+    var scans;    // array of scan names
+
+    var curScanIdx;  // index of current scan
+
+    var canvasDZ;
+    var canvasVR;
+    var canvasSW;
+    
+    var Annotations;      // (array of annotations)
+    importAnnotations();  // fetch xml doc containing annotations from server and init 
+    exportAnnotations();  // serialize and upload xml doc describing annotations
+
+    function drawActive(); // draw all circles from active annotations
+
+    function enableSelect();
+    function disableSelect();
+
+    var controlPoints;
+
+    function enableThreePointCircleMode()
+    {
+	for canvas in canvases {
+          canvas.onclick = canvas.newControlPoint;
+	  canvas.callback = this.threeClickControlPoint;
+        }
+    }
+    
+    function threeCircleControlPoint(Point p)
+    {
+        // add p to controlPoints
+   	disableSelect();
+	if (controlPoint.length == 3)
+	{
+	    // complete and draw new circle
+	    drawAll(c);
+	    enableSelect();
+        }
+    }
+
+    function enableTwoPointCirlceMode()
+    {
+        for canvas in (canvases)
+	{
+	    canvas.onclick = canvas.newControlPoint;
+	    canvas.callback = this.twoPointControlPoint;
+        }
+    }
+
+    function drawAll(obj) {
+        for canvas in (canvases) {
+	     obj.draw(canvas.graphicsContainer);
+	}
+    }
+}
+
+Canvas
+{
+   var divElement;        // the DOM div of this canvas
+   var graphicsContainer; // the SVG or VML element for drawing
+   
+   function hide();
+   function show();
+}
+
+Annotation
+{
+    var station;    // The four-letter station ID
+    var firstScan;  // The timestamp of the first scan in which it appeared (can be undefined)
+    var lastScan;   // Timestamp of last scan in which it appeared (can be undefined)
+    
+    var roostCircles;  // array of roost circles in sequential scan order
+
+    function InProgress();
+    function toXML();   // serialize as XML
+    function fromXML(); // read in from XML
+}
+
+RoostCircle
+{
+    var scan;         // the scan timestamp
+    var circle;       // the Circle object
+    var provisional;  // whether officially part of annotation or not
+
+    function move(x,y);    
+}
+
+Circle
+{
+    var center;  // (type Point)
+    var radius;  // real number
+
+    function draw(obj);  // draw yourself as child of DOM element obj
+}
+
+-------------------------
+XML format
+
+station/date required
+startscan can be undefined
+endscan can be undefined
+
+<roost station="KDOX" date="2010-01-01">
+
+  <id>KDOX-001</id>
+  <comments>
+    <comment user="sheldon">Spans three scans, occluded in second.</comment>
+  </comments>
+
+  <mapinfo>
+    <extent></extent>
+    <size></size>
+    <proj></proj>
+  </mapinfo>
+
+  <scans>
+
+    <scan timestamp="10:01:01">
+       <center>100</center>
+       <radius>100</radius>
+       <comments>
+         <comment user="sheldon">Very clear here!</comment>
+       <comments>
+    </scan>
+
+    <scan timestamp="10:05:23" occluded="yes">
+       <comments>
+          <comment user="sheldon">Reappears in next scan</comment>
+       </comments>
+    </scan>
+
+    <scan timestamp="10:10:13">
+       <center>100</center>
+       <radius>100</radius>
+       <comments>
+         <comment user="sheldon">Back again.</comment>
+       <comments>
+    </scan>
+
+  </scans>
+
+</annotation>
+
+
+User interaction specification
+------------------------------
+
+1. Navigation front-page to select station and day
+
+2. Single-day annotation task
+
+- User is presented with first image in video sequence
+- Three images side-by-side (DZ, VR, SW)
+- User can click at any time to disable one of the images
+- User has two drawing tools:
+  * Three-point-on-circumference circle drawing
+  * Center-and-radius circle drawing
+
+- Every graphic drawn on one canvas is mirrored on the other visible
+  canvases
+
+- An annotation consists of a sequence of circles, one per frame for
+  some number of consecutive frames. Each circle may have free-text
+  comments attached to it. The annotation as a whole may have
+  free-text comments as well.
+
+- Circle that are part of completed annotations are displayed on all
+  canvases by default, w/ global toggle switch to hide completed
+  annotations
+
+- When the user draws a new circle (that does not continue a previous
+  annotation), a new annotation is initiated. It is considered "in
+  progress" until the user has marked the start and end frames for the
+  annotation. When the first circle of an annotation is drawn, a
+  pop-up dialog will appear that asks the user whether or not this is
+  the first frame. If so, the start frame is set.
+
+- When the user navigates to a new frame, in-progress annotations from
+  adjacent frames are displayed if the start/end frames indicate that
+  the roost may be present in this frame. These are displayed in color
+  to differentiate them from circles belonging to completed
+  annotations. They are displayed as circles in the position of the
+  circle from the adjacent frame. The user has the option to:
+
+  1) Drag and resize the circle to indicate the position of the
+     roost in the current frame
+
+  2) Mark the roost as occluded, meaning it is not visible in this
+     frame but is visible in previous or subsquent frames
+  
+  3) Mark the roost as completed, meaning it is not visible in this or
+     any subsequent frames for an annotation with no end frame, or not
+     visible in this or any previous frames for an annotation with no
+     start frame.
+
+- Occluded roosts and start/end frames of roosts are marked by handles
+  in the frame where they occur marked so they can later be
+  edited. E.g., a completed roost may be changed to occluded if it is
+  discovered that the roost reappears in a subsequent frame. The user
+  would click on the "completed" handle and have the option to change
+  it to "occluded".
+
+The three point circle drawing tool works as follows:
+
+- Clicks to the canvas are recorded and displayed as control points
+  until three clicks have been made.
+
+- Upon the third click the circle is created and rendered.
+
+The two point circle drawing tool works as follows:
+
+- The first click marks the center of the circle. 
+- After the first click, a circle is rendered with the specified
+  center, and with radius such that the current mouse location is a
+  point on the circle. 
+- Upon the second click, the circle is completed. The radius is
+  determined by the mouse position.
+
+Circles may be drawn in any of the three canvases and mirrored in the
+others. If a circle is started in one canvas, a click in another
+canvas causes an error (alert is displayed and no control point is
+recorded).
+
+The canvas is "at rest" if there are no new circle objects in
+progress, i.e., the user has not yet clicked the first control point
+of a three-point or center-and-radius circle.
+
+Whenever the canvas is at rest, clicks on existing objects cause the
+object to be selected. Upon mouseover of the object, the cursor is
+changed from cross-hairs to arrow to indicate the selection can
+occur. A selected object can be moved, resized or commented.
+
+(Question: should you be able to drag or resize objects by their
+control points without first clicking on them??)
+
+(Question: are comments added in popup, or in text box adjacent to
+canvas?)
+(Probably in adjacent area)
+
+---------------------------------
+
+User sees an image w/ existing annotations displayed as circles
+
+Click on canvas:
+- Add a control point
+
+Third control point:
+- Draw circle
+- Prompt user for text
+- Clear control points
+
+Click on annotation (circle):
+- Select object
+- Display center and N compass point for moving/scaling
+- Display X for deleting
+- Display text box
+- Disable canvas events
+
+Click on center control point of selected object:
+- drag to move object
+
+Click on N compass point of selected objects:
+- drag to resize
+
+Click on (X) control point of selected object:
+- delete object
+
+Notes:
+
+Register the onmousedown event on the object so only that is dragged,
+but register onmousmove and onmouseup events on the document so they
+are caught no matter where the mouse has moved to.
+
+

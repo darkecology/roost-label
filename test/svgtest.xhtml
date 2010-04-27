@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC
+	  "-//W3C//DTD XHTML 1.0 Strict//EN"
+	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
+<!--#endif -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v="urn:schemas-microsoft-com:vml" 
+      xmlns:svg="http://www.w3.org/2000/svg" 
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+
+
+  <head>
+    <title>Roost Labeling Tool</title>
+  </head>
+
+  <body>
+
+     <div id="main_panel"> 
+      
+        <div id="image"  
+             style="position:absolute;left:0px;top:0px;z-index:-2;cursor:crosshair;width:100%;height:100%;">
+          <img src="image/KDOX20091001_110328_V04_DZ.mapl.gif"/>  
+        </div>  
+      
+       <div id="canvas" 
+     	    style="position:absolute;left:0px;top:0px;z-index:0;cursor:crosshair;width:100%;height:100%;"> 
+	 
+     	<svg:svg id="canvas_svg" 
+     		 width="100%" 
+     		 height="100%"  
+     		 style="position:absolute;left:0px;top:0px;z-index:0;"> 
+	  <svg:g>
+     	    <svg:circle id="circle" cx="100" cy="100" r="30" fill="red" stroke="blue" stroke-width="5"/>
+     	    <svg:circle id="circle" cx="100" cy="100" r="3" fill="red" stroke="blue" stroke-width="5"/>
+	  </svg:g>
+
+     	</svg:svg> 
+	
+       </div> 
+     </div> 
+
+
+     <script type="text/javascript">
+       
+       function getEvent(e)
+       {
+           return e ? e : window.event;
+       }
+
+       function stopPropagation(e)
+       {
+           if (e.stopPropagation) 
+              e.stopPropagation();
+           else 
+              e.cancelBubble = true;
+       }
+
+       function getMouse(e)
+       {
+           return new Point(e.clientX, e.clientY);
+       }
+       
+       function Point(x,y)
+       {
+           this.x = x;
+           this.y = y;
+       }
+
+       function getPosition(obj)
+       {
+           // Get the current "center" of an SVG object
+           var cx = obj.getAttributeNS(null, "cx");
+           var cy = obj.getAttributeNS(null, "cy");
+           return new Point(cx, cy);
+       }
+
+       function startDrag(e)
+       {
+           e = getEvent(e);
+           var canvas = document.getElementById("canvas");
+           var mousePos = getMouse(e);
+           var objectPos = getPosition(this);
+           objectPos.x -= mousePos.x;
+           objectPos.y -= mousePos.y;
+           document.dragObject = this;
+           document.dragOffset = objectPos;
+           document.onmousemove = drag;
+           document.onmouseup = stopDrag;
+           stopPropagation(e);
+           return false;
+       }
+
+       function drag(e)
+       {
+           e = getEvent(e);
+           var p = getMouse(e);
+           this.dragObject.setAttributeNS(null, "cx", p.x + this.dragOffset.x);
+           this.dragObject.setAttributeNS(null, "cy", p.y + this.dragOffset.y);
+           stopPropagation(e);
+       }
+
+       function stopDrag(e)
+       {
+           e = getEvent(e);
+           this.dragObject = null;
+           this.onmousemove = null;
+           this.onmouseup = null;
+           stopPropagation(e);
+       }
+
+       var circle = document.getElementById("circle");
+       circle.onmousedown = startDrag;
+      
+     </script>
+
+  </body>
+</html>

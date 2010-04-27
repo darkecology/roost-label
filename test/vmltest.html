@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v="urn:schemas-microsoft-com:vml" 
+      xmlns:svg="http://www.w3.org/2000/svg" 
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <head>
+    <title>Roost Labeling Tool</title>
+    <style>v\:* { behavior: url(#default#VML); display:inline-block}</style>
+  </head>
+
+  <body>
+
+     <div id="main_panel"> 
+      
+        <div id="image"  
+             style="position:absolute;left:0px;top:0px;z-index:-2;cursor:crosshair;width:100%;height:100%;">
+          <img src="image/KDOX20091001_110328_V04_DZ.mapl.gif"/>  
+        </div>  
+      
+       <div id="canvas" 
+     	    style="position:absolute;left:0px;top:0px;z-index:0;cursor:crosshair;width:100%;height:100%;"
+	    onmousedown="alert('Canvas!')"> 
+	 
+	 <v:oval onmousedown="alert('Oval!')" style="left:0;top:0;width:100;height:50" filled="f" stroked="t" strokeweight="2" strokecolor="red"/>
+	 
+       </div> 
+     </div>
+   
+  </body>
+  
+  
+  <script type="text/javascript">
+    function foo() {
+       alert('foo');
+    }
+    e = document.findElementById("canvas");
+    e.addEventListener('click', foo, false);
+  </script>
+
+</html>
