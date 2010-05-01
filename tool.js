@@ -152,6 +152,14 @@ Graphic.prototype.listen = function(eventname, obj, methodname)
     }
 };
 
+Graphic.prototype.setStyle = function(property, value)
+{
+    for (var i = 0; i < this.renderings.length; i++)
+    {
+	this.renderings[i].setStyle(property, value);
+    }
+};
+
 
 //------------------------------------------------------------------------
 // Interface Rendering
@@ -180,6 +188,11 @@ Rendering.prototype.unrender = function()
 Rendering.prototype.listen = function(eventname, obj, methodname)
 {
     this.renderElt[eventname] = bindEvent(obj, methodname);
+};
+
+Rendering.prototype.setStyle = function(property, value)
+{
+    this.renderElt.style[property] = value;
 };
 
 //------------------------------------------------------------------------
@@ -389,21 +402,16 @@ inherits(RoostCircle, Circle);
 RoostCircle.prototype.draw = function(obj)
 {
     Circle.prototype.draw.call(this, obj);
+    this.setStyle("cursor", "move");
+    this.listen("onmousedown", this, "startDrag");
+
+    this.radiusHandle.draw(obj);
+    this.radiusHandle.setStyle("cursor", "pointer");
+    this.radiusHandle.listen("onmousedown", this, "startResize");
 
     this.deleteHandle.draw(obj);
-    this.radiusHandle.draw(obj);
-
-    // update listeners
     this.deleteHandle.listen("onmousedown", this, "remove");
-
-    this.radiusHandle.listen("onmousedown", this, "startResize");
-    this.radiusHandle.listen("onmouseover", this, "showResizeCursor");
-    this.radiusHandle.listen("onmouseout",  this, "restoreCursor");
-
-    this.listen("onmousedown", this, "startDrag");
-    this.listen("onmouseover", this, "showMoveCursor");
-    this.listen("onmouseout",  this, "restoreCursor"); 
-
+    this.deleteHandle.setStyle("cursor", "pointer");
 };
 
 RoostCircle.prototype.redraw = function()
@@ -423,29 +431,6 @@ RoostCircle.prototype.undraw = function()
 RoostCircle.prototype.remove = function(e)
 {    
     this.undraw();
-};
-
-//--------------------
-// Cursors
-//--------------------
-RoostCircle.prototype.showResizeCursor = function(e, callObj)
-{
-    var canvas = getCanvas(callObj);
-    this._cursor = canvas.style.cursor;
-    canvas.style.cursor = "pointer";
-};
-
-RoostCircle.prototype.showMoveCursor = function(e, callObj)
-{
-    var canvas = getCanvas(callObj);
-    this._cursor = canvas.style.cursor;
-    canvas.style.cursor = "move";
-};
-
-RoostCircle.prototype.restoreCursor = function(e, callObj)
-{
-    var canvas = getCanvas(callObj);
-    canvas.style.cursor = this._cursor;
 };
 
 //--------------------
