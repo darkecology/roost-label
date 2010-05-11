@@ -612,27 +612,65 @@ function RoostTool()
     this.circles = [];
     this.controlPoints = [];
     this.markers = [];
+
+    this.frames = [
+	"KDOX20091001_100112",
+	"KDOX20091001_101006",
+	"KDOX20091001_101859",
+	"KDOX20091001_102753",
+	"KDOX20091001_103646",
+	"KDOX20091001_104541",
+	"KDOX20091001_105434",
+	"KDOX20091001_110328",
+	"KDOX20091001_111221",
+	"KDOX20091001_112114",
+	"KDOX20091001_113008",
+	"KDOX20091001_113902",
+	"KDOX20091001_114756",
+	"KDOX20091001_115648",
+	"KDOX20091001_120542",
+	"KDOX20091001_121435",
+	"KDOX20091001_122328",
+	"KDOX20091001_123222",
+	"KDOX20091001_124115",
+	"KDOX20091001_125008",
+	"KDOX20091001_125902",
+	"KDOX20091001_130756",
+	"KDOX20091001_131649",
+	"KDOX20091001_132543",
+	"KDOX20091001_133437",
+	"KDOX20091001_134329",
+	"KDOX20091001_135224"
+		   ];
+
+    this.frame = 0;
+    this.loadFrame(this.frame);
 }
 
-RoostTool.prototype.isComplete = function() {
-    return (this.controlPoints.length >= 3);
-};
+RoostTool.prototype.loadFrame = function(idx) {
 
-RoostTool.prototype.pause = function()
-{
-    this._onmousedown = this.canvasElements[0].onmousedown;
-    for (var i = 0; i < this.canvasElements.length; i++)
+    var XX = ["DZ", "VR", "SW"];
+    
+    for (var i = 0; i < XX.length; i++)
     {
-	this.canvasElements[i].onmousedown = null;
+	var url = "image/" + this.frames[idx] + "_V04_" + XX[i] + ".mapl.gif";
+	var elt = document.getElementById("img" + XX[i]);
+	elt.src = url;
     }
 };
 
-RoostTool.prototype.resume = function()
-{
-    for (var i = 0; i < this.canvasElements.length; i++)
+RoostTool.prototype.prevFrame = function() {
+    if (this.frame > 0 )
     {
-	this.canvasElements[i].onmousedown = this._onmousedown;
-    }    
+	this.loadFrame(--this.frame);
+    }
+};
+
+RoostTool.prototype.nextFrame = function() {
+    if (this.frame < this.frames.length - 1 )
+    {
+	this.loadFrame(++this.frame);
+    }
 };
 
 RoostTool.prototype.threePointMode = function(){
@@ -687,7 +725,32 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 var tool;
 function init()
 {
+    GetBrowserInfo();
     tool = new RoostTool();
     tool.threePointMode();
-    GetBrowserInfo();
+    document.onkeydown = keydown;    
+}
+
+function keydown(e)
+{
+    if (e.keyCode == 39)
+    {
+	next();
+	return false;
+    }
+    else if (e.keyCode == 37)
+    {
+	prev();
+	return false;
+    }
+}
+
+function prev()
+{
+    tool.prevFrame();
+}
+
+function next()
+{
+    tool.nextFrame();
 }

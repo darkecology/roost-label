@@ -40,13 +40,16 @@
   </head>
 
   <body onload="init();">
-    
+
+    <a id="prev" href="javascript:prev();">Prev</a>
+    <a id="next" href="javascript:next();">Next</a>
+
     <table>
       <tr>
 
 	<td>
 	  <div class="pane">
-	    <img src="image/KDOX20091001_110328_V04_DZ.mapl.gif"/>
+	    <img id="imgDZ" src="image/KDOX20091001_110328_V04_DZ.mapl.gif"/>
 	    <div class="canvas" id="canvasDZ">
 	      <svg:svg id="svgDZ"></svg:svg>
 	    </div>
@@ -55,7 +58,7 @@
 	  
 	<td>
 	  <div class="pane">
-	    <img src="image/KDOX20091001_110328_V04_VR.mapl.gif"/>  	    
+	    <img id="imgVR" src="image/KDOX20091001_110328_V04_VR.mapl.gif"/>  	    
 	    <div class="canvas" id="canvasVR"> 
      	      <svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
 	    </div>
@@ -64,7 +67,7 @@
 
 	<td>
 	  <div class="pane">
-	    <img src="image/KDOX20091001_110328_V04_SW.mapl.gif"/>  	    
+	    <img id="imgSW" src="image/KDOX20091001_110328_V04_SW.mapl.gif"/>  	    
 	    <div class="canvas" id="canvasSW"> 
      	      <svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
 	    </div>
