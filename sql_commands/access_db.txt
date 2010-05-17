@@ -1,0 +1,31 @@
+# MySQL 
+# Host:  		'oniddb.cws.oregonstate.edu'
+# User Name: 		'almuallj-db'
+# Password:		'R87kFXtxi9pJo8ri'
+# Database Name:: 	'almuallj-db'
+#--------------------------------------------------------
+# 
+# Access database from php
+# 	$conn = mysql_connect('oniddb.cws.oregonstate.edu', 'almuallj-db', 'R87kFXtxi9pJo8ri');
+#	$db = mysql_select_db('almuallj-db',$conn);
+#--------------------------------------------------------
+# 
+# Access database from perl
+#	# mysql user database name
+#	$db ="almuallj-db";
+#	## mysql database user name
+#	$user = "almuallj-db";
+
+#	## mysql database password
+#	$pass = "R87kFXtxi9pJo8ri";
+
+#	## user hostname : This should be "localhost" but it can be diffrent too
+#	$host="oniddb.cws.oregonstate.edu"
+
+#	# PERL MYSQL CONNECT
+#	$connect = Mysql->connect($host, $db, $user, $pass);
+
+
+#	# SELECT DB
+#	$connect->selectdb($db);
+
