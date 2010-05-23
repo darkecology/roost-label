@@ -653,7 +653,9 @@ RoostTool.prototype.loadFrame = function(idx) {
     var station = gup('station');
 	var year = gup('year');
 	var month = gup('month');
+	if (month < 10) { month = "0" + month;}
 	var day = gup('day');
+	if (day < 10) { day = "0" + day;}
 	
     for (var i = 0; i < XX.length; i++)
     {
