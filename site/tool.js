@@ -627,13 +627,12 @@ function RoostTool()
     this.xmlhttp = xmlhttp;
     xmlhttp.onreadystatechange = bindEvent(this, "getFrameCallback");
 	
-	var station = gup('station');
-	var year = gup('year');
-	var month = gup('month');
-	var day = gup('day');
-	var url_php_request = "getFrames.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
-	
-	
+    var station = gup('station');
+    var year = gup('year');
+    var month = gup('month');
+    var day = gup('day');
+    var url_php_request = "ajax/frame_list.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
+
     xmlhttp.open("GET",url_php_request,true);
     xmlhttp.send();
 }
@@ -659,7 +658,7 @@ RoostTool.prototype.loadFrame = function(idx) {
 	
     for (var i = 0; i < XX.length; i++)
     {
-	var url = "image/" + station + year + month + day + "_" + this.frames[idx] + "_V04_" + XX[i] + ".mapl.gif";
+	var url = "images/" + station + year + month + day + "_" + this.frames[idx] + "_V04_" + XX[i] + ".mapl.gif";
 	var elt = document.getElementById("img" + XX[i]);
 	elt.src = url;
     }
