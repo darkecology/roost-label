@@ -627,12 +627,18 @@ function RoostTool()
     this.xmlhttp = xmlhttp;
     xmlhttp.onreadystatechange = bindEvent(this, "getFrameCallback");
 	
-    var station = gup('station');
-    var year = gup('year');
-    var month = gup('month');
-    var day = gup('day');
-    var url_php_request = "ajax/frame_list.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
+	//var station = gup('station');
+	//var year = gup('year');
+	//var month = gup('month');
+	//var day = gup('day');
+	var station = document.getElementById("station_select").value;
+	var year = document.getElementById("year_select").value;
+	var month = document.getElementById("month_select").value;
+	var day = document.getElementById("day_select").value;
 
+	var url_php_request = "ajax/getFrames.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
+	
+	
     xmlhttp.open("GET",url_php_request,true);
     xmlhttp.send();
 }
@@ -640,8 +646,21 @@ function RoostTool()
 RoostTool.prototype.getFrameCallback = function() {
     if (this.xmlhttp.readyState==4 && this.xmlhttp.status==200)
     {
-	this.frames = JSON.parse(this.xmlhttp.responseText);
-	this.frame = 0;
+	//this.frames = JSON.parse(this.xmlhttp.responseText);
+	
+	
+	var ajaxStr = trim(this.xmlhttp.responseText);
+	var ajaxArr=new Array();
+	var ajaxArr = ajaxStr.split('~');
+	
+	
+	this.v=  ajaxArr.splice(0,1);
+	
+	this.frames = ajaxArr.sort();
+	
+	
+	
+	this.frame = 0; 
 	this.loadFrame(this.frame);
     }
 };
@@ -649,16 +668,25 @@ RoostTool.prototype.getFrameCallback = function() {
 RoostTool.prototype.loadFrame = function(idx) {
 
     var XX = ["DZ", "VR", "SW"];
-    var station = gup('station');
+    /*
+	var station = gup('station');
 	var year = gup('year');
 	var month = gup('month');
 	if (month < 10) { month = "0" + month;}
 	var day = gup('day');
 	if (day < 10) { day = "0" + day;}
+	*/
+	var station = document.getElementById("station_select").value;
+	var year = document.getElementById("year_select").value;
+	var month = document.getElementById("month_select").value;
+	if (month < 10) { month = "0" + month;}
+	var day = document.getElementById("day_select").value;
+	if (day < 10) { day = "0" + day;}
+	
 	
     for (var i = 0; i < XX.length; i++)
     {
-	var url = "images/" + station + year + month + day + "_" + this.frames[idx] + "_V04_" + XX[i] + ".mapl.gif";
+	var url = "images/" + station + "/" + year + "/" + month + "/" + day + "/" + station + year + month + day +"_" + this.frames[idx] + "_" + this.v + "_" + XX[i] + ".mapl.gif";
 	var elt = document.getElementById("img" + XX[i]);
 	elt.src = url;
     }
@@ -771,4 +799,55 @@ function gup( name )
     return "";
   else
     return results[1];
+}
+
+function trim (str, charlist) {
+    // Strips whitespace from the beginning and end of a string  
+    // 
+    // version: 1004.2314
+    // discuss at: http://phpjs.org/functions/trim
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   improved by: mdsjack (http://www.mdsjack.bo.it)
+    // +   improved by: Alexander Ermolaev (http://snippets.dzone.com/user/AlexanderErmolaev)
+    // +      input by: Erkekjetter
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +      input by: DxGx
+    // +   improved by: Steven Levithan (http://blog.stevenlevithan.com)
+    // +    tweaked by: Jack
+    // +   bugfixed by: Onno Marsman
+    // *     example 1: trim('    Kevin van Zonneveld    ');
+    // *     returns 1: 'Kevin van Zonneveld'
+    // *     example 2: trim('Hello World', 'Hdle');
+    // *     returns 2: 'o Wor'
+    // *     example 3: trim(16, 1);
+    // *     returns 3: 6
+    var whitespace, l = 0, i = 0;
+    str += '';
+    
+    if (!charlist) {
+        // default list
+        whitespace = " \n\r\t\f\x0b\xa0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200a\u200b\u2028\u2029\u3000";
+    } else {
+        // preg_quote custom list
+        charlist += '';
+        whitespace = charlist.replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
+    }
+    
+    l = str.length;
+    for (i = 0; i < l; i++) {
+        if (whitespace.indexOf(str.charAt(i)) === -1) {
+            str = str.substring(i);
+            break;
+        }
+    }
+    
+    l = str.length;
+    for (i = l - 1; i >= 0; i--) {
+        if (whitespace.indexOf(str.charAt(i)) === -1) {
+            str = str.substring(0, i + 1);
+            break;
+        }
+    }
+    
+    return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }
