@@ -1,93 +1,136 @@
-<!DOCTYPE html PUBLIC
-	  "-//W3C//DTD XHTML 1.0 Strict//EN"
-	  "http://www.w3.org/TR/xhtml11/DTD/xhtml11-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:v="urn:schemas-microsoft-com:vml" 
       xmlns:svg="http://www.w3.org/2000/svg" 
       xmlns:xlink="http://www.w3.org/1999/xlink">
-  
-  
-  <head>
-    <title>Roost Labeling Tool</title>
+
+
+    <head>
     
-    <script type="text/javascript" src="tool.js"/>
-
-    <style>
-      div.pane 
-      {
-        position: relative;
-        z:index:-2;
-      }
-
-      div.canvas 
-      {
-        position:absolute;
-        z-index: 0;
-        cursor:crosshair;
-        left: 0px;
-        top:  0px;
-        width:100%;
-        height:100%
-      }
-
-      svg
-      {
-        position:absolute;
-      }
-    </style>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        
+        <meta name="description" content="" />
+        
+        <meta name="keywords" content="" />
+        
+        <meta name="author" content="" />
+        
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+        
+        <title>Roost Labeling</title>
+    	
+		<script type="text/javascript" src="tool.js"/>
+			    
+        <script type="text/javascript" src="select.js"/>
+        
     
-  </head>
+	
+    </head>
+    
+    <body onload="starter();">
+    
+        <div id="wrapper">
+            <div id="header">
+            	<h2> Roost Labeling </h2>
+            </div>
+            
+            <div id="select">
+            
+                <form>
+                
+                    <div id="station">
+                        <strong>Station:</strong>
+                        <select id="station_select">
+                        	<option value="null" />
+                        </select>
+                    </div>
+                    
+                    <div id="year">
+                        <strong>Year:</strong>
+                        <select id="year_select">
+                        	<option value="null" />
+                        </select>
+                    </div>
+                    
+                    <div id="month">
+                        <strong>Month:</strong>
+                        <select id="month_select">
+                        	<option value="null" />
+                        </select>
+                    </div>
+                    
+                    <div id="day">
+                        <strong>Day:</strong>
+                        <select id="day_select">
+                        	<option value="null" />
+                        </select>
+                    </div>
+                
+                </form>
+            
+            </div> <!-- end #select -->
+            
+			<div id="tool">
+				
+				<a id="prev" href="javascript:prev();">Prev</a>
+				<a id="next" href="javascript:next();">Next</a>
+				
+				<table>
+					<tr>
+					
+						<td>
+						
+							<div class="pane">
+								<img id="imgDZ" src=""/>
+								<div class="canvas" id="canvasDZ">
+									<svg:svg id="svgDZ"></svg:svg>
+								</div>
+							</div>
+						</td>
+						
+						<td>
+							<div class="pane">
+								<img id="imgVR" src=""/>  	    
+								<div class="canvas" id="canvasVR"> 
+									<svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
+								</div>
+							</div>
+						</td>
+						
+						<td>
+							<div class="pane">
+								<img id="imgSW" src=""/>  	    
+								<div class="canvas" id="canvasSW"> 
+									<svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
+								</div>
+							</div>
+						</td>
+						
+						</tr>
+					<tr/>
+				</table>
+				
+				<div>
+					<p>Instructions:</p>
+					<ul>
+						<li>Click three times on the perimeter of the roost to draw a circle (you can click in any image)</li>
+						<li>Drag the circle to reposition</li>
+						<li>Drag the control point on the perimeter to resize</li>
+						<li>Click the 'x' in the center of the circle to delete</li>
+					</ul>
+					<p>Note: after you have drawn a circle, click to drag or resize and the circle will become transparent so you can see through to the image.</p>
+				</div>
+				
+	
+			</div>
+			
+            <div id="footer">
+            	<p>Copyright &copy; 2010 Roost Labeling Site</p>
+            </div> <!-- end #footer -->
+            
+        </div> <!-- End #wrapper -->
+    
+    </body>
 
-  <body onload="init();">
-
-    <a id="prev" href="javascript:prev();">Prev</a>
-    <a id="next" href="javascript:next();">Next</a>
-
-    <table>
-      <tr>
-
-	<td>
-	  <div class="pane">
-	    <img id="imgDZ" src="image/KDOX20091001_110328_V04_DZ.mapl.gif"/>
-	    <div class="canvas" id="canvasDZ">
-	      <svg:svg id="svgDZ"></svg:svg>
-	    </div>
-	  </div>
-	</td>
-	  
-	<td>
-	  <div class="pane">
-	    <img id="imgVR" src="image/KDOX20091001_110328_V04_VR.mapl.gif"/>  	    
-	    <div class="canvas" id="canvasVR"> 
-     	      <svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
-	    </div>
-	  </div>
-	</td>
-
-	<td>
-	  <div class="pane">
-	    <img id="imgSW" src="image/KDOX20091001_110328_V04_SW.mapl.gif"/>  	    
-	    <div class="canvas" id="canvasSW"> 
-     	      <svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
-	    </div>
-	  </div>
-	</td>
-
-      </tr>
-      <tr/>
-    </table>
-
-    <div>
-      Instructions:
-      <ul>
-	<li>Click three times on the perimeter of the roost to draw a circle (you can click in any image)</li>
-	<li>Drag the circle to reposition</li>
-	<li>Drag the control point on the perimeter to resize</li>
-	<li>Click the 'x' in the center of the circle to delete</li>
-      </ul>
-      Note: after you have drawn a circle, click to drag or resize and the circle will become transparent so you can see through to the image.
-    </div>
-     
-  </body>
 </html>
