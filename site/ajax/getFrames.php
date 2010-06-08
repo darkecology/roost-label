@@ -39,11 +39,22 @@ mysql_select_db('almuallj-db', $con);
 
 $sql="SELECT `time` FROM  `roost_table` WHERE station = \"$station\" AND year = \"$year\" AND month = \"$month\" AND day = \"$day\" AND type = 'DZ'   ";
 
-//echo $sql;
+$sql_v = "SELECT `v` FROM  `roost_table` WHERE station = \"$station\" AND year = \"$year\" AND month = \"$month\" AND day = \"$day\" AND type = 'DZ'";
 
-$result = mysql_query($sql);
+
+$result_v = mysql_query($sql_v);
+
+$row_v = mysql_fetch_array($result_v);
+
+
+
+
 
 $frames_time_array = array();
+
+$frames_time_array[] = $row_v['v'];
+
+$result = mysql_query($sql);
 								  
 
 
@@ -59,7 +70,8 @@ while($row = mysql_fetch_array($result)){
 
 
 
-echo json_encode($frames_time_array);
+#echo json_encode($frames_time_array);
+echo implode('~',$frames_time_array);
 
 ?>
 
