@@ -100,8 +100,11 @@
                 xmlhttp.onreadystatechange=function() {	
                     if (xmlhttp.readyState==4 && xmlhttp.status==200){					
                         var day_select = document.getElementById("day_select");
-                        day_select.innerHTML=xmlhttp.responseText;
-                        day_select.onchange = init;
+                        day_select.innerHTML = xmlhttp.responseText;
+						day_select.onchange = function() {
+							this.blur();
+							RoostToolInit();
+						};
                     }
                 }
                

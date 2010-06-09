@@ -609,6 +609,8 @@ function RoostTool()
 			   document.getElementById("canvasVR"),
 			   document.getElementById("canvasSW")];
 
+    this.annotations = [];
+
     this.circles = [];
     this.controlPoints = [];
     this.markers = [];
@@ -636,7 +638,7 @@ function RoostTool()
 	var month = document.getElementById("month_select").value;
 	var day = document.getElementById("day_select").value;
 
-	var url_php_request = "ajax/getFrames.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
+	var url_php_request = "ajax/frame_list.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
 	
 	
     xmlhttp.open("GET",url_php_request,true);
@@ -733,14 +735,15 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 
     if (this.controlPoints.length == 3)
     {
-	var c = pointsToCircle(this.controlPoints);
+	// create a new RoostCircle object (modify this to create a new RoostSequence object instead)
+	var c = pointsToCircle(this.controlPoints); 
 
 	if (c)
 	{
 	    for (var i = 0; i < this.svgElements.length; i++) {
 		c.draw(this.svgElements[i]);
 	    }
-	    this.circles.push(c);
+	    this.circles.push(c); // add to RoostTool's list of circles
 	}
 
 	for (var i=0; i < this.markers.length; i++)
@@ -756,7 +759,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 // initialization
 //------------------------------------------------------------------------
 var tool;
-function init()
+function RoostToolInit()
 {
     GetBrowserInfo();
     tool = new RoostTool();
