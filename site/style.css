@@ -108,6 +108,12 @@ margin-left:80px;
 #month   {float: left; width: 150px; padding: 10px; }
 #day     {float: left; width: 150px; padding: 10px; }
 
+#station_select {width: 70px;}
+#year_select {width: 55px;}
+#month_select {width: 40px;}
+#day_select {width: 40px;}
+
+
 #selection {width: 100px;}
 #sidebar {
 width:200px;

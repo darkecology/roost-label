@@ -653,13 +653,17 @@ RoostTool.prototype.getFrameCallback = function() {
 	
 	var ajaxStr = trim(this.xmlhttp.responseText);
 	var ajaxArr=new Array();
-	var ajaxArr = ajaxStr.split('~');
+	//ajaxArr = ajaxStr.split('&&');
+	//var ajaxArr_v_value = ajaxStr.split('&&')[0];
+	var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
+	var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
+	var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
 	
+	//this.v=  ajaxArr.splice(0,1);
 	
-	this.v=  ajaxArr.splice(0,1);
-	
-	this.frames = ajaxArr.sort();
-	
+	this.frames_DV = ajaxArr_DV;
+	this.frames_VR = ajaxArr_VR;
+	this.frames_SW = ajaxArr_SW;
 	
 	
 	this.frame = 0; 
@@ -677,20 +681,25 @@ RoostTool.prototype.loadFrame = function(idx) {
 	if (month < 10) { month = "0" + month;}
 	var day = gup('day');
 	if (day < 10) { day = "0" + day;}
-	*/
+	
 	var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;
 	var month = document.getElementById("month_select").value;
 	if (month < 10) { month = "0" + month;}
 	var day = document.getElementById("day_select").value;
 	if (day < 10) { day = "0" + day;}
-	
-	
-    for (var i = 0; i < XX.length; i++)
+	*/
+	url = [];
+	url[0] = this.frames_DV[idx];
+	url[1] = this.frames_VR[idx];
+	url[2] = this.frames_SW[idx];
+    
+	for (var i = 0; i < XX.length; i++)
     {
-	var url = "images/" + station + "/" + year + "/" + month + "/" + day + "/" + station + year + month + day +"_" + this.frames[idx] + "_" + this.v + "_" + XX[i] + ".mapl.gif";
+	//var url = "images/" + station + "/" + year + "/" + month + "/" + day + "/" + station + year + month + day +"_" + [idx] + "_" + this.v + "_" + XX[i] + ".mapl.gif";
+	var img_url = url[i];
 	var elt = document.getElementById("img" + XX[i]);
-	elt.src = url;
+	elt.src = img_url;
     }
 };
 

@@ -5,7 +5,7 @@
 function report_error($text) { 
      # add other stuff you may want here 
      $str1 = 'Error:'; //example of addon to beginning 
-     $str2 = '; filename:data.php'; //example of addon to end 
+     $str2 = '; filename:frames_list.php'; //example of addon to end 
      die($str1.'<br />'.$text.'<br />'.$str2); 
 } 
 
@@ -37,41 +37,75 @@ if (!$con)
 
 mysql_select_db('almuallj-db', $con);
 
-$sql="SELECT `time` FROM  `roost_table` WHERE station = \"$station\" AND year = \"$year\" AND month = \"$month\" AND day = \"$day\" AND type = 'DZ'   ";
+$sql_DZ="SELECT `file_name`, `time` 
+			FROM  `roost_table` 
+			WHERE station = \"$station\" 
+				AND year = \"$year\" 
+				AND month = \"$month\" 
+				AND day = \"$day\" 
+				AND type = 'DZ' 
+			ORDER BY 'time'";
+$sql_VR="SELECT `file_name`, `time` 
+			FROM  `roost_table` 
+			WHERE station = \"$station\" 
+				AND year = \"$year\" 
+				AND month = \"$month\" 
+				AND day = \"$day\" 
+				AND type = 'VR' 
+			ORDER BY 'time'";
+$sql_SW="SELECT `file_name`, `time` 
+			FROM  `roost_table` 
+			WHERE station = \"$station\" 
+				AND year = \"$year\" 
+				AND month = \"$month\" 
+				AND day = \"$day\" 
+				AND type = 'SW' 
+			ORDER BY 'time'";
 
-$sql_v = "SELECT `v` FROM  `roost_table` WHERE station = \"$station\" AND year = \"$year\" AND month = \"$month\" AND day = \"$day\" AND type = 'DZ'";
-
-
-$result_v = mysql_query($sql_v);
-
-$row_v = mysql_fetch_array($result_v);
 
 
 
 
 
-$frames_time_array = array();
+$frames_array = array();
+$frames_DZ_array = array();
+$frames_VR_array = array();
+$frames_SW_array = array();
 
-$frames_time_array[] = $row_v['v'];
 
-$result = mysql_query($sql);
-								  
+$result = mysql_query($sql_DZ);
 
 
 while($row = mysql_fetch_array($result)){
-	//echo "test1.1";
-	//echo $row['time'] . "\n";
-	$frames_time_array[] = $row['time'];
-
+	$frames_DZ_array[] = $row['file_name'];
 } 
 
 
 
+$result = mysql_query($sql_VR);
+
+while($row = mysql_fetch_array($result)){
+	$frames_VR_array[] = $row['file_name'];
+} 
+
+
+$result = mysql_query($sql_SW);
+
+while($row = mysql_fetch_array($result)){
+	$frames_SW_array[] = $row['file_name'];
+} 
 
 
 
-#echo json_encode($frames_time_array);
-echo implode('~',$frames_time_array);
+$frames_array = implode('~', $frames_DZ_array); 
+$frames_array .= "&&";
+$frames_array .= implode('~', $frames_VR_array); 
+$frames_array .= "&&";
+$frames_array .= implode('~', $frames_SW_array); 
+
+
+
+echo ($frames_array);
 
 ?>
 
