@@ -648,47 +648,26 @@ function RoostTool()
 RoostTool.prototype.getFrameCallback = function() {
     if (this.xmlhttp.readyState==4 && this.xmlhttp.status==200)
     {
-	//this.frames = JSON.parse(this.xmlhttp.responseText);
+		
+		var ajaxStr = trim(this.xmlhttp.responseText);
+	
+		var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
+		var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
+		var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
+		
+		this.frames_DV = ajaxArr_DV;
+		this.frames_VR = ajaxArr_VR;
+		this.frames_SW = ajaxArr_SW;
 	
 	
-	var ajaxStr = trim(this.xmlhttp.responseText);
-	var ajaxArr=new Array();
-	//ajaxArr = ajaxStr.split('&&');
-	//var ajaxArr_v_value = ajaxStr.split('&&')[0];
-	var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
-	var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
-	var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
-	
-	//this.v=  ajaxArr.splice(0,1);
-	
-	this.frames_DV = ajaxArr_DV;
-	this.frames_VR = ajaxArr_VR;
-	this.frames_SW = ajaxArr_SW;
-	
-	
-	this.frame = 0; 
-	this.loadFrame(this.frame);
+		this.frame = 0; 
+		this.loadFrame(this.frame);
     }
 };
 
 RoostTool.prototype.loadFrame = function(idx) {
 
     var XX = ["DZ", "VR", "SW"];
-    /*
-	var station = gup('station');
-	var year = gup('year');
-	var month = gup('month');
-	if (month < 10) { month = "0" + month;}
-	var day = gup('day');
-	if (day < 10) { day = "0" + day;}
-	
-	var station = document.getElementById("station_select").value;
-	var year = document.getElementById("year_select").value;
-	var month = document.getElementById("month_select").value;
-	if (month < 10) { month = "0" + month;}
-	var day = document.getElementById("day_select").value;
-	if (day < 10) { day = "0" + day;}
-	*/
 	url = [];
 	url[0] = this.frames_DV[idx];
 	url[1] = this.frames_VR[idx];
@@ -696,10 +675,9 @@ RoostTool.prototype.loadFrame = function(idx) {
     
 	for (var i = 0; i < XX.length; i++)
     {
-	//var url = "images/" + station + "/" + year + "/" + month + "/" + day + "/" + station + year + month + day +"_" + [idx] + "_" + this.v + "_" + XX[i] + ".mapl.gif";
-	var img_url = url[i];
-	var elt = document.getElementById("img" + XX[i]);
-	elt.src = img_url;
+		var img_url = url[i];
+		var elt = document.getElementById("img" + XX[i]);
+		elt.src = img_url;
     }
 };
 
@@ -711,7 +689,7 @@ RoostTool.prototype.prevFrame = function() {
 };
 
 RoostTool.prototype.nextFrame = function() {
-    if (this.frame < this.frames.length - 1 )
+    if (this.frame < this.frames_DV.length - 1 )
     {
 	this.loadFrame(++this.frame);
     }
