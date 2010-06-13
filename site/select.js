@@ -103,6 +103,7 @@
                         day_select.innerHTML = xmlhttp.responseText;
 						day_select.onchange = function() {
 							this.blur();
+							display_date();
 							RoostToolInit();
 						};
                     }
@@ -111,6 +112,15 @@
                 xmlhttp.open("GET",url,true);
                 xmlhttp.send();				
             }
+			function display_date(){
+				var station = document.getElementById("station_select").value;
+				var year = document.getElementById("year_select").value;
+				var month = document.getElementById("month_select").value;
+				var day = document.getElementById("day_select").value;
+				
+				var display = document.getElementById("display");
+				display.innerHTML = "<b class=\"display_sub\">Station:</b>"+ station + "<b class=\"display_sub\">Year:</b>"+year +"<b class=\"display_sub\">Month:</b>"+ month +"<b class=\"display_sub\">Day:</b>"+day +" ";
+			}
 
 
             

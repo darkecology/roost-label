@@ -37,6 +37,7 @@ border-right:1px solid #ccc;
 }
 
 #header {
+	text-align:center;
 width:1460px;
 height:100px;
 margin:0 auto;
@@ -73,7 +74,6 @@ height:80px;
 
 #content {
 width:1400px;
-
 padding:10px;
 }
 
@@ -91,7 +91,31 @@ float:left;
 padding:10px;
 }
 
-
+#panel {
+	width:1400px;
+	float:left;
+	padding:10px;
+	border-bottom:1px solid #ccc;
+	vertical-align: middle;
+	height:50px;
+}
+#controller {
+	float: left; 
+	width: 200px;
+	text-align:center;
+	vertical-align:middle;
+	height:50px;
+	}
+#display {
+	float: left; width: 700px;
+	vertical-align: middle;
+	font-size:large;
+}
+.display_sub {
+	
+	margin-left:50px;
+	color: #005CB9;
+}
 
 
 
