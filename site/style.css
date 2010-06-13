@@ -27,6 +27,10 @@ color:#333;
 margin:0;
 padding:0;
 }
+a:link {color:#005CB9; font-size:14px; font-weight:bold;}
+a:visited {color:#005CB9;}
+a:hover {color:#ffcc00;}
+
  
 #wrapper {
 width:1860px;
