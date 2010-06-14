@@ -637,13 +637,36 @@ function RoostTool()
 	var year = document.getElementById("year_select").value;
 	var month = document.getElementById("month_select").value;
 	var day = document.getElementById("day_select").value;
-
+	
 	var url_php_request = "ajax/frame_list.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
 	
-	
+	document.getElementById("visibility_select").onchange = visibilityChange;
+	visibilityChange();
     xmlhttp.open("GET",url_php_request,true);
     xmlhttp.send();
-}
+};
+
+function visibilityChange() {
+	var visible = document.getElementById("visibility_select").value;
+	if (visible == 1) 
+	{
+		document.getElementById("imgDZ").style.display = "block";
+		document.getElementById("imgVR").style.display = "none";
+		document.getElementById("imgSW").style.display = "none";
+	}
+	if (visible == 2) 
+	{
+		document.getElementById("imgDZ").style.display = "block";
+		document.getElementById("imgVR").style.display = "block";
+		document.getElementById("imgSW").style.display = "none";
+	}
+	if (visible == 3)
+	{
+		document.getElementById("imgDZ").style.display = "block";
+		document.getElementById("imgVR").style.display = "block";
+		document.getElementById("imgSW").style.display = "block";
+	}
+};
 
 RoostTool.prototype.getFrameCallback = function() {
     if (this.xmlhttp.readyState==4 && this.xmlhttp.status==200)
