@@ -396,6 +396,7 @@ function RoostCircle(cx, cy, r)
     Circle.call(this, cx, cy, r);
     this.deleteHandle = new XMarker(cx, cy, 8);
     this.radiusHandle = new CircleMarker(cx, cy - r);
+	this.parent = null;
 }
 inherits(RoostCircle, Circle);
 
@@ -596,6 +597,74 @@ function pointsToCircle(p)
 
 
 //------------------------------------------------------------------------
+// RoostSequence
+//------------------------------------------------------------------------
+
+function RoostSequence(frameNum, circle)
+{
+	this.seq_start = null;
+	this.seq_end = null;
+	this.tool = null;
+	this.proCircleStart = null;
+	this.proCircleEnd = null;
+	this.sequenceID = null;
+	this.locallyChanged = null;
+	this.sequenceIndex = null;
+	this.comments = null;
+	this.circles = [];
+}
+
+RoostSequence.prototype.updateInfoBox = function() 
+{
+
+};
+
+RoostSequence.prototype.revertRoostSequence = function() 
+{
+
+};
+
+RoostSequence.prototype.saveRoostSequence = function() 
+{
+
+};
+
+RoostSequence.prototype.deleteRoostSequence = function() 
+{
+
+};
+
+RoostSequence.prototype.insertCircle = function(frameNum) 
+{
+
+};
+
+RoostSequence.prototype.saveEvent = function() 
+{
+
+};
+
+RoostSequence.prototype.revertEvent = function() 
+{
+
+};
+
+RoostSequence.prototype.deleteEvent = function() 
+{
+
+};
+
+RoostSequence.prototype.extendForward = function() 
+{
+
+};
+
+RoostSequence.prototype.extendBackward = function() 
+{
+
+};
+
+//------------------------------------------------------------------------
 // RoostTool
 //------------------------------------------------------------------------
 
@@ -610,8 +679,9 @@ function RoostTool()
 			   document.getElementById("canvasSW")];
 
     this.annotations = [];
-
-    this.circles = [];
+	this.circles = [];
+	this.roostSeqObj = [];
+	
     this.controlPoints = [];
     this.markers = [];
 
@@ -666,6 +736,26 @@ function visibilityChange() {
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "block";
 	}
+};
+
+RoostTool.prototype.saveAll = function() {
+	
+};
+
+RoostTool.prototype.resetAll = function() {
+	
+};
+
+RoostTool.prototype.updateButtons = function() {
+	
+};
+
+RoostTool.prototype.saveURL = function() {
+
+};
+
+RoostTool.prototype.moveToFrame = function(frameNum) {
+
 };
 
 RoostTool.prototype.getFrameCallback = function() {
