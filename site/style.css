@@ -105,7 +105,7 @@ border-top:1px solid #ccc;
 
 }
 
-#infoBox{
+.infoBox{
 float:left;
 border:1px solid #000;
 }

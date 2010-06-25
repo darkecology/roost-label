@@ -1,5 +1,4 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:v="urn:schemas-microsoft-com:vml" 
       xmlns:svg="http://www.w3.org/2000/svg" 
@@ -129,42 +128,43 @@
 				</table>
 			</div>	
 			<div id="infoPanel">
-				<div id="infoBox">
-					<table>
-						<tr>
-							<td>KDOX-20091001-1</td>
-							<td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
-						</tr>
-						<tr>
-							<td>First appears: <span id="firstTime">10:22:33</span></td>
-							<td>( <a href="javascript:extendBackward();">extend backward</a> ) </td>
-						</tr>
-						<tr>
-							<td>Last appears: <span id="lastTime">11:03:30</span></td>
-							<td>( <a href="javascript:extendForward();">extend forward</a> ) </td>
-						</tr>
-						<tr>
-							<td>Comments:</td>
-						</tr>
-					</table>
-					<table>
+				<div class="infoBox">
+				
+				  <table>
 					<tr>
-						<td><textarea id="comment" cols="40" rows="5"></textarea></td>
+					  <td id="infoBoxId">KDOX-20091001-1</td>
+					  <td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
 					</tr>
 					<tr>
-					<td>
-					<button class="button" type="button">Delete</button>
-					<button class="button" type="button">Revert</button>
-					<button class="button" type="button">Save</button>
-					</td>
+					  <td>First appears: <span id="firstTime">10:22:33</span></td>
+					  <td>( <a id="jjj">still editing ...</a> ) </td>
 					</tr>
-					
-					</table>
+					<tr>
+					  <td>Last appears: <span id="lastTime">11:03:30</span></td>
+					  <td>( <a href="">extend forward</a> ) </td>
+					</tr>
+				  </table>
+				  <table>
+					<tr>
+					  <td>Comments:</td>
+					</tr>
+					<tr>
+					  <td><textarea id="comment" cols="40" rows="5"></textarea></td>
+					</tr>
+					<tr>
+					  <td>
+						<button class="button" type="button">Delete</button>
+						<button class="button" type="button">Revert</button>
+						<button class="button" type="button">Save</button>
+					  </td>
+					</tr>
+				  </table>
 				</div>
 			</div>
 			<div id="infoPanelController">
 				<button class="button" type="button">Save All</button>
 				<button class="button" type="button">Reset</button>
+				<button class="button" type="button" onclick="addInfoBox(0)">test</button>
 
 
 			</div>

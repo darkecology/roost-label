@@ -1007,3 +1007,112 @@ function trim (str, charlist) {
     
     return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }
+
+
+
+//-----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+                                                                                                                                                             
+                                                                                                                                                             
+
+function clone(obj){
+
+    if(obj == null || typeof(obj) != 'object')
+
+        return obj;
+
+    var temp = new obj.constructor(); // changed (twice)
+
+    for(var key in obj)
+
+        temp[key] = clone(obj[key]);
+
+
+
+    return temp;
+
+}
+
+
+
+//------------------------------------------------------------------------
+// Global Function: addInfoBox();
+//------------------------------------------------------------------------
+
+
+function addInfoBox(infoBoxIndx){
+	var infoPanel = document.getElementById("infoPanel");	
+	var newInfoBox = document.createElement("div");
+	newInfoBox.setAttribute('class', "infoBox");
+	newInfoBox.setAttribute('id', infoBoxIndx);
+	//newInfoBox.innerHTML = '<p>test</p>';
+	//td[table#][tr#]#
+
+	var table1 = document.createElement("table");
+	var table2 = document.createElement("table");
+	
+	
+	
+	var tr11 = document.createElement("tr");
+	var tr12 = document.createElement("tr");
+	var tr13 = document.createElement("tr");
+
+	var td111 = document.createElement("td");
+	td111.setAttribute('id', 'infoBoxId');
+	td111.innerHTML = "unsaved_"+infoBoxIndx;
+	
+	var td112 = document.createElement("td");
+	
+	td112.innerHTML = "Location( <span id=\"xcoord_" + infoBoxIndx + "\">0</span> ,<span id=\"ycoord_" + infoBoxIndx + "\">0</span> )";
+	
+	tr11.appendChild(td111);
+	tr11.appendChild(td112);
+	
+
+
+	//-------------------------------------------------
+	tr12.innerHTML = "<td>First Appears:<span id=\"firstTime_" + infoBoxIndx + "\">00:00:00</span></td><td>(<a id=\"extendBackwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
+	
+	tr13.innerHTML = "<td>Last Appears:<span id=\"LastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
+	
+
+	//--------------------------------------------------------
+	var tr21 = document.createElement("tr");
+	var tr22 = document.createElement("tr");
+	var tr23 = document.createElement("tr");
+
+
+	tr21.innerHTML = "<td>Comments:</td>";
+	tr22.innerHTML = "<td><textarea id=\"comments_" + infoBoxIndx + "\" cols=\"40\" rows=\"5\"></textarea></td>";
+	tr23.innerHTML = "<td><button class=\"button\" type=\"button\" id=\"delete_" + infoBoxIndx + "\">Delete</button>"
+		+ "<button class=\"button\" type=\"button\" id=\"revert_" + infoBoxIndx + "\">Revert</button>"
+		+ "<button class=\"button\" type=\"button\" id=\"save_" + infoBoxIndx + "\">Save</button>"
+		+ "</td>";
+
+	
+	
+
+	
+
+
+
+
+
+	table1.appendChild(tr11);
+	table1.appendChild(tr12);	
+	table1.appendChild(tr13);	
+
+
+	table2.appendChild(tr21);
+	table2.appendChild(tr22);	
+	table2.appendChild(tr23);	
+
+
+	newInfoBox.appendChild(table1);
+	newInfoBox.appendChild(table2);
+	
+
+	infoPanel.appendChild(newInfoBox);
+
+}
