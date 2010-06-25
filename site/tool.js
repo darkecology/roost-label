@@ -602,16 +602,17 @@ function pointsToCircle(p)
 
 function RoostSequence(frameNum, circle)
 {
-	this.seq_start = null;
-	this.seq_end = null;
-	this.tool = null;
-	this.proCircleStart = null;
-	this.proCircleEnd = null;
+	this.seq_start = frameNum;
+	this.seq_end = frameNum;
+	this.tool = window.tool;
+	this.proCircleStart = 0;
+	this.proCircleEnd = 0;
 	this.sequenceID = null;
-	this.locallyChanged = null;
+	this.locallyChanged = 1;
 	this.sequenceIndex = null;
 	this.comments = null;
 	this.circles = [];
+	this.circles[frameNum] = circle;
 }
 
 RoostSequence.prototype.updateInfoBox = function() 
@@ -639,6 +640,11 @@ RoostSequence.prototype.insertCircle = function(frameNum)
 
 };
 
+RoostSequence.prototype.updateCanvas = function(frameNum) 
+{
+
+};
+
 RoostSequence.prototype.saveEvent = function() 
 {
 
@@ -656,12 +662,21 @@ RoostSequence.prototype.deleteEvent = function()
 
 RoostSequence.prototype.extendForward = function() 
 {
-
+	this.tool.moveToFrame(++this.seq_end);
+	this.updateCanvas();
+	this.updateInfoBox();
+	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.extendBackward = function() 
 {
-
+	if(this.seq_end - 1 > 0)
+	{
+		this.tool.moveToFrame(--this.seq_end);
+		this.updateCanvas();
+		this.updateInfoBox();
+		this.tool.updateButtons();
+	}
 };
 
 //------------------------------------------------------------------------
@@ -679,7 +694,6 @@ function RoostTool()
 			   document.getElementById("canvasSW")];
 
     this.annotations = [];
-	this.circles = [];
 	this.roostSeqObj = [];
 	
     this.controlPoints = [];
@@ -755,7 +769,36 @@ RoostTool.prototype.saveURL = function() {
 };
 
 RoostTool.prototype.moveToFrame = function(frameNum) {
-
+	this.loadFrame(frameNum);
+	this.frame = frameNum;
+	for(var sequence in this.roostSeqObj)
+	{
+		if (this.roostSeqObj[sequence].circles[this.frame - 1] != null)
+		{
+			var proCircle = new RoostCircle(this.roostSeqObj[sequence].circles[this.frame - 1].x, this.roostSeqObj[sequence].circles[this.frame - 1].y, this.roostSeqObj[sequence].circles[this.frame - 1].r);			this.roostSeqObj[sequence].proCircleEnd = 1;
+			this.roostSeqObj[sequence].proCircleStart = 1;
+			proCircle.strokeColor = "grey";
+			proCircle.radiusHandle.fill = "grey";
+			proCircle.deleteHandle.strokeColor = "grey";
+			for (var i = 0; i < this.svgElements.length; i++) 
+			{
+				proCircle.draw(this.svgElements[i]);
+			}
+		}
+		else
+		{
+			var proCircle = new RoostCircle(this.roostSeqObj[sequence].circles[this.frame + 1].x, this.roostSeqObj[sequence].circles[this.frame + 1].y, this.roostSeqObj[sequence].circles[this.frame + 1].r);
+			this.roostSeqObj[sequence].proCircleEnd = 1;
+			proCircle.strokeColor = "grey";
+			proCircle.radiusHandle.fill = "grey";
+			proCircle.deleteHandle.strokeColor = "grey";
+			for (var i = 0; i < this.svgElements.length; i++) 
+			{
+				proCircle.draw(this.svgElements[i]);
+			}
+					
+		}
+	}
 };
 
 RoostTool.prototype.getFrameCallback = function() {
@@ -797,14 +840,22 @@ RoostTool.prototype.loadFrame = function(idx) {
 RoostTool.prototype.prevFrame = function() {
     if (this.frame > 0 )
     {
-	this.loadFrame(--this.frame);
+		this.loadFrame(--this.frame);
+		for(var sequence in this.roostSeqObj)
+		{
+			this.roostSeqObj[sequence].updateCanvas();
+		}
     }
 };
 
 RoostTool.prototype.nextFrame = function() {
     if (this.frame < this.frames_DV.length - 1 )
     {
-	this.loadFrame(++this.frame);
+		this.loadFrame(++this.frame);
+		for(var sequence in this.roostSeqObj)
+		{
+			this.roostSeqObj[sequence].updateCanvas();
+		}
     }
 };
 
@@ -837,13 +888,15 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     {
 	// create a new RoostCircle object (modify this to create a new RoostSequence object instead)
 	var c = pointsToCircle(this.controlPoints); 
+	this.roostSeqObj.push(new RoostSequence(this.frame, c));
 
 	if (c)
 	{
-	    for (var i = 0; i < this.svgElements.length; i++) {
-		c.draw(this.svgElements[i]);
+	    for (var i = 0; i < this.svgElements.length; i++) 
+		{
+			c.draw(this.svgElements[i]);
 	    }
-	    this.circles.push(c); // add to RoostTool's list of circles
+	
 	}
 
 	for (var i=0; i < this.markers.length; i++)
