@@ -391,12 +391,12 @@ inherits(CircleMarker, Circle);
 // class RoostCircle: a circle that can be edited
 //------------------------------------------------------------------------
 
-function RoostCircle(cx, cy, r)
+function RoostCircle(cx, cy, r, parent)
 {
     Circle.call(this, cx, cy, r);
     this.deleteHandle = new XMarker(cx, cy, 8);
     this.radiusHandle = new CircleMarker(cx, cy - r);
-	this.parent = null;
+	this.parent = parent;
 }
 inherits(RoostCircle, Circle);
 
@@ -432,6 +432,12 @@ RoostCircle.prototype.undraw = function()
 RoostCircle.prototype.remove = function(e)
 {    
     this.undraw();
+	if(this.strokeColor == "red")
+	{
+		this.parent.circles[this.parent.tool.frame] = null;
+		this.parent.locallyChanged = 1;
+		this.parent.updateInfoBox();
+	}
 };
 
 //--------------------
@@ -461,6 +467,16 @@ RoostCircle.prototype.finishResize = function(e, callObj)
     this.strokeOpacity = 1;
     this.redraw();
     this.canvas.onmousemove = null;
+	if(this.strokeColor == "grey")
+	{
+		this.strokeColor = "red";
+		this.radiusHandle.fill = "red";
+		this.deleteHandle.strokeColor = "red";
+		this.parent.insertCircle(this);
+		this.parent.locallyChanged = 1;
+		this.parent.updateInfoBox();
+		this.redraw();
+	}
 };
 
 //--------------------
@@ -496,6 +512,16 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
     this.strokeOpacity = 1;
     this.redraw();
     this.canvas.onmousemove = null;
+	if(this.strokeColor == "grey")
+	{
+		this.strokeColor = "red";
+		this.radiusHandle.fill = "red";
+		this.deleteHandle.strokeColor = "red";
+		this.parent.insertCircle(this);
+		this.parent.locallyChanged = 1;
+		this.parent.updateInfoBox();
+		this.redraw();
+	}
 };
 
 function getCanvas(elt)
@@ -592,7 +618,7 @@ function pointsToCircle(p)
     cy = slopeA*cx + interceptA;
     r  = Math.sqrt((p1.x - cx)*(p1.x - cx) + (p1.y - cy)*(p1.y - cy));
 
-    return new RoostCircle(cx, cy, r);
+    return new Circle(cx, cy, r);
 };
 
 
@@ -635,9 +661,9 @@ RoostSequence.prototype.deleteRoostSequence = function()
 
 };
 
-RoostSequence.prototype.insertCircle = function(frameNum) 
+RoostSequence.prototype.insertCircle = function(circle) 
 {
-
+	this.circles[this.tool.frame] = circle;
 };
 
 RoostSequence.prototype.updateCanvas = function(frameNum) 
@@ -663,6 +689,18 @@ RoostSequence.prototype.deleteEvent = function()
 RoostSequence.prototype.extendForward = function() 
 {
 	this.tool.moveToFrame(++this.seq_end);
+	if (this.circles[this.tool.frame - 1] != null)
+	{
+		var proCircle = new RoostCircle(this.circles[this.tool.frame - 1].x, this.circles[this.tool.frame - 1].y, this.circles[this.tool.frame - 1].r, this);			
+		this.proCircleStart = 1;
+		proCircle.strokeColor = "grey";
+		proCircle.radiusHandle.fill = "grey";
+		proCircle.deleteHandle.strokeColor = "grey";
+		for (var i = 0; i < this.tool.svgElements.length; i++) 
+		{
+			proCircle.draw(this.tool.svgElements[i]);
+		}
+	}
 	this.updateCanvas();
 	this.updateInfoBox();
 	this.tool.updateButtons();
@@ -672,7 +710,20 @@ RoostSequence.prototype.extendBackward = function()
 {
 	if(this.seq_end - 1 > 0)
 	{
-		this.tool.moveToFrame(--this.seq_end);
+		this.tool.moveToFrame(--this.seq_start);
+		if (this.circles[this.tool.frame + 1] != null)
+		{
+			var proCircle = new RoostCircle(this.circles[this.tool.frame + 1].x, this.circles[this.tool.frame + 1].y, this.circles[this.tool.frame + 1].r, this);			
+			this.proCircleStart = 1;
+			proCircle.strokeColor = "grey";
+			proCircle.radiusHandle.fill = "grey";
+			proCircle.deleteHandle.strokeColor = "grey";
+			for (var i = 0; i < this.tool.svgElements.length; i++) 
+			{
+				proCircle.draw(this.tool.svgElements[i]);
+			}
+		}
+
 		this.updateCanvas();
 		this.updateInfoBox();
 		this.tool.updateButtons();
@@ -771,34 +822,6 @@ RoostTool.prototype.saveURL = function() {
 RoostTool.prototype.moveToFrame = function(frameNum) {
 	this.loadFrame(frameNum);
 	this.frame = frameNum;
-	for(var sequence in this.roostSeqObj)
-	{
-		if (this.roostSeqObj[sequence].circles[this.frame - 1] != null)
-		{
-			var proCircle = new RoostCircle(this.roostSeqObj[sequence].circles[this.frame - 1].x, this.roostSeqObj[sequence].circles[this.frame - 1].y, this.roostSeqObj[sequence].circles[this.frame - 1].r);			this.roostSeqObj[sequence].proCircleEnd = 1;
-			this.roostSeqObj[sequence].proCircleStart = 1;
-			proCircle.strokeColor = "grey";
-			proCircle.radiusHandle.fill = "grey";
-			proCircle.deleteHandle.strokeColor = "grey";
-			for (var i = 0; i < this.svgElements.length; i++) 
-			{
-				proCircle.draw(this.svgElements[i]);
-			}
-		}
-		else
-		{
-			var proCircle = new RoostCircle(this.roostSeqObj[sequence].circles[this.frame + 1].x, this.roostSeqObj[sequence].circles[this.frame + 1].y, this.roostSeqObj[sequence].circles[this.frame + 1].r);
-			this.roostSeqObj[sequence].proCircleEnd = 1;
-			proCircle.strokeColor = "grey";
-			proCircle.radiusHandle.fill = "grey";
-			proCircle.deleteHandle.strokeColor = "grey";
-			for (var i = 0; i < this.svgElements.length; i++) 
-			{
-				proCircle.draw(this.svgElements[i]);
-			}
-					
-		}
-	}
 };
 
 RoostTool.prototype.getFrameCallback = function() {
@@ -888,13 +911,14 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     {
 	// create a new RoostCircle object (modify this to create a new RoostSequence object instead)
 	var c = pointsToCircle(this.controlPoints); 
-	this.roostSeqObj.push(new RoostSequence(this.frame, c));
+	roostC = new RoostCircle(c.x, c.y, c.r, this);
+	this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
 
-	if (c)
+	if (roostC)
 	{
 	    for (var i = 0; i < this.svgElements.length; i++) 
 		{
-			c.draw(this.svgElements[i]);
+			roostC.draw(this.svgElements[i]);
 	    }
 	
 	}
