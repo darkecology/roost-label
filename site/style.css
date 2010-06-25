@@ -27,9 +27,13 @@ color:#333;
 margin:0;
 padding:0;
 }
+
+
 a:link {color:#005CB9; font-size:14px; font-weight:bold;}
 a:visited {color:#005CB9;}
 a:hover {color:#ffcc00;}
+
+
 
  
 #wrapper {
@@ -87,14 +91,34 @@ height: 40px;
 border-bottom:1px solid #ccc;
 }
 
-#tool {	
+#canvasPanel {	
 width:auto;
 min-height:650px;
 padding:10px;
 }
 
-#instruction {
-padding-bottom:100px;
+#infoPanel{
+clear:both;
+width:auto;
+min-height:185px;
+border-top:1px solid #ccc;
+
+}
+
+#infoBox{
+float:left;
+border:1px solid #000;
+}
+
+#infoPanelController{
+clear:both;
+width:auto;
+height:30px;
+border-top:1px solid #ccc;
+}
+
+.button{
+float:right;
 }
 
 #panel {

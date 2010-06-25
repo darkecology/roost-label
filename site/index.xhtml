@@ -65,6 +65,13 @@
                         	<option value="null" />
                         </select>
                     </div>
+
+					<div id="bookmark">
+					
+						<a href=""> Show URL </a>
+
+					</div>
+
 					<div id="visible">
 						<strong>Visibility:</strong>
 						<select id="visibility_select">
@@ -85,7 +92,7 @@
 					
 				</div>
 			</div>
-			<div id="tool">
+			<div id="canvasPanel">
 				<table>
 					<tr>
 					
@@ -121,23 +128,50 @@
 					<tr/>
 				</table>
 			</div>	
-			<div id="instruction">
-				<p>Instructions:</p>
-				<ul>
-					<li>Click three times on the perimeter of the roost to draw a circle (you can click in any image)</li>
-					<li>Drag the circle to reposition</li>
-					<li>Drag the control point on the perimeter to resize</li>
-					<li>Click the 'x' in the center of the circle to delete</li>
-				</ul>
-				<p>Note: after you have drawn a circle, click to drag or resize and the circle will become transparent so you can see through to the image.</p>
+			<div id="infoPanel">
+				<div id="infoBox">
+					<table>
+						<tr>
+							<td>KDOX-20091001-1</td>
+							<td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
+						</tr>
+						<tr>
+							<td>First appears: <span id="firstTime">10:22:33</span></td>
+							<td>( <a href="">extend backward</a> ) </td>
+						</tr>
+						<tr>
+							<td>Last appears: <span id="lastTime">11:03:30</span></td>
+							<td>( <a href="">extend forward</a> ) </td>
+						</tr>
+						<tr>
+							<td>Comments:</td>
+						</tr>
+					</table>
+					<table>
+					<tr>
+						<td><textarea id="comment" cols="40" rows="5"></textarea></td>
+					</tr>
+					<tr>
+					<td>
+					<button class="button" type="button">Delete</button>
+					<button class="button" type="button">Revert</button>
+					<button class="button" type="button">Save</button>
+					</td>
+					</tr>
+					
+					</table>
+				</div>
 			</div>
-				
-	
+			<div id="infoPanelController">
+				<button class="button" type="button">Save All</button>
+				<button class="button" type="button">Reset</button>
+
+
+			</div>
+
 			
 			
-            <div id="footer">
-            	<p>Copyright &copy; 2010 Roost Labeling Site</p>
-            </div> <!-- end #footer -->
+            
             
         </div> <!-- End #wrapper -->
     
