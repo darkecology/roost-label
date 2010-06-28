@@ -664,6 +664,14 @@ RoostSequence.prototype.deleteRoostSequence = function()
 RoostSequence.prototype.insertCircle = function(circle) 
 {
 	this.circles[this.tool.frame] = circle;
+	if(this.proCircleEnd)
+	{
+		this.seq_end++;
+	}
+	else if (this.proCircleStart)
+	{
+		this.seq_start--;
+	}
 };
 
 RoostSequence.prototype.saveEvent = function() 
@@ -683,47 +691,20 @@ RoostSequence.prototype.deleteEvent = function()
 
 RoostSequence.prototype.extendForward = function() 
 {
-	this.tool.moveToFrame(++this.seq_end);
-	if (this.circles[this.tool.frame - 1] != null)
-	{
-		var proCircle = new RoostCircle(this.circles[this.tool.frame - 1].x, this.circles[this.tool.frame - 1].y, this.circles[this.tool.frame - 1].r, this);			
-		this.proCircleEnd = 1;
-		proCircle.strokeColor = "grey";
-		proCircle.radiusHandle.fill = "grey";
-		proCircle.deleteHandle.strokeColor = "grey";
-		for (var i = 0; i < this.tool.svgElements.length; i++) 
-		{
-			proCircle.draw(this.tool.svgElements[i]);
-		}
-	}
+	this.tool.moveToFrame(this.seq_end + 1);
+	this.proCircleEnd = 1;
 	this.tool.updateCanvas();
-	this.tool.activeCircles[this.tool.frame].push(proCircle);
 	this.updateInfoBox();
 	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.extendBackward = function() 
 {
-	if(this.seq_end - 1 > 0)
-	{
-		this.tool.moveToFrame(--this.seq_start);
-		if (this.circles[this.tool.frame + 1] != null)
-		{
-			var proCircle = new RoostCircle(this.circles[this.tool.frame + 1].x, this.circles[this.tool.frame + 1].y, this.circles[this.tool.frame + 1].r, this);			
-			this.proCircleStart = 1;
-			proCircle.strokeColor = "grey";
-			proCircle.radiusHandle.fill = "grey";
-			proCircle.deleteHandle.strokeColor = "grey";
-			for (var i = 0; i < this.tool.svgElements.length; i++) 
-			{
-				proCircle.draw(this.tool.svgElements[i]);
-			}
-		}
-		this.tool.activeCircles[this.tool.frame].push(proCircle);
-		this.tool.updateCanvas();
-		this.updateInfoBox();
-		this.tool.updateButtons();
-	}
+	this.tool.moveToFrame(this.seq_start - 1);
+	this.proCircleStart = 1;
+	this.tool.updateCanvas();
+	this.updateInfoBox();
+	this.tool.updateButtons();
 };
 
 //------------------------------------------------------------------------
@@ -803,7 +784,7 @@ RoostTool.prototype.updateCanvas = function()
 {
 	for(var activeCircleIndex in this.activeCircles)
 	{
-		this.activeCircles(activeCircleIndex].undraw();
+		this.activeCircles[activeCircleIndex].undraw();
 	}
 	this.activeCircles = [];
 	for(var roostSequenceIndex in this.roostSeqObj)
@@ -811,18 +792,70 @@ RoostTool.prototype.updateCanvas = function()
 		var curRoostSeq = this.roostSeqObj[roostSequenceIndex];
 		if (curRoostSeq.circles[this.frame] != null)
 		{
-			curRoostSeq.circles[this.frame].draw();
-			this.activeCircles.push(this.roostSeqObj[roostSequenceIndex].circles[this.frame]);
+			for (var i = 0; i < this.svgElements.length; i++) 
+			{
+				curRoostSeq.circles[this.frame].draw(this.svgElements[i]);
+			}
+			this.activeCircles.push(curRoostSeq.circles[this.frame]);
 		}
-		else if(curRoostSeq.proCircleEnd)
+		else if(curRoostSeq.proCircleEnd && this.frame == curRoostSeq.seq_end + 1)
 		{
-			
+			if (curRoostSeq.circles[this.frame - 1] != null)
+			{
+				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
+				proCircle.strokeColor = "grey";
+				proCircle.radiusHandle.fill = "grey";
+				proCircle.deleteHandle.strokeColor = "grey";
+				for (var i = 0; i < this.svgElements.length; i++) 
+				{
+					proCircle.draw(this.svgElements[i]);
+				}
+				this.activeCircles.push(proCircle);
+			}
 		}
-		if((this.frame != curRoostSeq.seq_end || curRoostSeq.proCircleEnd) || (this.frame != curRoostSeq.seq_start || curRoostSeq.proCircleStart))
+		else if (curRoostSeq.proCircleStart && this.frame == curRoostSeq.seq_start - 1)
 		{
-			curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			if (curRoostSeq.circles[this.frame + 1] != null)
+			{
+				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
+				proCircle.strokeColor = "grey";
+				proCircle.radiusHandle.fill = "grey";
+				proCircle.deleteHandle.strokeColor = "grey";
+				for (var i = 0; i < this.svgElements.length; i++) 
+				{
+					proCircle.draw(this.svgElements[i]);
+				}
+				this.activeCircles.push(proCircle)
+			}		
 		}
-		
+		if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
+		{
+			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start))
+			{
+				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			}
+		}
+		else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
+		{
+			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start - 1))
+			{
+				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			}
+		}
+		else if(curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd) 
+		{
+			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start - 1))
+			{
+				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			}
+		}
+		else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
+		{
+			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start))
+			{
+				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			}			
+		}	
 	}
 };
 
@@ -928,17 +961,13 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     {
 	// create a new Circle object (modify this to create a new RoostSequence object instead)
 	var c = pointsToCircle(this.controlPoints); 
-	roostC = new RoostCircle(c.x, c.y, c.r, this);
-	this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
-	this.sequenceIndex++;
-
-	if (roostC)
+	if (c)
 	{
-	    for (var i = 0; i < this.svgElements.length; i++) 
-		{
-			roostC.draw(this.svgElements[i]);
-	    }
-	
+		roostC = new RoostCircle(c.x, c.y, c.r, this);
+		this.activeCircles.push(roostC);
+		this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
+		this.sequenceIndex++;
+		this.updateCanvas();
 	}
 
 	for (var i=0; i < this.markers.length; i++)
