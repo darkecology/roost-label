@@ -1,4 +1,4 @@
-// BEGIN GLOBALS COPIED FROM LabelMe my_scripts.js
+// Jafer BEGIN GLOBALS COPIED FROM LabelMe my_scripts.js
 // RETHINK AND REORGANIZE THESE
 var bname;
 var bversion;
