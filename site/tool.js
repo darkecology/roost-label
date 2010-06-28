@@ -666,11 +666,6 @@ RoostSequence.prototype.insertCircle = function(circle)
 	this.circles[this.tool.frame] = circle;
 };
 
-RoostSequence.prototype.updateCanvas = function(frameNum) 
-{
-
-};
-
 RoostSequence.prototype.saveEvent = function() 
 {
 
@@ -701,7 +696,7 @@ RoostSequence.prototype.extendForward = function()
 			proCircle.draw(this.tool.svgElements[i]);
 		}
 	}
-	this.updateCanvas();
+	this.tool.updateCanvas();
 	this.tool.activeCircles[this.tool.frame].push(proCircle);
 	this.updateInfoBox();
 	this.tool.updateButtons();
@@ -725,7 +720,7 @@ RoostSequence.prototype.extendBackward = function()
 			}
 		}
 		this.tool.activeCircles[this.tool.frame].push(proCircle);
-		this.updateCanvas();
+		this.tool.updateCanvas();
 		this.updateInfoBox();
 		this.tool.updateButtons();
 	}
@@ -747,7 +742,7 @@ function RoostTool()
 
     this.annotations = [];
 	this.roostSeqObj = [];
-	this.activeCircles = [][];
+	this.activeCircles = [];
     this.controlPoints = [];
     this.markers = [];
 	this.sequenceIndex = 0;
@@ -801,6 +796,33 @@ function visibilityChange() {
 		document.getElementById("imgDZ").style.display = "block";
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "block";
+	}
+};
+
+RoostTool.prototype.updateCanvas = function() 
+{
+	for(var activeCircleIndex in this.activeCircles)
+	{
+		this.activeCircles(activeCircleIndex].undraw();
+	}
+	this.activeCircles = [];
+	for(var roostSequenceIndex in this.roostSeqObj)
+	{
+		var curRoostSeq = this.roostSeqObj[roostSequenceIndex];
+		if (curRoostSeq.circles[this.frame] != null)
+		{
+			curRoostSeq.circles[this.frame].draw();
+			this.activeCircles.push(this.roostSeqObj[roostSequenceIndex].circles[this.frame]);
+		}
+		else if(curRoostSeq.proCircleEnd)
+		{
+			
+		}
+		if((this.frame != curRoostSeq.seq_end || curRoostSeq.proCircleEnd) || (this.frame != curRoostSeq.seq_start || curRoostSeq.proCircleStart))
+		{
+			curRoostSeq.circles[this.frame].deleteHandle.undraw();
+		}
+		
 	}
 };
 
@@ -865,10 +887,7 @@ RoostTool.prototype.prevFrame = function() {
     if (this.frame > 0 )
     {
 		this.loadFrame(--this.frame);
-		for(var sequence in this.roostSeqObj)
-		{
-			this.roostSeqObj[sequence].updateCanvas();
-		}
+		this.updateCanvas();
     }
 };
 
@@ -876,10 +895,7 @@ RoostTool.prototype.nextFrame = function() {
     if (this.frame < this.frames_DV.length - 1 )
     {
 		this.loadFrame(++this.frame);
-		for(var sequence in this.roostSeqObj)
-		{
-			this.roostSeqObj[sequence].updateCanvas();
-		}
+		this.updateCanvas();
     }
 };
 
