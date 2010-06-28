@@ -633,8 +633,8 @@ function RoostSequence(frameNum, circle)
 	this.tool = window.tool;
 	this.proCircleStart = 0;
 	this.proCircleEnd = 0;
-	this.sequenceID = null;
-	this.locallyChanged = 1;
+	this.sequenceId = null;
+	this.locallyChanged = 0;
 	this.sequenceIndex = this.tool.sequenceIndex;
 	this.comments = null;
 	this.circles = [];
@@ -643,6 +643,79 @@ function RoostSequence(frameNum, circle)
 
 RoostSequence.prototype.updateInfoBox = function() 
 {
+	//if the infobox isn't exist, create one and add it to the info panel
+	if(document.getElementById(this.sequenceIndex) == null){
+		addInfoBox(this.sequenceIndex);
+	}
+
+	//keep the infoBox associated with this.RoostSequence in a variable
+	var infoBoxElement = document.getElementById(this.sequenceIndex);
+	var infoBoxId = document.getElementById("infoBoxId_"+this.sequenceIndex);
+	var infoBoxXcoord = document.getElementById("xcoord_"+this.sequenceIndex);
+	var infoBoxYcoord = document.getElementById("ycoord_"+this.sequenceIndex);
+	var infoBoxFirstTime = document.getElementById("firstTime_"+this.sequenceIndex);
+	var infoBoxLastTime = document.getElementById("lastTime_"+this.sequenceIndex);
+	var infoBoxExtendBackwardLink = document.getElementById("extendBackwardLink_"+this.sequenceIndex);
+	var infoBoxExtendForwardLink = document.getElementById("extendForwardLink_"+this.sequenceIndex);
+	var infoBoxComments = document.getElementById("comments_"+this.sequenceIndex);
+	var infoBoxSave = document.getElementById("save_"+this.sequenceIndex);
+	var infoBoxRevert = document.getElementById("revert_"+this.sequenceIndex);
+	var infoBoxDelete = document.getElementById("delete_"+this.sequenceIndex);
+
+	//sequenceId will be null when it is newly created during the current session and the user haven't saved it yet
+	// therefore we don't have a unique id for the sequence yet.
+	if (this.sequenceId != null){
+		infoBoxId.innerHTML = this.sequenceId;
+	}
+
+	//update location label
+	infoBoxXcoord.innerHTML = this.circles[this.seq_start].x;
+	infoBoxYcoord.innerHTML = this.circles[this.seq_start].y;
+	
+
+	//update the first time & last time
+	infoBoxFirstTime.innerHTML = this.tool.frames_timeStamp[this.seq_start];
+	infoBoxLastTime.innerHTML = this.tool.frames_timeStamp[this.seq_end];
+
+	//update extend links
+	if(this.proCircleEnd){
+		infoBoxExtendForwardLink.removeAttribute(href);
+		infoBoxExtendForwardLink.innerHTML = "still editing ...";
+	}else{
+		infoBoxExtendForwardLink.onclick = bindEvent(this, "extendForward");
+		infoBoxExtendForwardLink.innerHTML = "extend forward";
+	}
+		
+	if(this.proCircleStart){
+		infoBoxExtendBackwardLink.removeAttribute(href);
+		infoBoxExtendBackwardLink.innerHTML = "still editing ...";
+	}else{
+		infoBoxExtendBackwardLink.onclick = bindEvent(this, "extendBackward");
+		infoBoxExtendBackwardLink.innerHTML = "extend backward";
+	}
+
+	
+	//update comments
+	if(this.comments != null)
+		infoBoxComments.innerHTML = this.comments;
+	
+
+	//update save button
+	if(this.locallyChanged){
+		infoBoxSave.removeAttribute('disabled');
+		//infoBoxSave.setAttribute('onclick', 'alert("binding")');
+		infoBoxSave.onclick = bindEvent(this, "saveEvent");
+
+		infoBoxRevert.removeAttribute('disabled');
+		infoBoxRevert.onclick = bindEvent(this, "revertEvent" );
+
+
+	}else{
+		infoBoxSave.setAttribute('disabled', 'disabled');
+		infoBoxRevert.setAttribute('disabled', 'disabled');
+	}
+	
+	infoBoxDelete.onclick = bindEvent(this, "deleteEvent");
 
 };
 
@@ -653,7 +726,7 @@ RoostSequence.prototype.revertRoostSequence = function()
 
 RoostSequence.prototype.saveRoostSequence = function() 
 {
-
+alert("test save button");
 };
 
 RoostSequence.prototype.deleteRoostSequence = function() 
@@ -664,14 +737,6 @@ RoostSequence.prototype.deleteRoostSequence = function()
 RoostSequence.prototype.insertCircle = function(circle) 
 {
 	this.circles[this.tool.frame] = circle;
-	if(this.proCircleEnd)
-	{
-		this.seq_end++;
-	}
-	else if (this.proCircleStart)
-	{
-		this.seq_start--;
-	}
 };
 
 RoostSequence.prototype.saveEvent = function() 
@@ -691,20 +756,47 @@ RoostSequence.prototype.deleteEvent = function()
 
 RoostSequence.prototype.extendForward = function() 
 {
-	this.tool.moveToFrame(this.seq_end + 1);
-	this.proCircleEnd = 1;
+	this.tool.moveToFrame(++this.seq_end);
+	if (this.circles[this.tool.frame - 1] != null)
+	{
+		var proCircle = new RoostCircle(this.circles[this.tool.frame - 1].x, this.circles[this.tool.frame - 1].y, this.circles[this.tool.frame - 1].r, this);			
+		this.proCircleEnd = 1;
+		proCircle.strokeColor = "grey";
+		proCircle.radiusHandle.fill = "grey";
+		proCircle.deleteHandle.strokeColor = "grey";
+		for (var i = 0; i < this.tool.svgElements.length; i++) 
+		{
+			proCircle.draw(this.tool.svgElements[i]);
+		}
+	}
 	this.tool.updateCanvas();
+	this.tool.activeCircles[this.tool.frame].push(proCircle);
 	this.updateInfoBox();
 	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.extendBackward = function() 
 {
-	this.tool.moveToFrame(this.seq_start - 1);
-	this.proCircleStart = 1;
-	this.tool.updateCanvas();
-	this.updateInfoBox();
-	this.tool.updateButtons();
+	if(this.seq_end - 1 > 0)
+	{
+		this.tool.moveToFrame(--this.seq_start);
+		if (this.circles[this.tool.frame + 1] != null)
+		{
+			var proCircle = new RoostCircle(this.circles[this.tool.frame + 1].x, this.circles[this.tool.frame + 1].y, this.circles[this.tool.frame + 1].r, this);			
+			this.proCircleStart = 1;
+			proCircle.strokeColor = "grey";
+			proCircle.radiusHandle.fill = "grey";
+			proCircle.deleteHandle.strokeColor = "grey";
+			for (var i = 0; i < this.tool.svgElements.length; i++) 
+			{
+				proCircle.draw(this.tool.svgElements[i]);
+			}
+		}
+		this.tool.activeCircles[this.tool.frame].push(proCircle);
+		this.tool.updateCanvas();
+		this.updateInfoBox();
+		this.tool.updateButtons();
+	}
 };
 
 //------------------------------------------------------------------------
@@ -782,81 +874,7 @@ function visibilityChange() {
 
 RoostTool.prototype.updateCanvas = function() 
 {
-	for(var activeCircleIndex in this.activeCircles)
-	{
-		this.activeCircles[activeCircleIndex].undraw();
-	}
-	this.activeCircles = [];
-	for(var roostSequenceIndex in this.roostSeqObj)
-	{
-		var curRoostSeq = this.roostSeqObj[roostSequenceIndex];
-		if (curRoostSeq.circles[this.frame] != null)
-		{
-			for (var i = 0; i < this.svgElements.length; i++) 
-			{
-				curRoostSeq.circles[this.frame].draw(this.svgElements[i]);
-			}
-			this.activeCircles.push(curRoostSeq.circles[this.frame]);
-		}
-		else if(curRoostSeq.proCircleEnd && this.frame == curRoostSeq.seq_end + 1)
-		{
-			if (curRoostSeq.circles[this.frame - 1] != null)
-			{
-				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
-				proCircle.strokeColor = "grey";
-				proCircle.radiusHandle.fill = "grey";
-				proCircle.deleteHandle.strokeColor = "grey";
-				for (var i = 0; i < this.svgElements.length; i++) 
-				{
-					proCircle.draw(this.svgElements[i]);
-				}
-				this.activeCircles.push(proCircle);
-			}
-		}
-		else if (curRoostSeq.proCircleStart && this.frame == curRoostSeq.seq_start - 1)
-		{
-			if (curRoostSeq.circles[this.frame + 1] != null)
-			{
-				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
-				proCircle.strokeColor = "grey";
-				proCircle.radiusHandle.fill = "grey";
-				proCircle.deleteHandle.strokeColor = "grey";
-				for (var i = 0; i < this.svgElements.length; i++) 
-				{
-					proCircle.draw(this.svgElements[i]);
-				}
-				this.activeCircles.push(proCircle)
-			}		
-		}
-		if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}
-		}
-		else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start - 1))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}
-		}
-		else if(curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd) 
-		{
-			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start - 1))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}
-		}
-		else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}			
-		}	
-	}
+
 };
 
 RoostTool.prototype.saveAll = function() {
@@ -889,10 +907,12 @@ RoostTool.prototype.getFrameCallback = function() {
 		var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
 		var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
 		var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
+		var ajaxArr_timeStamp = ajaxStr.split('&&')[3].split('~');
 		
 		this.frames_DV = ajaxArr_DV;
 		this.frames_VR = ajaxArr_VR;
 		this.frames_SW = ajaxArr_SW;
+		this.frames_timeStamp = ajaxArr_timeStamp;
 	
 	
 		this.frame = 0; 
@@ -961,13 +981,17 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     {
 	// create a new Circle object (modify this to create a new RoostSequence object instead)
 	var c = pointsToCircle(this.controlPoints); 
-	if (c)
+	roostC = new RoostCircle(c.x, c.y, c.r, this);
+	this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
+	this.sequenceIndex++;
+
+	if (roostC)
 	{
-		roostC = new RoostCircle(c.x, c.y, c.r, this);
-		this.activeCircles.push(roostC);
-		this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
-		this.sequenceIndex++;
-		this.updateCanvas();
+	    for (var i = 0; i < this.svgElements.length; i++) 
+		{
+			roostC.draw(this.svgElements[i]);
+	    }
+	
 	}
 
 	for (var i=0; i < this.markers.length; i++)
@@ -1130,7 +1154,7 @@ function addInfoBox(infoBoxIndx){
 	var tr13 = document.createElement("tr");
 
 	var td111 = document.createElement("td");
-	td111.setAttribute('id', 'infoBoxId');
+	td111.setAttribute('id', "infoBoxId_"+infoBoxIndx);
 	td111.innerHTML = "unsaved_"+infoBoxIndx;
 	
 	var td112 = document.createElement("td");
@@ -1145,7 +1169,7 @@ function addInfoBox(infoBoxIndx){
 	//-------------------------------------------------
 	tr12.innerHTML = "<td>First Appears:<span id=\"firstTime_" + infoBoxIndx + "\">00:00:00</span></td><td>(<a id=\"extendBackwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
 	
-	tr13.innerHTML = "<td>Last Appears:<span id=\"LastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
+	tr13.innerHTML = "<td>Last Appears:<span id=\"lastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
 	
 
 	//--------------------------------------------------------
@@ -1159,12 +1183,8 @@ function addInfoBox(infoBoxIndx){
 	tr23.innerHTML = "<td><button class=\"button\" type=\"button\" id=\"delete_" + infoBoxIndx + "\">Delete</button>"
 		+ "<button class=\"button\" type=\"button\" id=\"revert_" + infoBoxIndx + "\">Revert</button>"
 		+ "<button class=\"button\" type=\"button\" id=\"save_" + infoBoxIndx + "\">Save</button>"
-		+ "</td>";
+		+ "</td>";	
 
-	
-	
-
-	
 
 
 
