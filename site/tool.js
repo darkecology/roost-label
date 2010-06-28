@@ -635,7 +635,7 @@ function RoostSequence(frameNum, circle)
 	this.proCircleEnd = 0;
 	this.sequenceID = null;
 	this.locallyChanged = 1;
-	this.sequenceIndex = null;
+	this.sequenceIndex = this.tool.sequenceIndex;
 	this.comments = null;
 	this.circles = [];
 	this.circles[frameNum] = circle;
@@ -692,7 +692,7 @@ RoostSequence.prototype.extendForward = function()
 	if (this.circles[this.tool.frame - 1] != null)
 	{
 		var proCircle = new RoostCircle(this.circles[this.tool.frame - 1].x, this.circles[this.tool.frame - 1].y, this.circles[this.tool.frame - 1].r, this);			
-		this.proCircleStart = 1;
+		this.proCircleEnd = 1;
 		proCircle.strokeColor = "grey";
 		proCircle.radiusHandle.fill = "grey";
 		proCircle.deleteHandle.strokeColor = "grey";
@@ -702,6 +702,7 @@ RoostSequence.prototype.extendForward = function()
 		}
 	}
 	this.updateCanvas();
+	this.tool.activeCircles[this.tool.frame].push(proCircle);
 	this.updateInfoBox();
 	this.tool.updateButtons();
 };
@@ -723,7 +724,7 @@ RoostSequence.prototype.extendBackward = function()
 				proCircle.draw(this.tool.svgElements[i]);
 			}
 		}
-
+		this.tool.activeCircles[this.tool.frame].push(proCircle);
 		this.updateCanvas();
 		this.updateInfoBox();
 		this.tool.updateButtons();
@@ -746,10 +747,10 @@ function RoostTool()
 
     this.annotations = [];
 	this.roostSeqObj = [];
-	
+	this.activeCircles = [][];
     this.controlPoints = [];
     this.markers = [];
-
+	this.sequenceIndex = 0;
     // AJAX call to get list of frames and then navigate to initial frame
 
     if (window.XMLHttpRequest)
@@ -909,10 +910,11 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 
     if (this.controlPoints.length == 3)
     {
-	// create a new RoostCircle object (modify this to create a new RoostSequence object instead)
+	// create a new Circle object (modify this to create a new RoostSequence object instead)
 	var c = pointsToCircle(this.controlPoints); 
 	roostC = new RoostCircle(c.x, c.y, c.r, this);
 	this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
+	this.sequenceIndex++;
 
 	if (roostC)
 	{
