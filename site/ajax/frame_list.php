@@ -62,6 +62,14 @@ $sql_SW="SELECT `file_name`, `time`
 				AND type = 'SW' 
 			ORDER BY 'time'";
 
+$sql_timeStamp="SELECT `time` 
+			FROM  `roost_table` 
+			WHERE station = \"$station\" 
+				AND year = \"$year\" 
+				AND month = \"$month\" 
+				AND day = \"$day\" 
+				AND type = 'SW' 
+			ORDER BY 'time'";
 
 
 
@@ -71,7 +79,7 @@ $frames_array = array();
 $frames_DZ_array = array();
 $frames_VR_array = array();
 $frames_SW_array = array();
-
+$frames_timeStamp_array = array();
 
 $result = mysql_query($sql_DZ);
 
@@ -96,13 +104,21 @@ while($row = mysql_fetch_array($result)){
 } 
 
 
+$result = mysql_query($sql_timeStamp);
+
+while($row = mysql_fetch_array($result)){
+	$frames_timeStamp_array[] = $row['time'];
+} 
+
+
 
 $frames_array = implode('~', $frames_DZ_array); 
 $frames_array .= "&&";
 $frames_array .= implode('~', $frames_VR_array); 
 $frames_array .= "&&";
 $frames_array .= implode('~', $frames_SW_array); 
-
+$frames_array .= "&&";
+$frames_array .= implode('~', $frames_timeStamp_array); 
 
 
 echo ($frames_array);
