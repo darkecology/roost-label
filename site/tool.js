@@ -1,8 +1,4 @@
-<<<<<<< .mine
-// JJJJJJJJafer BEGIN GLOBALS COPIED FROM LabelMe my_scripts.js
-=======
 // Will BEGIN GLOBALS COPIED FROM LabelMe my_scripts.js
->>>>>>> .r49
 // RETHINK AND REORGANIZE THESE
 var bname;
 var bversion;
