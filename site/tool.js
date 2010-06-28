@@ -3,6 +3,27 @@
 var bname;
 var bversion;
 
+function bookmark_us(url, title)
+{
+	if (window.sidebar) // firefox
+	{
+		window.sidebar.addPanel(title, url, "");
+	}
+	else if(window.opera && window.print) // opera
+	{ 
+		var elem = document.createElement('a');
+		elem.setAttribute('href',url);
+		elem.setAttribute('title',title);
+		elem.setAttribute('rel','sidebar');
+		elem.click();
+	}
+	else if(document.all)// ie
+	{
+		window.external.AddFavorite(url, title);
+	}
+}
+
+
 function getEvent(e)
 {
     return e || window.event;
@@ -827,6 +848,11 @@ function RoostTool()
 	visibilityChange();
     xmlhttp.open("GET",url_php_request,true);
     xmlhttp.send();
+	
+	//Set up the bookmark link.
+	var bookmarkLink = document.getElementById("bookmarkLink");
+	url = "javascript:bookmark_us('http://www.reconn.us','title')";
+	bookmarkLink.setAttribute("href",url);
 };
 
 function visibilityChange() {
