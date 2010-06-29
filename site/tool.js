@@ -851,7 +851,8 @@ function RoostTool()
 	
 	//Set up the bookmark link.
 	var bookmarkLink = document.getElementById("bookmarkLink");
-	url = "javascript:bookmark_us('http://www.reconn.us','title')";
+	var urlTitle = "Roost Site -- station:"+station+" year:"+year+" month:"+month+" day:"+day;
+	url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+station+"&year="+year+"&month="+month+"&day="+day+"',\'"+urlTitle+"')";
 	bookmarkLink.setAttribute("href",url);
 };
 

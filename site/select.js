@@ -1,4 +1,3 @@
-//<![CDATA[	
 
 var reset_selection = "<option value=\"null\" />";
 
@@ -10,8 +9,8 @@ function starter(){
 function get_stations(){
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
         xmlhttp=new XMLHttpRequest();
-    }
-    else{// code for IE6, IE5
+    }else{
+		// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
     
@@ -19,28 +18,25 @@ function get_stations(){
         if (xmlhttp.readyState==4 && xmlhttp.status==200){					
             var station_select = document.getElementById("station_select");
             station_select.innerHTML=xmlhttp.responseText;
-			station_select.onchange = get_years;	
+			station_select.onchange = function() { get_years(0); };	
 			var stationURL = getURL("station");
 			if (stationURL != ""){
 				for( var i = 0 ; i < station_select.length; i++){
 					if (station_select.options[i].value == stationURL){
 						station_select.options[i].selected = true;
-						get_years();
+						get_years(1);
 					}
 				}
-			}
-            
+			}    
         }
-    }
+    };
     xmlhttp.open("GET","ajax/get_stations.php",true);
-                xmlhttp.send();
+    xmlhttp.send();
 	
 	
 }
 
-
-
-function get_years()
+function get_years(URLselect)
 {
 	document.getElementById("month_select").innerHTML = reset_selection;
 	document.getElementById("day_select").innerHTML = reset_selection;
@@ -58,18 +54,18 @@ function get_years()
         if (xmlhttp.readyState==4 && xmlhttp.status==200){					
             var year_select = document.getElementById("year_select");
             year_select.innerHTML=xmlhttp.responseText;
-            year_select.onchange = get_months;
+            year_select.onchange = function() { get_months(0);};
 			var yearURL = getURL("year");
-			if (yearURL != ""){
+			if (yearURL != "" & URLselect){
 				for( var i = 0 ; i < year_select.length; i++){
 					if (year_select.options[i].value == yearURL){
 						year_select.options[i].selected = true;
-						get_months();
+						get_months(1);
 					}
 				}
 			}
         }
-    }
+    };
     
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
@@ -77,7 +73,7 @@ function get_years()
 
 
 
-function get_months()
+function get_months(URLselect)
 {
 	document.getElementById("day_select").innerHTML = reset_selection;
     var station = document.getElementById("station_select").value;
@@ -95,26 +91,26 @@ function get_months()
         if (xmlhttp.readyState==4 && xmlhttp.status==200){					
             var month_select = document.getElementById("month_select");
             month_select.innerHTML=xmlhttp.responseText;
-            month_select.onchange = get_days;
+            month_select.onchange = function() { get_days(0);};
 			var monthURL = getURL("month");
-			if (monthURL != ""){
+			if (monthURL != "" && URLselect){
 				for( var i = 0 ; i < month_select.length; i++){
 					if (month_select.options[i].value == monthURL){
 						month_select.options[i].selected = true;
-						get_days();
+						get_days(1);
 					}
 				}
 			}
 
         }
-    }
+    };
     
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
 }
 
 
-function get_days()
+function get_days(URLselect)
 {
     var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;
@@ -138,7 +134,7 @@ function get_days()
 				RoostToolInit();
 			};
 			var dayURL = getURL("day");
-			if (dayURL != ""){
+			if (dayURL != "" && URLselect){
 				for( var i = 0 ; i < day_select.length; i++){
 					if (day_select.options[i].value == dayURL){
 						day_select.options[i].selected = true;
@@ -149,7 +145,7 @@ function get_days()
 				}
 			}
         }
-    }
+    };
                
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
@@ -165,23 +161,13 @@ function display_date(){
 }
 
 
-function getURL( name )
-{
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results == null )
-    return "";
-  else
-    return results[1];
+function getURL( name ){
+	name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+	var regexS = "[\\?&]"+name+"=([^&#]*)";
+	var regex = new RegExp( regexS );
+	var results = regex.exec( window.location.href );
+	if( results == null )
+		return "";
+	else
+		return results[1];
 }
-
-
-
-
-
-
-
-
-//]]>
