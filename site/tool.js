@@ -435,13 +435,19 @@ RoostCircle.prototype.draw = function(obj)
     this.deleteHandle.listen("onmousedown", this, "remove");
     this.deleteHandle.setStyle("cursor", "pointer");
 };
+RoostCircle.prototype.drawDeleteHandle = function(obj){
+	this.deleteHandle.draw(obj);
+    this.deleteHandle.listen("onmousedown", this, "remove");
+    this.deleteHandle.setStyle("cursor", "pointer");
+};
+
 
 RoostCircle.prototype.redraw = function()
 {
     this.deleteHandle.redraw();
     this.radiusHandle.redraw();
     Circle.prototype.redraw.call(this);
-}
+};
 
 RoostCircle.prototype.undraw = function()
 {
@@ -769,10 +775,6 @@ RoostSequence.prototype.saveRoostSequence = function()
 alert("test save button");
 };
 
-RoostSequence.prototype.deleteRoostSequence = function() 
-{
-
-};
 
 RoostSequence.prototype.insertCircle = function(circle) 
 {
@@ -797,8 +799,40 @@ RoostSequence.prototype.revertEvent = function()
 
 };
 
+RoostSequence.prototype.ajaxDeleteRoost = function() 
+{
+
+};
+
+
 RoostSequence.prototype.deleteEvent = function() 
 {
+	if(this.sequenceId != null){
+		//ajax call to delete from the backend	
+		this.ajaxDeleteRoost();
+	}
+	
+	//delete infoBox
+	var infoPanelElement = document.getElementById("infoPanel");
+	var len = infoPanelElement.childNodes.length;
+
+	for(var i = 0 ; i < len; i++){
+		if (this.sequenceIndex == 0)
+			indx = "0";
+		else
+			indx = this.sequenceIndex;
+		if(infoPanelElement.childNodes[i].id == indx){
+			infoPanelElement.removeChild(infoPanelElement.childNodes[i]);
+			break;
+		}
+		
+	}
+	
+	
+
+	//remove the data structure of this roost sequence
+	//delete from the canvas
+	this.tool.deleteRoostSequence(this.sequenceIndex);
 
 };
 
@@ -904,7 +938,8 @@ RoostTool.prototype.updateCanvas = function()
 	//undraw all circles in the activeCircle array
 	for(var i = 0; i < this.activeCircles.length; i++)
 	{
-		this.activeCircles[i].undraw();
+		if(this.activeCircles[i] != null)
+		   this.activeCircles[i].undraw();
 	}
 	//empty the activeCircle array
 	this.activeCircles = [];
@@ -913,88 +948,91 @@ RoostTool.prototype.updateCanvas = function()
 	for(var roostSequenceIndex = 0; roostSequenceIndex < this.roostSeqObj.length; roostSequenceIndex++)
 	{
 		var curRoostSeq = this.roostSeqObj[roostSequenceIndex];
-		if (curRoostSeq.circles[this.frame] != null)
-		{
-			for (var i = 0; i < this.svgElements.length; i++) 
+		if ( curRoostSeq != null){
+			
+			
+			if (curRoostSeq.circles[this.frame] != null)
 			{
-				curRoostSeq.circles[this.frame].draw(this.svgElements[i]);
-			}
-			this.activeCircles.push(curRoostSeq.circles[this.frame]);
-		}
-		else if(curRoostSeq.proCircleEnd && this.frame == curRoostSeq.seq_end + 1)
-		{
-			if (curRoostSeq.circles[this.frame - 1] != null)
-			{
-				var proCircle = clone(curRoostSeq.circles[this.frame - 1]);//new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
-				proCircle.strokeColor = "grey";
-				//proCircle.radiusHandle.fill = "grey";
-				//proCircle.deleteHandle.strokeColor = "grey";
 				for (var i = 0; i < this.svgElements.length; i++) 
 				{
-					proCircle.draw(this.svgElements[i]);
+					curRoostSeq.circles[this.frame].draw(this.svgElements[i]);
 				}
-				this.activeCircles.push(proCircle);
+				this.activeCircles.push(curRoostSeq.circles[this.frame]);
 			}
-		}
-		else if (curRoostSeq.proCircleStart && this.frame == curRoostSeq.seq_start - 1)
-		{
-			if (curRoostSeq.circles[this.frame + 1] != null)
+			else if(curRoostSeq.proCircleEnd && this.frame == curRoostSeq.seq_end + 1)
 			{
+				if (curRoostSeq.circles[this.frame - 1] != null)
+				{
+					var proCircle = clone(curRoostSeq.circles[this.frame - 1]);//new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
+					proCircle.strokeColor = "grey";
+					//proCircle.radiusHandle.fill = "grey";
+					//proCircle.deleteHandle.strokeColor = "grey";
+					for (var i = 0; i < this.svgElements.length; i++) 
+					{
+						proCircle.draw(this.svgElements[i]);
+					}
+					this.activeCircles.push(proCircle);
+				}
+			}
+			else if (curRoostSeq.proCircleStart && this.frame == curRoostSeq.seq_start - 1)
+			{
+				if (curRoostSeq.circles[this.frame + 1] != null)
+				{
+					
+					var proCircle = clone(curRoostSeq.circles[this.frame +1]);//new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
+					proCircle.strokeColor = "grey";
+					//proCircle.radiusHandle.fill = "red";
+					//proCircle.deleteHandle.strokeColor = "red";
+					for (var i = 0; i < this.svgElements.length; i++) 
+					{
+						proCircle.draw(this.svgElements[i]);
+					}
+					this.activeCircles.push(proCircle);
+				}		
+			}
+			//var m = curRoostSeq.circles[this.frame].deleteHandle.rendering.length;
+			if(curRoostSeq.circles[this.frame] != null)
+				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+			var len = 0;
+			for(var i = 0 ; i < curRoostSeq.circles.length; i++){
+				if (curRoostSeq.circles[i] != null)
+					len++;
+			}
+			
+			if(len > 1){
+				if(this.frame == 0 || this.frame == curRoostSeq.tool.frames_DV.length-1){
+					for (var i = 0; i < this.svgElements.length; i++) {
+						curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
+					}
+				}
 				
-				var proCircle = clone(curRoostSeq.circles[this.frame +1]);//new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
-				proCircle.strokeColor = "grey";
-				//proCircle.radiusHandle.fill = "red";
-				//proCircle.deleteHandle.strokeColor = "red";
-				for (var i = 0; i < this.svgElements.length; i++) 
+				
+				if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
 				{
-					proCircle.draw(this.svgElements[i]);
+					if (this.frame == curRoostSeq.seq_start)
+						for (var i = 0; i < this.svgElements.length; i++) {
+							curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
+						}
 				}
-				this.activeCircles.push(proCircle);
-			}		
-		}
-		//var m = curRoostSeq.circles[this.frame].deleteHandle.rendering.length;
-		if(curRoostSeq.circles[this.frame] != null)
-			curRoostSeq.circles[this.frame].deleteHandle.undraw();
-		var len = 0;
-		for(var i = 0 ; i < curRoostSeq.circles.length; i++){
-			if (curRoostSeq.circles[i] != null)
-				len++;
-		}
-
-		if(len > 1){
-			if(this.frame == 0 || this.frame == curRoostSeq.tool.frames_DV.length-1){
-				for (var i = 0; i < this.svgElements.length; i++) {
-					curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
+				else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
+				{
+					if (this.frame == curRoostSeq.seq_end)
+						for (var i = 0; i < this.svgElements.length; i++) {
+							curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
+						}
 				}
+				else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
+				{
+					if (this.frame == curRoostSeq.seq_start || this.frame == curRoostSeq.seq_end)
+						for (var i = 0; i < this.svgElements.length; i++) {
+							curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
+						}
+				}	
 			}
-		
-
-			if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
-			{
-				if (this.frame == curRoostSeq.seq_start)
-					for (var i = 0; i < this.svgElements.length; i++) {
-						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
-					}
-			}
-			else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-			{
-				if (this.frame == curRoostSeq.seq_end)
-					for (var i = 0; i < this.svgElements.length; i++) {
-						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
-					}
-			}
-			else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-			{
-				if (this.frame == curRoostSeq.seq_start || this.frame == curRoostSeq.seq_end)
-					for (var i = 0; i < this.svgElements.length; i++) {
-						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
-					}
-			}	
+			
 		}
-		
-		
 	}
-
+	
 };
 
 RoostTool.prototype.saveAll = function() {
@@ -1008,6 +1046,20 @@ RoostTool.prototype.resetAll = function() {
 RoostTool.prototype.updateButtons = function() {
 	
 };
+
+
+RoostTool.prototype.deleteRoostSequence = function(roostSequenceindex) 
+{
+	this.roostSeqObj[roostSequenceindex] = null;
+	
+	//bug if decrement
+	//this.sequenceIndex--;
+
+	//update canvas
+	this.updateCanvas();
+};
+
+
 
 RoostTool.prototype.moveToFrame = function(frameNum) {
 	this.loadFrame(frameNum);
