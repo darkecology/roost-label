@@ -412,12 +412,12 @@ inherits(CircleMarker, Circle);
 // class RoostCircle: a circle that can be edited
 //------------------------------------------------------------------------
 
-function RoostCircle(cx, cy, r, parent)
+function RoostCircle(cx, cy, r, roostSequence)
 {
     Circle.call(this, cx, cy, r);
     this.deleteHandle = new XMarker(cx, cy, 8);
     this.radiusHandle = new CircleMarker(cx, cy - r);
-	this.parent = parent;
+	this.roostSequence = roostSequence;
 }
 inherits(RoostCircle, Circle);
 
@@ -639,7 +639,7 @@ function pointsToCircle(p)
     cy = slopeA*cx + interceptA;
     r  = Math.sqrt((p1.x - cx)*(p1.x - cx) + (p1.y - cy)*(p1.y - cy));
 
-    return new Circle(cx, cy, r);
+    return new RoostCircle(cx, cy, r);
 };
 
 
@@ -652,8 +652,8 @@ function RoostSequence(frameNum, circle)
 	this.seq_start = frameNum;
 	this.seq_end = frameNum;
 	this.tool = window.tool;
-	this.proCircleStart = 0;
-	this.proCircleEnd = 0;
+	this.proCircleStart = 1;
+	this.proCircleEnd = 1;
 	this.sequenceId = null;
 	this.locallyChanged = 0;
 	this.sequenceIndex = this.tool.sequenceIndex;
@@ -880,12 +880,16 @@ function visibilityChange() {
 
 RoostTool.prototype.updateCanvas = function() 
 {
-	for(var activeCircleIndex in this.activeCircles)
+	//undraw all circles in the activeCircle array
+	for(var i = 0; i < this.activeCircles.length; i++)
 	{
-		this.activeCircles[activeCircleIndex].undraw();
+		this.activeCircles[i].undraw();
 	}
+	//empty the activeCircle array
 	this.activeCircles = [];
-	for(var roostSequenceIndex in this.roostSeqObj)
+	
+	//draw all circles that belongs to this frame number
+	for(var roostSequenceIndex = 0; roostSequenceIndex < this.roostSeqObj.length; roostSequenceIndex++)
 	{
 		var curRoostSeq = this.roostSeqObj[roostSequenceIndex];
 		if (curRoostSeq.circles[this.frame] != null)
@@ -900,10 +904,10 @@ RoostTool.prototype.updateCanvas = function()
 		{
 			if (curRoostSeq.circles[this.frame - 1] != null)
 			{
-				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
+				var proCircle = clone(curRoostSeq.circles[this.frame - 1]);//new RoostCircle(curRoostSeq.circles[this.frame - 1].x, curRoostSeq.circles[this.frame - 1].y, curRoostSeq.circles[this.frame - 1].r, curRoostSeq);		
 				proCircle.strokeColor = "grey";
-				proCircle.radiusHandle.fill = "grey";
-				proCircle.deleteHandle.strokeColor = "grey";
+				//proCircle.radiusHandle.fill = "grey";
+				//proCircle.deleteHandle.strokeColor = "grey";
 				for (var i = 0; i < this.svgElements.length; i++) 
 				{
 					proCircle.draw(this.svgElements[i]);
@@ -915,15 +919,16 @@ RoostTool.prototype.updateCanvas = function()
 		{
 			if (curRoostSeq.circles[this.frame + 1] != null)
 			{
-				var proCircle = new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
+				
+				var proCircle = clone(curRoostSeq.circles[this.frame +1]);//new RoostCircle(curRoostSeq.circles[this.frame + 1].x, curRoostSeq.circles[this.frame + 1].y, curRoostSeq.circles[this.frame + 1].r, curRoostSeq);		
 				proCircle.strokeColor = "grey";
-				proCircle.radiusHandle.fill = "grey";
-				proCircle.deleteHandle.strokeColor = "grey";
+				//proCircle.radiusHandle.fill = "red";
+				//proCircle.deleteHandle.strokeColor = "red";
 				for (var i = 0; i < this.svgElements.length; i++) 
 				{
 					proCircle.draw(this.svgElements[i]);
 				}
-				this.activeCircles.push(proCircle)
+				this.activeCircles.push(proCircle);
 			}		
 		}
 		if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
@@ -1061,23 +1066,37 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     if (this.controlPoints.length == 3)
     {
 	// create a new Circle object (modify this to create a new RoostSequence object instead)
-	var c = pointsToCircle(this.controlPoints); 
-	if (c)
-	{
-		roostC = new RoostCircle(c.x, c.y, c.r, this);
-		this.activeCircles.push(roostC);
-		this.roostSeqObj.push(new RoostSequence(this.frame, roostC));
-		this.sequenceIndex++;
-		this.updateCanvas();
-	}
+		var c = pointsToCircle(this.controlPoints); 
+		//var c2 = clone(c);
+		if (c)
+		{
+			//no need to create a new roost circle; we can use var c 
+			//roostC = new RoostCircle(c.x, c.y, c.r, this);
+			this.activeCircles.push(c);
+			var newRoostSequence =new RoostSequence(this.frame, c); 
+			this.roostSeqObj.push(newRoostSequence);
+			c.roostSequence =newRoostSequence;
+			this.sequenceIndex++;
+			//canvas need to draw the new circle only... no need to update the canvas;Jafer
+			//this.updateCanvas();
+			for (var i = 0; i < this.svgElements.length; i++) 
+			{
+				//c2.draw(this.svgElements[i]);
+				c.draw(this.svgElements[i]);
+			}
+			c.deleteHandle.undraw();
+			this.activeCircles.push(c);
+			c.roostSequence.updateInfoBox();
+			
+		}
+		
 
-
-	for (var i=0; i < this.markers.length; i++)
-	{
-	    this.markers[i].undraw();
-	}
-	this.controlPoints = [];
-	this.markers = [];
+		for (var i=0; i < this.markers.length; i++)
+		{
+			this.markers[i].undraw();
+		}
+		this.controlPoints = [];
+		this.markers = [];
     }
 };
 
@@ -1097,13 +1116,13 @@ function keydown(e)
 {
     if (e.keyCode == 39)
     {
-	next();
-	return false;
+		next();
+		return false;
     }
     else if (e.keyCode == 37)
     {
-	prev();
-	return false;
+		prev();
+		return false;
     }
 }
 
@@ -1186,12 +1205,10 @@ function trim (str, charlist) {
 //-----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
-                                                                                                                                                             
-                                                                                                                                                             
 
 function clone(obj){
 
-    if(obj == null || typeof(obj) != 'object')
+    if(obj == null || typeof(obj) != 'object' || obj.constructor.toString().match(/function RoostSequence/i))
 
         return obj;
 
@@ -1201,13 +1218,9 @@ function clone(obj){
 
         temp[key] = clone(obj[key]);
 
-
-
     return temp;
 
 }
-
-
 
 //------------------------------------------------------------------------
 // Global Function: addInfoBox();
@@ -1219,14 +1232,13 @@ function addInfoBox(infoBoxIndx){
 	var newInfoBox = document.createElement("div");
 	newInfoBox.setAttribute('class', "infoBox");
 	newInfoBox.setAttribute('id', infoBoxIndx);
-	//newInfoBox.innerHTML = '<p>test</p>';
+	
 	//td[table#][tr#]#
-
 	var table1 = document.createElement("table");
 	var table2 = document.createElement("table");
 	
 	
-	
+	//first table
 	var tr11 = document.createElement("tr");
 	var tr12 = document.createElement("tr");
 	var tr13 = document.createElement("tr");
@@ -1243,18 +1255,15 @@ function addInfoBox(infoBoxIndx){
 	tr11.appendChild(td112);
 	
 
-
-	//-------------------------------------------------
 	tr12.innerHTML = "<td>First Appears:<span id=\"firstTime_" + infoBoxIndx + "\">00:00:00</span></td><td>(<a id=\"extendBackwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
 	
 	tr13.innerHTML = "<td>Last Appears:<span id=\"lastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
 	
 
-	//--------------------------------------------------------
+	//second table
 	var tr21 = document.createElement("tr");
 	var tr22 = document.createElement("tr");
 	var tr23 = document.createElement("tr");
-
 
 	tr21.innerHTML = "<td>Comments:</td>";
 	tr22.innerHTML = "<td><textarea id=\"comments_" + infoBoxIndx + "\" cols=\"40\" rows=\"5\"></textarea></td>";
@@ -1262,11 +1271,6 @@ function addInfoBox(infoBoxIndx){
 		+ "<button class=\"button\" type=\"button\" id=\"revert_" + infoBoxIndx + "\">Revert</button>"
 		+ "<button class=\"button\" type=\"button\" id=\"save_" + infoBoxIndx + "\">Save</button>"
 		+ "</td>";	
-
-
-
-
-
 
 	table1.appendChild(tr11);
 	table1.appendChild(tr12);	
