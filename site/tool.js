@@ -455,10 +455,25 @@ RoostCircle.prototype.remove = function(e)
     this.undraw();
 	if(this.strokeColor == "red")
 	{
-		this.parent.circles[this.parent.tool.frame] = null;
-		this.parent.locallyChanged = 1;
-		this.parent.updateInfoBox();
+		this.roostSequence.circles[this.roostSequence.tool.frame] = null;
+		if(this.roostSequence.tool.frame == this.roostSequence.seq_start){
+			this.roostSequence.seq_start++;
+		}else{
+			this.roostSequence.seq_end--;
+		}
+		
+		this.roostSequence.locallyChanged = 1;
+		this.roostSequence.updateInfoBox();
 	}
+	
+	if(this.strokeColor == "grey" && this.roostSequence.tool.frame == this.roostSequence.seq_end +1){
+		this.roostSequence.proCircleEnd = 0;
+	}
+	
+	if(this.strokeColor == "grey" && this.roostSequence.tool.frame == this.roostSequence.seq_start -1){
+		this.roostSequence.proCircleStart = 0;
+	}
+
 };
 
 //--------------------
@@ -486,18 +501,19 @@ RoostCircle.prototype.resize = function(e, callObj)
 RoostCircle.prototype.finishResize = function(e, callObj)
 {
     this.strokeOpacity = 1;
-    this.redraw();
+    
     this.canvas.onmousemove = null;
 	if(this.strokeColor == "grey")
 	{
 		this.strokeColor = "red";
-		this.radiusHandle.fill = "red";
-		this.deleteHandle.strokeColor = "red";
-		this.parent.insertCircle(this);
-		this.parent.locallyChanged = 1;
-		this.parent.updateInfoBox();
-		this.redraw();
+		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
+			this.deleteHandle.undraw();
+		this.roostSequence.insertCircle(this);
+		this.roostSequence.locallyChanged = 1;
+		this.roostSequence.updateInfoBox();
+		
 	}
+	this.redraw();
 };
 
 //--------------------
@@ -531,18 +547,19 @@ RoostCircle.prototype.drag = function(e, callObj)
 RoostCircle.prototype.finishDrag = function(e, callObj)
 {
     this.strokeOpacity = 1;
-    this.redraw();
+    
     this.canvas.onmousemove = null;
 	if(this.strokeColor == "grey")
 	{
 		this.strokeColor = "red";
-		this.radiusHandle.fill = "red";
-		this.deleteHandle.strokeColor = "red";
-		this.parent.insertCircle(this);
-		this.parent.locallyChanged = 1;
-		this.parent.updateInfoBox();
-		this.redraw();
+		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
+			this.deleteHandle.undraw();
+		this.roostSequence.insertCircle(this);
+		this.roostSequence.locallyChanged = 1;
+		this.roostSequence.updateInfoBox();
+		
 	}
+	this.redraw();
 };
 
 function getCanvas(elt)
@@ -660,6 +677,10 @@ function RoostSequence(frameNum, circle)
 	this.comments = null;
 	this.circles = [];
 	this.circles[frameNum] = circle;
+	if(frameNum == 0)
+		this.proCircleStart = 0;
+	if(frameNum == tool.frames_DV.length -1 )
+		this.proCircleEnd = 0;
 }
 
 RoostSequence.prototype.updateInfoBox = function() 
@@ -931,34 +952,47 @@ RoostTool.prototype.updateCanvas = function()
 				this.activeCircles.push(proCircle);
 			}		
 		}
-		if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}
+		//var m = curRoostSeq.circles[this.frame].deleteHandle.rendering.length;
+		if(curRoostSeq.circles[this.frame] != null)
+			curRoostSeq.circles[this.frame].deleteHandle.undraw();
+		var len = 0;
+		for(var i = 0 ; i < curRoostSeq.circles.length; i++){
+			if (curRoostSeq.circles[i] != null)
+				len++;
 		}
-		else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start - 1))
-			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+
+		if(len > 1){
+			if(this.frame == 0 || this.frame == curRoostSeq.tool.frames_DV.length-1){
+				for (var i = 0; i < this.svgElements.length; i++) {
+					curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
+				}
 			}
-		}
-		else if(curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd) 
-		{
-			if ((this.frame != curRoostSeq.seq_start - 1 && this.frame != curRoostSeq.seq_end + 1) && (this.frame <= curRoostSeq.seq_end + 1 && this.frame >= curRoostSeq.seq_start - 1))
+		
+
+			if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
 			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
+				if (this.frame == curRoostSeq.seq_start)
+					for (var i = 0; i < this.svgElements.length; i++) {
+						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
+					}
 			}
-		}
-		else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
-		{
-			if ((this.frame != curRoostSeq.seq_start && this.frame != curRoostSeq.seq_end) && (this.frame <= curRoostSeq.seq_end && this.frame >= curRoostSeq.seq_start))
+			else if(curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
 			{
-				curRoostSeq.circles[this.frame].deleteHandle.undraw();
-			}			
-		}	
+				if (this.frame == curRoostSeq.seq_end)
+					for (var i = 0; i < this.svgElements.length; i++) {
+						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
+					}
+			}
+			else if(!curRoostSeq.proCircleStart && !curRoostSeq.proCircleEnd)
+			{
+				if (this.frame == curRoostSeq.seq_start || this.frame == curRoostSeq.seq_end)
+					for (var i = 0; i < this.svgElements.length; i++) {
+						curRoostSeq.circles[this.frame].deleteHandle.draw(this.svgElements[i]);	
+					}
+			}	
+		}
+		
+		
 	}
 
 };
@@ -973,10 +1007,6 @@ RoostTool.prototype.resetAll = function() {
 
 RoostTool.prototype.updateButtons = function() {
 	
-};
-
-RoostTool.prototype.saveURL = function() {
-
 };
 
 RoostTool.prototype.moveToFrame = function(frameNum) {
@@ -1208,7 +1238,8 @@ function trim (str, charlist) {
 
 function clone(obj){
 
-    if(obj == null || typeof(obj) != 'object' || obj.constructor.toString().match(/function RoostSequence/i))
+	var mmm = obj.constructor.toString();
+    if(obj == null || typeof(obj) != 'object' || obj.constructor.toString().match(/function RoostSequence/i) || obj.constructor.toString().match(/\[object HTMLDivElement/i))
 
         return obj;
 
