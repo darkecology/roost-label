@@ -520,6 +520,7 @@ RoostCircle.prototype.finishResize = function(e, callObj)
 		
 	}
 	this.redraw();
+	document.onmouseup = null;
 };
 
 //--------------------
@@ -566,6 +567,7 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
 		
 	}
 	this.redraw();
+	document.onmouseup = null;
 };
 
 function getCanvas(elt)
