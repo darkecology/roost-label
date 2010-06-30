@@ -564,9 +564,11 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
 		this.roostSequence.insertCircle(this);
 		this.roostSequence.locallyChanged = 1;
 		this.roostSequence.updateInfoBox();
-		
 	}
 	this.redraw();
+	//if the first circle is dragged, the location label in the infoBox need to be changed
+	if(this.roostSequence.tool.frame==this.roostSequence.seq_start)
+		this.roostSequence.updateInfoBox();
 	document.onmouseup = null;
 };
 
@@ -818,6 +820,18 @@ RoostSequence.prototype.deleteEvent = function()
 	}
 	
 	//delete infoBox
+	this.deleteInfoBox();
+	
+	
+	
+
+	//remove the data structure of this roost sequence
+	//delete from the canvas
+	this.tool.deleteRoostSequence(this.sequenceIndex);
+
+};
+
+RoostSequence.prototype.deleteInfoBox = function(){
 	var infoPanelElement = document.getElementById("infoPanel");
 	var len = infoPanelElement.childNodes.length;
 
@@ -832,14 +846,8 @@ RoostSequence.prototype.deleteEvent = function()
 		}
 		
 	}
-	
-	
-
-	//remove the data structure of this roost sequence
-	//delete from the canvas
-	this.tool.deleteRoostSequence(this.sequenceIndex);
-
 };
+
 
 RoostSequence.prototype.extendForward = function() 
 {
@@ -1159,7 +1167,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 		{
 			//no need to create a new roost circle; we can use var c 
 			//roostC = new RoostCircle(c.x, c.y, c.r, this);
-			this.activeCircles.push(c);
+			
 			var newRoostSequence =new RoostSequence(this.frame, c); 
 			this.roostSeqObj.push(newRoostSequence);
 			c.roostSequence =newRoostSequence;
