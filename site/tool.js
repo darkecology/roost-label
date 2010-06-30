@@ -776,7 +776,76 @@ RoostSequence.prototype.revertRoostSequence = function()
 
 RoostSequence.prototype.saveRoostSequence = function() 
 {
-	//Will need do AJAX and update the this.sequenceID with AJAX return.
+
+	var xmlString = "<?xml version='1.0'?>"
+					+ "<roost>"
+					+ "<station>"
+					+ this.tool.station
+					+ "</station>"
+					+ "<year>"
+					+ this.tool.year
+					+ "</year>"
+					+ "<month>"
+					+ this.tool.month
+					+ "</month>"
+					+ "<day>"
+					+ this.tool.day
+					+ "</day>"
+					+ "<comments>"
+					+ this.comments
+					+ "</comments>"
+					+ "<userId>annonymous</userId>";
+
+	if (this.sequenceId == null){
+		xmlString += "<sequenceId>null</sequenceId>";
+	}else{
+		xmlString += "<sequenceId>"
+					 + this.sequenceId
+					 + "</sequenceId>";
+
+	}
+	for(var i = 0; i < this.circles.length; i++){
+		if(this.circles[i] != null){
+			xmlString += "<circle>"
+					+ "<x>"
+					+ this.circles[i].x
+					+ "</x>"
+					+ "<y>"
+					+ this.circles[i].y
+					+ "</y>"
+					+ "<r>"
+					+ this.circles[i].r
+					+ "</r>"
+					+ "<frameNumber>"
+					+ i
+					+ "</frameNumber>"
+					+ "</circle>";
+		}
+	}
+
+	xmlString += "</roost>";
+
+	var url = "ajax/save_roost.php";
+
+	xmlhttp= new XMLHttpRequest();
+	
+	xmlhttp.open("POST", url, true);
+	
+	
+	// Tell the server you're sending it XML
+	xmlhttp.setRequestHeader("Content-Type", "text/xml");
+	
+	// Set up a function for the server to run when it's done
+	xmlhttp.onreadystatechange = function(){
+	
+		if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
+			this.sequenceId = trim(xmlhttp.responseText);
+		}
+	};
+	
+	// Send the request
+	xmlhttp.send(xmlString);
+
 };
 
 
@@ -926,12 +995,12 @@ function RoostTool()
 	//var year = gup('year');
 	//var month = gup('month');
 	//var day = gup('day');
-	var station = document.getElementById("station_select").value;
-	var year = document.getElementById("year_select").value;
-	var month = document.getElementById("month_select").value;
-	var day = document.getElementById("day_select").value;
+	this.station = document.getElementById("station_select").value;
+	this.year = document.getElementById("year_select").value;
+	this.month = document.getElementById("month_select").value;
+	this.day = document.getElementById("day_select").value;
 	
-	var url_php_request = "ajax/frame_list.php?station=" + station + "&year=" + year + "&month=" + month+ "&day=" + day;
+	var url_php_request = "ajax/frame_list.php?station=" + this.station + "&year=" + this.year + "&month=" + this.month+ "&day=" + this.day;
 	
 	document.getElementById("visibility_select").onchange = visibilityChange;
 	visibilityChange();
@@ -940,8 +1009,8 @@ function RoostTool()
 	
 	//Set up the bookmark link.
 	var bookmarkLink = document.getElementById("bookmarkLink");
-	var urlTitle = "Roost Site -- station:"+station+" year:"+year+" month:"+month+" day:"+day;
-	url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+station+"&year="+year+"&month="+month+"&day="+day+"',\'"+urlTitle+"')";
+	var urlTitle = "Roost Site -- station:"+this.station+" year:"+this.year+" month:"+this.month+" day:"+this.day;
+	url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+this.station+"&year="+this.year+"&month="+this.month+"&day="+this.day+"',\'"+urlTitle+"')";
 	bookmarkLink.setAttribute("href",url);
 };
 
