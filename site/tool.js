@@ -1075,6 +1075,16 @@ RoostTool.prototype.resetAll = function() {
 
 RoostTool.prototype.updateButtons = function() {
 	
+	for(var i = 0 ; i < this.roostSeqObj.length; i++){
+		if(roostSeqObj[i] != null && roostSeqObj[i].locallyChanged){
+			document.getElementById("saveAllButton").removeAttribute('disabled');
+			document.getElementById("resetButton").removeAttribute('disabled');
+			return;
+		}
+	}
+	document.getElementById("saveAllButton").setAttribute('disabled', 'disabled');
+	document.getElementById("resetButton").setAttribute('disabled', 'disabled');
+			
 };
 
 
@@ -1223,6 +1233,8 @@ function RoostToolInit()
     tool = new RoostTool();
     tool.threePointMode();
     document.onkeydown = keydown;    
+	document.getElementById("saveAllButton").onclick = bindEvent(tool, "saveAll");
+	document.getElementById("resetButton").onclick = bindEvent(tool, "resetAll");
 }
 
 function keydown(e)
