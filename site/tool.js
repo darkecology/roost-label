@@ -795,10 +795,9 @@ RoostSequence.prototype.insertCircle = function(circle)
 
 RoostSequence.prototype.saveEvent = function() 
 {
+	this.locallyChanged = 0;
 	this.saveRoostSequence();
 	this.updateInfoBox();
-	this.locallyChanged = 0;
-
 };
 
 RoostSequence.prototype.revertEvent = function() 
@@ -1049,7 +1048,13 @@ RoostTool.prototype.updateCanvas = function()
 };
 
 RoostTool.prototype.saveAll = function() {
-	
+	for(var sequenceIndex in this.roostSeqObj)
+	{
+		if (this.roostSeqObj[sequenceIndex] != null && this.roostSeqObj[sequenceIndex].locallyChanged == 1)
+		{
+			this.roostSeqObj[sequenceIndex].saveEvent();
+		}
+	}
 };
 
 RoostTool.prototype.resetAll = function() {
