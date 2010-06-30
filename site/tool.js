@@ -772,7 +772,7 @@ RoostSequence.prototype.revertRoostSequence = function()
 
 RoostSequence.prototype.saveRoostSequence = function() 
 {
-alert("test save button");
+	//Will need do AJAX and update the this.sequenceID with AJAX return.
 };
 
 
@@ -791,6 +791,9 @@ RoostSequence.prototype.insertCircle = function(circle)
 
 RoostSequence.prototype.saveEvent = function() 
 {
+	this.saveRoostSequence();
+	this.updateInfoBox();
+	this.locallyChanged = 0;
 
 };
 
@@ -1158,6 +1161,8 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			var newRoostSequence =new RoostSequence(this.frame, c); 
 			this.roostSeqObj.push(newRoostSequence);
 			c.roostSequence =newRoostSequence;
+			//The newRoostSequence has not been saved yet.
+			newRoostSequence.locallyChanged = 1;
 			this.sequenceIndex++;
 			//canvas need to draw the new circle only... no need to update the canvas;Jafer
 			//this.updateCanvas();
@@ -1169,7 +1174,6 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			c.deleteHandle.undraw();
 			this.activeCircles.push(c);
 			c.roostSequence.updateInfoBox();
-			
 		}
 		
 
