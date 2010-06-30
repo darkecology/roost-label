@@ -802,7 +802,19 @@ RoostSequence.prototype.saveEvent = function()
 
 RoostSequence.prototype.revertEvent = function() 
 {
-
+	if (this.sequenceID != null)
+	{
+		this.deleteEvent();
+		this.revertRoostSequence();
+		this.locallyChanged = 0;
+		this.updateInfoBox()
+	}
+	else 
+	{
+		this.deleteEvent();
+	}
+	this.tool.updateCanvas();
+	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.ajaxDeleteRoost = function() 
