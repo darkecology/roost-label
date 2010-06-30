@@ -826,6 +826,16 @@ RoostSequence.prototype.ajaxDeleteRoost = function()
 RoostSequence.prototype.deleteEvent = function() 
 {
 	if(this.sequenceId != null){
+		var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceID;
+		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.open("GET",url,true);
+		xmlhttp.send();	
 		//ajax call to delete from the backend	
 		this.ajaxDeleteRoost();
 	}
