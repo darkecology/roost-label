@@ -1072,7 +1072,7 @@ function RoostTool()
 	bookmarkLink.setAttribute("href",url);
 	
 	//Get Sequences Information.
-	
+	this.getSequences();
 };
 
 RoostTool.prototype.getSequences = function() {
@@ -1111,7 +1111,7 @@ RoostTool.prototype.getSequences = function() {
 						newSequence.seq_end = frameNumber;
 					}
 					sequenceEnd = frameNumber;
-					newCircle = new RoostCircle(x, y, r, newSequence);
+					newCircle = new RoostCircle(parseFloat(x), parseFloat(y), parseFloat(r), newSequence);
 					newSequence.circles[frameNumber] = newCircle;
 				}
 				newSequence.seq_start = sequenceEnd;
