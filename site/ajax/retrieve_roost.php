@@ -24,7 +24,7 @@
 	mysql_select_db('roostdb', $con);
 	// echo "connected";
 	$sqlSelectCircles = "select *  FROM Circle_Table
-							WHERE SequenceID = \"$sequenceID\"";
+							WHERE SequenceID = \"$sequenceID\" ORDER BY FrameNumber";
 			
 	$sqlSelectSequence = "select *  FROM Sequence_Table
 							WHERE SequenceID = \"$sequenceID\"";
@@ -32,37 +32,29 @@
 	$resultC = mysql_query($sqlSelectCircles);
 	$resultS = mysql_query($sqlSelectSequence);
 	$row = mysql_fetch_array($resultS);
-	$comments = $row['Comments'];
 
-	while($row = mysql_fetch_array($resultS){
-
-	}
 
     $xmlstr = "<?xml version='1.0' ?>\n".
               // optionally you can specify a xml-stylesheet for presenting the results. just uncoment the following line and change the stylesheet name.
               /* "<?xml-stylesheet type='text/xsl' href='xml_style.xsl' ?>\n". */
-              "<book></book>";
+              "<roost></roost>";
 
     // create the SimpleXMLElement object with an empty <book> element
     $xml = new SimpleXMLElement($xmlstr);
 
-    // add some child nodes
-    $xml->addChild("title", "Title of my book");
-    $xml->addChild("abstract", "My book is about learning to work with SimpleXMLElement");
+	$comments = $row['Comments'];
+	$xml->addChild("comments", $comments);
 
-    // add some more child nodes
-    $chapter1 = $xml->addChild("chapter_1");
-	$chapter1->addChild("section", "jjjj");
-    // add an attribute to child chapter_1
-    $chapter1->addAttribute("chapter_title", "Introduction to my book");
-
-    $chapter2 = $xml->addChild("chapter_2");
-    $chapter2->addAttribute("chapter_title", "Development of my book");
-
-    $chapter3 = $xml->addChild("chapter_3");
-    $chapter3->addAttribute("chapter_title", "Another chapter of my book");
-
-    $conclusion = $xml->addChild("conclusion", "The ending of my book");
+	while($row = mysql_fetch_array($resultC)){
+	
+		$circle = $xml->addChild("circle");
+	
+		$circle->addChild("X", $row['X']);
+		$circle->addChild("Y", $row['Y']);
+		$circle->addChild("R", $row['R']);
+		$circle->addChild("FrameNumber", $row['FrameNumber']);
+		
+	}
 
     // insert the header to tell the browser how to read the document
     header("Content-type: text/xml");

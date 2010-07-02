@@ -894,7 +894,7 @@ RoostSequence.prototype.retrieveRoostSequence = function()
 {
 	
 	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceID;
-	var xmlDoc;
+	
 
 	xmlhttp= new XMLHttpRequest();
 	
@@ -905,18 +905,34 @@ RoostSequence.prototype.retrieveRoostSequence = function()
 	//xmlhttp.setRequestHeader("Content-Type", "text/xml");
 	
 	// Set up a function for the server to run when it's done
-	xmlhttp.onreadystatechange = function(){
-		if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
-			xmlDoc = xmlhttp.responseXML;
-
-			//create circles 
-
-		}
-	};
+	xmlhttp.onreadystatechange = bindEvent(this, "retrieveRoostSequenceCallBack");
 	
 	// Send the request
-	xmlhttp.send(xmlString);
+	xmlhttp.send();
 
+};
+
+RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
+	
+	
+	if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
+		var xmlDoc = xmlhttp.responseXML;
+		
+		//create circles 
+		
+		this.comments = xmlDoc.getElementsByTagName("comments")[0].childNodes[0].textContent;
+		
+		c = xmlDoc.getElementsByTagName("circle");
+		for(var i = 0; i< c.length; i++){
+			var x = c[i].getElementsByTagName("X")[0].childNodes[0].nodeValue;
+			var y = c[i].getElementsByTagName("Y")[0].childNodes[0].nodeValue;
+			var r = c[i].getElementsByTagName("R")[0].childNodes[0].nodeValue;
+			var frameNumber = c[i].getElementsByTagName("FrameNumber")[0].childNodes[0].nodeValue;
+			var circle = new RoostCircle(x, y, r, this);
+			this.insertCircle(circle, frameNumber);
+		}
+		
+	}
 };
 
 
