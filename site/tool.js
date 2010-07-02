@@ -1057,7 +1057,63 @@ function RoostTool()
 	var urlTitle = "Roost Site -- station:"+this.station+" year:"+this.year+" month:"+this.month+" day:"+this.day;
 	url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+this.station+"&year="+this.year+"&month="+this.month+"&day="+this.day+"',\'"+urlTitle+"')";
 	bookmarkLink.setAttribute("href",url);
+	
+	//Get Sequences Information.
+	
 };
+
+RoostTool.prototype.getSequences = function() {
+	var xmlDoc;
+	tool = 	this;
+	if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    }else{
+		// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    
+    xmlhttp.onreadystatechange=function() 
+	{	
+        if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			xmlDoc = xmlhttp.responseXML;
+			var sequences = xmlDoc.childNodes[0].childNodes;
+			for(var sequenceIndex = 0; sequenceIndex < sequences.length; sequenceIndex++)
+			{
+				var sequenceEnd = 0;
+				newSequence = new RoostSequence(null, null);
+				newSequence.proCircleStart = 0;
+				newSequence.proCircleEnd = 0;
+				newSequence.sequenceId = sequences[sequenceIndex].getElementsByTagName("SequenceID")[0].textContent; 
+				newSequence.comments = sequences[sequenceIndex].getElementsByTagName("Comments")[0].textContent;
+				var circles = sequences[sequenceIndex].getElementsByTagName("Circle");
+				for(var circleIndex = 0; circleIndex < circles.length; circleIndex++)
+				{
+					var x = circles[circleIndex].getElementsByTagName("X")[0].textContent;
+					var y = circles[circleIndex].getElementsByTagName("Y")[0].textContent;
+					var r = circles[circleIndex].getElementsByTagName("R")[0].textContent;
+					var frameNumber = circles[circleIndex].getElementsByTagName("FrameNumber")[0].textContent;
+					if (circleIndex == 0)
+					{
+						newSequence.seq_end = frameNumber;
+					}
+					sequenceEnd = frameNumber;
+					newCircle = new RoostCircle(x, y, r, newSequence);
+					newSequence.circles[frameNumber] = newCircle;
+				}
+				newSequence.seq_start = sequenceEnd;
+				tool.roostSeqObj[tool.sequenceIndex] = newSequence;
+				tool.sequenceIndex++;
+				newSequence.updateInfoBox();
+			}
+			tool.updateCanvas();
+		}
+	}
+	var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;
+	xmlhttp.open("GET", url ,true);
+    xmlhttp.send();
+}
+
 
 function visibilityChange() {
 	var visible = document.getElementById("visibility_select").value;
