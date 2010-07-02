@@ -414,6 +414,9 @@ inherits(CircleMarker, Circle);
 
 function RoostCircle(cx, cy, r, roostSequence)
 {
+	cx = cx.toFixed(3);
+	cy = cy.toFixed(3);
+	r = r.toFixed(3);
     Circle.call(this, cx, cy, r);
     this.deleteHandle = new XMarker(cx, cy, 8);
     this.radiusHandle = new CircleMarker(cx, cy - r);
@@ -924,12 +927,22 @@ RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 		
 		c = xmlDoc.getElementsByTagName("circle");
 		for(var i = 0; i< c.length; i++){
+			
 			var x = c[i].getElementsByTagName("X")[0].childNodes[0].nodeValue;
+			x = parseFloat(x);
 			var y = c[i].getElementsByTagName("Y")[0].childNodes[0].nodeValue;
+			y = parseFloat(y);
 			var r = c[i].getElementsByTagName("R")[0].childNodes[0].nodeValue;
+			r = parseFloat(r);
 			var frameNumber = c[i].getElementsByTagName("FrameNumber")[0].childNodes[0].nodeValue;
+			frameNumber = parseFloat(frameNumber);
 			var circle = new RoostCircle(x, y, r, this);
 			this.insertCircle(circle, frameNumber);
+			if (i == 0)
+			{
+				this.seq_start = frameNumberr;
+			}
+			this.seq_end = frameNumberr;
 		}
 		
 	}
@@ -1108,11 +1121,11 @@ RoostTool.prototype.getSequences = function() {
 			}
 			tool.updateCanvas();
 		}
-	}
+	};
 	var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;
 	xmlhttp.open("GET", url ,true);
     xmlhttp.send();
-}
+};
 
 
 function visibilityChange() {
