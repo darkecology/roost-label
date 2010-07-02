@@ -414,9 +414,9 @@ inherits(CircleMarker, Circle);
 
 function RoostCircle(cx, cy, r, roostSequence)
 {
-	cx = cx.toFixed(3);
-	cy = cy.toFixed(3);
-	r = r.toFixed(3);
+	cx = parseFloat(cx.toFixed(3));
+	cy = parseFloat(cy.toFixed(3));
+	r = parseFloat(r.toFixed(3));
     Circle.call(this, cx, cy, r);
     this.deleteHandle = new XMarker(cx, cy, 8);
     this.radiusHandle = new CircleMarker(cx, cy - r);
@@ -1072,7 +1072,7 @@ function RoostTool()
 	bookmarkLink.setAttribute("href",url);
 	
 	//Get Sequences Information.
-	this.getSequences();
+	
 };
 
 RoostTool.prototype.getSequences = function() {
@@ -1111,7 +1111,7 @@ RoostTool.prototype.getSequences = function() {
 						newSequence.seq_end = frameNumber;
 					}
 					sequenceEnd = frameNumber;
-					newCircle = new RoostCircle(parseFloat(x), parseFloat(y), parseFloat(r), newSequence);
+					newCircle = new RoostCircle(x, y, r, newSequence);
 					newSequence.circles[frameNumber] = newCircle;
 				}
 				newSequence.seq_start = sequenceEnd;
