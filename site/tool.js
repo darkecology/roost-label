@@ -514,7 +514,7 @@ RoostCircle.prototype.finishResize = function(e, callObj)
 		this.strokeColor = "red";
 		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
 			this.deleteHandle.undraw();
-		this.roostSequence.insertCircle(this);
+		this.roostSequence.insertCircle(this, tool.frame);
 		this.roostSequence.locallyChanged = 1;
 		this.roostSequence.updateInfoBox();
 		
@@ -561,7 +561,7 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
 		this.strokeColor = "red";
 		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
 			this.deleteHandle.undraw();
-		this.roostSequence.insertCircle(this);
+		this.roostSequence.insertCircle(this, tool.frame);
 		this.roostSequence.locallyChanged = 1;
 		this.roostSequence.updateInfoBox();
 	}
@@ -849,14 +849,14 @@ RoostSequence.prototype.saveRoostSequence = function()
 };
 
 
-RoostSequence.prototype.insertCircle = function(circle) 
+RoostSequence.prototype.insertCircle = function(circle, frameNumber) 
 {
-	this.circles[this.tool.frame] = circle;
-	if(this.proCircleEnd)
+	this.circles[frameNumber] = circle;
+	if(this.proCircleEnd && this.tool.frame == frameNumber)
 	{
 		this.seq_end++;
 	}
-	else if (this.proCircleStart)
+	else if (this.proCircleStart && this.tool.frame == frameNumber)
 	{
 		this.seq_start--;
 	}
@@ -873,10 +873,14 @@ RoostSequence.prototype.revertEvent = function()
 {
 	if (this.sequenceID != null)
 	{
-		this.deleteEvent();
-		this.revertRoostSequence();
+		//this.deleteEvent();
+		//this.tool.deleteRoostSequence(this.sequenceIndex);
+		this.circles = [];
+		this.proCircleStart = 0;
+		this.proCircleEnd = 0;
+		this.retrieveRoostSequence();
 		this.locallyChanged = 0;
-		this.updateInfoBox()
+		this.updateInfoBox();
 	}
 	else 
 	{
@@ -886,14 +890,39 @@ RoostSequence.prototype.revertEvent = function()
 	this.tool.updateButtons();
 };
 
-RoostSequence.prototype.ajaxDeleteRoost = function() 
+RoostSequence.prototype.retrieveRoostSequence = function() 
 {
+	
+	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceID;
+	var xmlDoc;
+
+	xmlhttp= new XMLHttpRequest();
+	
+	xmlhttp.open("GET", url, true);
+	
+	
+	// Tell the server you're sending it XML
+	//xmlhttp.setRequestHeader("Content-Type", "text/xml");
+	
+	// Set up a function for the server to run when it's done
+	xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
+			xmlDoc = xmlhttp.responseXML;
+
+			//create circles 
+
+		}
+	};
+	
+	// Send the request
+	xmlhttp.send(xmlString);
 
 };
 
 
 RoostSequence.prototype.deleteEvent = function() 
 {
+	//ajax call to delete from the backend	
 	if(this.sequenceId != null){
 		var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceID;
 		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -905,8 +934,8 @@ RoostSequence.prototype.deleteEvent = function()
 		}
 		xmlhttp.open("GET",url,true);
 		xmlhttp.send();	
-		//ajax call to delete from the backend	
-		this.ajaxDeleteRoost();
+		
+		//this.ajaxDeleteRoost();
 	}
 	
 	//delete infoBox
@@ -1407,7 +1436,7 @@ function trim (str, charlist) {
 
 
 //-----------------------------------------------------------------------
-//
+// Global function: clone()
 //----------------------------------------------------------------------
 
 function clone(obj){
