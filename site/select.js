@@ -1,4 +1,4 @@
-
+var tool;
 var reset_selection = "<option value=\"null\" />";
 
 function starter(){
@@ -8,7 +8,7 @@ function starter(){
 
 function get_stations(){
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
+        var xmlhttp=new XMLHttpRequest();
     }else{
 		// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
@@ -40,11 +40,17 @@ function get_years(URLselect)
 {
 	document.getElementById("month_select").innerHTML = reset_selection;
 	document.getElementById("day_select").innerHTML = reset_selection;
+	//document.getElementById("canvasPanel").innerHTML = "";
+	document.getElementById("imgVR").style.display = "none";
+	document.getElementById("imgSW").style.display = "none";
+	document.getElementById("imgDZ").style.display = "none";
+	
+
     var station = document.getElementById("station_select").value;
     //alert(station);
 	var url = "ajax/get_years.php?station="+station;
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
+        var xmlhttp=new XMLHttpRequest();
     }
     else{// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
@@ -76,12 +82,17 @@ function get_years(URLselect)
 function get_months(URLselect)
 {
 	document.getElementById("day_select").innerHTML = reset_selection;
+	//document.getElementById("canvasPanel").innerHTML = "";
+	document.getElementById("imgVR").style.display = "none";
+	document.getElementById("imgSW").style.display = "none";
+	document.getElementById("imgDZ").style.display = "none";
+	
     var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;
     //alert(station);
 	var url = "ajax/get_months.php?station="+station+"&year="+year;
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
+        var xmlhttp=new XMLHttpRequest();
     }
     else{// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
@@ -115,10 +126,17 @@ function get_days(URLselect)
     var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;
 	var month = document.getElementById("month_select").value;
-    //alert(station);
+    
+	//reset canvas if set
+	document.getElementById("imgVR").style.display = "none";
+	document.getElementById("imgSW").style.display = "none";
+	document.getElementById("imgDZ").style.display = "none";
+	
+
+	//alert(station);
 	var url = "ajax/get_days.php?station="+station+"&year="+year+"&month="+month;
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
+        var xmlhttp=new XMLHttpRequest();
     }
     else{// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
@@ -130,6 +148,7 @@ function get_days(URLselect)
             day_select.innerHTML = xmlhttp.responseText;
 			day_select.onchange = function() {
 				this.blur();
+				//innerTables();
 				display_date();
 				RoostToolInit();
 			};
@@ -139,6 +158,7 @@ function get_days(URLselect)
 					if (day_select.options[i].value == dayURL){
 						day_select.options[i].selected = true;
 						day_select.blur();
+						//innerTables();
 						display_date();
 						RoostToolInit();
 					}
@@ -150,6 +170,31 @@ function get_days(URLselect)
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
 }
+
+function innerTables(){
+document.getElementById("canvasPanel").innerHTML= "<table>"
+												  + "<tr>"
+												  + "<td>"
+												  + "<div class=\"pane\"><img id=\"imgDZ\" src=\"\"/>"
+												  + "<div class=\"canvas\" id=\"canvasDZ\">"
+												  + "<svg:svg id=\"svgDZ\"></svg:svg>"
+												  + "</div>"
+												  + "</div>"
+												  + "</td>"
+												  + "<td>"
+												  + "<div class=\"pane\">"
+												  + "<img id=\"imgVR\" src=\"\"/>"
+												  + "<div class=\"canvas\" id=\"canvasVR\">"
+												  + "<svg:svg id=\"svgVR\" width=\"100%\" height=\"100%\"></svg:svg>"
+												  + "</div></div></td><td>"
+												  + "<div class=\"pane\">"
+												  + "<img id=\"imgSW\" src=\"\"/>"
+												  + "<div class=\"canvas\" id=\"canvasSW\">"
+												  + "<svg:svg id=\"svgSW\" width=\"100%\" height=\"100%\"></svg:svg>"
+												  + "</div></div></td></tr><tr/>"
+												  + "</table>";
+}
+
 function display_date(){
 	var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;

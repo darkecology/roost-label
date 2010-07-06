@@ -518,10 +518,10 @@ RoostCircle.prototype.finishResize = function(e, callObj)
 		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
 			this.deleteHandle.undraw();
 		this.roostSequence.insertCircle(this, tool.frame);
-		this.roostSequence.locallyChanged = 1;
-		this.roostSequence.updateInfoBox();
-		
 	}
+	//we need ot update the info box so the user can save changes 
+	this.roostSequence.locallyChanged = 1;
+	this.roostSequence.updateInfoBox();
 	this.redraw();
 	document.onmouseup = null;
 };
@@ -548,7 +548,7 @@ RoostCircle.prototype.drag = function(e, callObj)
     var dx = p.x - this.offsetx - this.x;
     var dy = p.y - this.offsety - this.y;
 
-    this.move(dx, dy);
+    this.move(parseFloat(dx.toFixed(3)), parseFloat(dy.toFixed(3)));
     this.deleteHandle.move(dx, dy);
     this.radiusHandle.move(dx, dy);
     this.redraw();
@@ -565,13 +565,16 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
 		if(tool.frame !=0 && tool.frame != tool.frames_DV.length-1)
 			this.deleteHandle.undraw();
 		this.roostSequence.insertCircle(this, tool.frame);
-		this.roostSequence.locallyChanged = 1;
+		
 		this.roostSequence.updateInfoBox();
 	}
 	this.redraw();
-	//if the first circle is dragged, the location label in the infoBox need to be changed
-	if(this.roostSequence.tool.frame==this.roostSequence.seq_start)
-		this.roostSequence.updateInfoBox();
+	this.roostSequence.locallyChanged = 1;
+
+	//wrong -> if the first circle is dragged, the location label in the infoBox need to be changed
+	//actually we need to update infobox everytime 
+	//if(this.roostSequence.tool.frame==this.roostSequence.seq_start)
+	this.roostSequence.updateInfoBox();
 	document.onmouseup = null;
 };
 
@@ -689,11 +692,13 @@ function RoostSequence(frameNum, circle)
 	this.sequenceIndex = this.tool.sequenceIndex;
 	this.comments = null;
 	this.circles = [];
-	this.circles[frameNum] = circle;
-	if(frameNum == 0)
-		this.proCircleStart = 0;
-	if(frameNum == tool.frames_DV.length -1 )
-		this.proCircleEnd = 0;
+	if(frameNum != null){
+		this.circles[frameNum] = circle;
+		if(frameNum == 0)
+			this.proCircleStart = 0;
+		if(frameNum == tool.frames_DV.length -1 )
+			this.proCircleEnd = 0;
+	}
 }
 
 RoostSequence.prototype.updateInfoBox = function() 
@@ -720,17 +725,30 @@ RoostSequence.prototype.updateInfoBox = function()
 	//sequenceId will be null when it is newly created during the current session and the user haven't saved it yet
 	// therefore we don't have a unique id for the sequence yet.
 	if (this.sequenceId != null){
-		infoBoxId.innerHTML = this.sequenceId;
+		infoBoxId.innerHTML = this.tool.station+"_"+this.tool.year+this.tool.month+this.tool.day+"_"+this.sequenceId;
 	}
 
 	//update location label
-	infoBoxXcoord.innerHTML = this.circles[this.seq_start].x;
-	infoBoxYcoord.innerHTML = this.circles[this.seq_start].y;
+	infoBoxXcoord.innerHTML = parseFloat(this.circles[this.seq_start].x.toFixed(3));
+	infoBoxYcoord.innerHTML = parseFloat(this.circles[this.seq_start].y.toFixed(3));
+	
+	/*test
+	if (this.seq_start == null)
+	{	var mm;}
+	else if (tool.frames_timeStamp == null){
+		var mm;
+	}else if ( infoBoxFirstTime.innerHTML == null){
+		var mm;
+	}else if(infoBoxFirstTime == null){
+		var mm;
+	}
+	*/
+	
 	
 
 	//update the first time & last time
-	infoBoxFirstTime.innerHTML = this.tool.frames_timeStamp[this.seq_start];
-	infoBoxLastTime.innerHTML = this.tool.frames_timeStamp[this.seq_end];
+	infoBoxFirstTime.innerHTML = tool.frames_timeStamp[this.seq_start];
+	infoBoxLastTime.innerHTML = tool.frames_timeStamp[this.seq_end];
 
 	//update extend links
 	if(this.proCircleEnd){
@@ -839,16 +857,21 @@ RoostSequence.prototype.saveRoostSequence = function()
 	xmlhttp.setRequestHeader("Content-Type", "text/xml");
 	
 	// Set up a function for the server to run when it's done
-	xmlhttp.onreadystatechange = function(){
+	xmlhttp.onreadystatechange = bindEvent(this, "saveRoostSequenceCallBack");
+
 	
-		if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
-			this.sequenceId = trim(xmlhttp.responseText);
-		}
-	};
 	
 	// Send the request
 	xmlhttp.send(xmlString);
 
+};
+
+RoostSequence.prototype.saveRoostSequenceCallBack = function(){
+	
+	if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
+		this.sequenceId = trim(xmlhttp.responseText);
+		document.getElementById("infoBoxId_"+this.sequenceIndex).innerHTML = this.tool.station+"_"+this.tool.year+this.tool.month+this.tool.day+"_"+this.sequenceId;
+	}
 };
 
 
@@ -1029,7 +1052,7 @@ function RoostTool()
 			   document.getElementById("canvasVR"),
 			   document.getElementById("canvasSW")];
 
-    this.annotations = [];
+    //this.annotations = [];
 	this.roostSeqObj = [];
 	this.activeCircles = [];
     this.controlPoints = [];
@@ -1039,7 +1062,7 @@ function RoostTool()
 
     if (window.XMLHttpRequest)
     {// code for IE7+, Firefox, Chrome, Opera, Safari
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
     }
     else
     {// code for IE6, IE5
@@ -1047,28 +1070,53 @@ function RoostTool()
     }
     
     this.xmlhttp = xmlhttp;
-    xmlhttp.onreadystatechange = bindEvent(this, "getFrameCallback");
+    //xmlhttp.onreadystatechange = bindEvent(this, "getFrameCallback");
 	
-	//var station = gup('station');
-	//var year = gup('year');
-	//var month = gup('month');
-	//var day = gup('day');
 	this.station = document.getElementById("station_select").value;
 	this.year = document.getElementById("year_select").value;
 	this.month = document.getElementById("month_select").value;
 	this.day = document.getElementById("day_select").value;
 	
 	var url_php_request = "ajax/frame_list.php?station=" + this.station + "&year=" + this.year + "&month=" + this.month+ "&day=" + this.day;
+	xmlhttp.open("GET",url_php_request,false);
+    xmlhttp.send();
+	
+
+	//call back 	
+	//---------------------------------------------
+	var ajaxStr = trim(xmlhttp.responseText);
+	
+	var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
+	var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
+	var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
+	var ajaxArr_timeStamp = ajaxStr.split('&&')[3].split('~');
+		
+	this.frames_DV = ajaxArr_DV;
+	this.frames_VR = ajaxArr_VR;
+	this.frames_SW = ajaxArr_SW;
+	this.frames_timeStamp = ajaxArr_timeStamp;
+	
+	
+	this.frame = 0; 
+	this.loadFrame(this.frame);
+	//------------------------------------------
+
+
+
+
+	//var station = gup('station');
+	//var year = gup('year');
+	//var month = gup('month');
+	//var day = gup('day');
+	
 	
 	document.getElementById("visibility_select").onchange = visibilityChange;
 	visibilityChange();
-    xmlhttp.open("GET",url_php_request,true);
-    xmlhttp.send();
-	
+    
 	//Set up the bookmark link.
 	var bookmarkLink = document.getElementById("bookmarkLink");
 	var urlTitle = "Roost Site -- station:"+this.station+" year:"+this.year+" month:"+this.month+" day:"+this.day;
-	url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+this.station+"&year="+this.year+"&month="+this.month+"&day="+this.day+"',\'"+urlTitle+"')";
+	var url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+this.station+"&year="+this.year+"&month="+this.month+"&day="+this.day+"',\'"+urlTitle+"')";
 	bookmarkLink.setAttribute("href",url);
 	
 	//Get Sequences Information.
@@ -1076,56 +1124,146 @@ function RoostTool()
 	
 };
 
+RoostTool.prototype.resetToolObject = function(){
+	//empty the infoPanel
+	document.getElementById("infoPanel").innerHTML = "";
+	
+
+	//undraw all circles
+	for(var i = 0; i < this.activeCircles.length; i++)
+	{
+		if(this.activeCircles[i] != null)
+		   this.activeCircles[i].undraw();
+	}
+	//empty the activeCircle array
+	this.activeCircles = [];
+	
+	//reset Sequence Objects
+	this.roostSeqObj = [];
+
+
+	//reset sequence index 
+	this.sequenceIndex = 0;
+
+    // AJAX call to get list of frames and then navigate to initial frame
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+	var xmlhttp=new XMLHttpRequest();
+    }
+    else
+    {// code for IE6, IE5
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    
+    this.xmlhttp = xmlhttp;
+    //xmlhttp.onreadystatechange = bindEvent(this, "getFrameCallback");
+	
+	this.station = document.getElementById("station_select").value;
+	this.year = document.getElementById("year_select").value;
+	this.month = document.getElementById("month_select").value;
+	this.day = document.getElementById("day_select").value;
+	
+	var url_php_request = "ajax/frame_list.php?station=" + this.station + "&year=" + this.year + "&month=" + this.month+ "&day=" + this.day;
+	xmlhttp.open("GET",url_php_request,false);
+    xmlhttp.send();
+	
+
+	//call back 	
+	//---------------------------------------------
+	var ajaxStr = trim(xmlhttp.responseText);
+	
+	var ajaxArr_DV = ajaxStr.split('&&')[0].split('~');
+	var ajaxArr_VR = ajaxStr.split('&&')[1].split('~');
+	var ajaxArr_SW = ajaxStr.split('&&')[2].split('~');
+	var ajaxArr_timeStamp = ajaxStr.split('&&')[3].split('~');
+		
+	this.frames_DV = ajaxArr_DV;
+	this.frames_VR = ajaxArr_VR;
+	this.frames_SW = ajaxArr_SW;
+	this.frames_timeStamp = ajaxArr_timeStamp;
+	
+	
+	this.frame = 0; 
+	this.loadFrame(this.frame);
+	//------------------------------------------
+
+
+
+
+	//var station = gup('station');
+	//var year = gup('year');
+	//var month = gup('month');
+	//var day = gup('day');
+	
+	
+	document.getElementById("visibility_select").onchange = visibilityChange;
+	visibilityChange();
+    
+	//Set up the bookmark link.
+	var bookmarkLink = document.getElementById("bookmarkLink");
+	var urlTitle = "Roost Site -- station:"+this.station+" year:"+this.year+" month:"+this.month+" day:"+this.day;
+	var url = "javascript:bookmark_us('"+ location.protocol + location.host + location.pathname +"?station="+this.station+"&year="+this.year+"&month="+this.month+"&day="+this.day+"',\'"+urlTitle+"')";
+	bookmarkLink.setAttribute("href",url);
+	
+	//Get Sequences Information.
+	this.getSequences();
+
+};
+
 RoostTool.prototype.getSequences = function() {
 	var xmlDoc;
 	tool = 	this;
 	if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-        xmlhttp=new XMLHttpRequest();
+        var xmlhttp=new XMLHttpRequest();
     }else{
 		// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    
-    xmlhttp.onreadystatechange=function() 
-	{	
-        if (xmlhttp.readyState==4 && xmlhttp.status==200)
-		{
-			xmlDoc = xmlhttp.responseXML;
-			var sequences = xmlDoc.childNodes[0].childNodes;
-			for(var sequenceIndex = 0; sequenceIndex < sequences.length; sequenceIndex++)
-			{
-				var sequenceEnd = 0;
-				newSequence = new RoostSequence(null, null);
-				newSequence.proCircleStart = 0;
-				newSequence.proCircleEnd = 0;
-				newSequence.sequenceId = sequences[sequenceIndex].getElementsByTagName("SequenceID")[0].textContent; 
-				newSequence.comments = sequences[sequenceIndex].getElementsByTagName("Comments")[0].textContent;
-				var circles = sequences[sequenceIndex].getElementsByTagName("Circle");
-				for(var circleIndex = 0; circleIndex < circles.length; circleIndex++)
-				{
-					var x = circles[circleIndex].getElementsByTagName("X")[0].textContent;
-					var y = circles[circleIndex].getElementsByTagName("Y")[0].textContent;
-					var r = circles[circleIndex].getElementsByTagName("R")[0].textContent;
-					var frameNumber = circles[circleIndex].getElementsByTagName("FrameNumber")[0].textContent;
-					if (circleIndex == 0)
-					{
-						newSequence.seq_end = frameNumber;
-					}
-					sequenceEnd = frameNumber;
-					newCircle = new RoostCircle(parseFloat(x), parseFloat(y), parseFloat(r), newSequence);
-					newSequence.circles[frameNumber] = newCircle;
-				}
-				newSequence.seq_start = sequenceEnd;
-				tool.roostSeqObj[tool.sequenceIndex] = newSequence;
-				tool.sequenceIndex++;
-				newSequence.updateInfoBox();
-			}
-			tool.updateCanvas();
-		}
-	};
-	var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;
-	xmlhttp.open("GET", url ,true);
+	var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;    
+	xmlhttp.open("GET", url ,false);
     xmlhttp.send();
+	
+    
+	
+    
+		
+	xmlDoc = xmlhttp.responseXML;
+	var sequences = xmlDoc.childNodes[0].childNodes;
+	for(var sequenceIndex = 0; sequenceIndex < sequences.length; sequenceIndex++)
+	{
+		var sequenceEnd = 0;
+		var newSequence = new RoostSequence(null, null);
+		newSequence.proCircleStart = 0;
+		newSequence.proCircleEnd = 0;
+		newSequence.sequenceId = sequences[sequenceIndex].getElementsByTagName("SequenceID")[0].textContent; 
+		newSequence.comments = sequences[sequenceIndex].getElementsByTagName("Comments")[0].textContent;
+		var circles = sequences[sequenceIndex].getElementsByTagName("Circle");
+		for(var circleIndex = 0; circleIndex < circles.length; circleIndex++)
+		{
+			var x = circles[circleIndex].getElementsByTagName("X")[0].textContent;
+			var y = circles[circleIndex].getElementsByTagName("Y")[0].textContent;
+			var r = circles[circleIndex].getElementsByTagName("R")[0].textContent;
+			var frameNumber = circles[circleIndex].getElementsByTagName("FrameNumber")[0].textContent;
+			x = parseFloat(x);
+			y = parseFloat(y);
+			r = parseFloat(r);
+
+			if (circleIndex == 0)
+			{
+				newSequence.seq_end = frameNumber;
+			}
+			sequenceEnd = frameNumber;
+			var newCircle = new RoostCircle(x, y, r, newSequence);
+			newSequence.circles[frameNumber] = newCircle;
+		}
+		newSequence.seq_start = sequenceEnd;
+		tool.roostSeqObj[tool.sequenceIndex] = newSequence;
+		tool.sequenceIndex++;
+		newSequence.updateInfoBox();
+	}
+	tool.updateCanvas();
+
+	
 };
 
 
@@ -1325,14 +1463,14 @@ RoostTool.prototype.getFrameCallback = function() {
 RoostTool.prototype.loadFrame = function(idx) {
 
     var XX = ["DZ", "VR", "SW"];
-	url = [];
-	url[0] = this.frames_DV[idx];
-	url[1] = this.frames_VR[idx];
-	url[2] = this.frames_SW[idx];
+	var framesImages = [];
+	framesImages[0] = this.frames_DV[idx];
+	framesImages[1] = this.frames_VR[idx];
+	framesImages[2] = this.frames_SW[idx];
     
 	for (var i = 0; i < XX.length; i++)
     {
-		var img_url = url[i];
+		var img_url = framesImages[i];
 		var elt = document.getElementById("img" + XX[i]);
 		elt.src = img_url;
     }
@@ -1420,15 +1558,28 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 //------------------------------------------------------------------------
 // initialization
 //------------------------------------------------------------------------
-var tool;
+
 function RoostToolInit()
 {
     GetBrowserInfo();
-    tool = new RoostTool();
-    tool.threePointMode();
+    if (tool != null){
+		//var prevActiveCircles = tool.activeCircles; 
+		//tool = new RoostTool();
+		//tool.activeCircles = prevActiveCircles;
+		//update canvas
+		//tool.updateCanvas();
+		//tool.threePointMode();
+		tool.resetToolObject();
+		
+	}else{
+		tool = new RoostTool();
+		tool.threePointMode();
+	}
     document.onkeydown = keydown;    
 	document.getElementById("saveAllButton").onclick = bindEvent(tool, "saveAll");
 	document.getElementById("resetButton").onclick = bindEvent(tool, "resetAll");
+
+
 }
 
 function keydown(e)
@@ -1442,7 +1593,9 @@ function keydown(e)
     {
 		prev();
 		return false;
-    }
+    }else {
+		return true;
+	}
 }
 
 function prev()
