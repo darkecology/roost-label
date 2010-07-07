@@ -671,6 +671,11 @@ function pointsToCircle(p)
     cx = (interceptB - interceptA)/(slopeA - slopeB);
     cy = slopeA*cx + interceptA;
     r  = Math.sqrt((p1.x - cx)*(p1.x - cx) + (p1.y - cy)*(p1.y - cy));
+	if (r >= 250)
+	{
+		alert("Error: Radius must be less than 250px");
+		return;
+	}
 
     return new RoostCircle(cx, cy, r);
 };
@@ -1116,8 +1121,7 @@ function RoostTool()
 	//var year = gup('year');
 	//var month = gup('month');
 	//var day = gup('day');
-	
-	
+		
 	document.getElementById("visibility_select").onchange = visibilityChange;
 	visibilityChange();
     
@@ -1551,7 +1555,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			
 			var newRoostSequence =new RoostSequence(this.frame, c); 
 			this.roostSeqObj.push(newRoostSequence);
-			c.roostSequence =newRoostSequence;
+			c.roostSequence = newRoostSequence;
 			//The newRoostSequence has not been saved yet.
 			newRoostSequence.locallyChanged = 1;
 			this.sequenceIndex++;
