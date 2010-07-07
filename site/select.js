@@ -46,6 +46,13 @@ function get_years(URLselect)
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
 	
+	//empty the display div
+	document.getElementById("display").innerHTML = "";
+
+
+	//reset the infoPanel
+	document.getElementById("infoPanel").innerHTML = "";
+	
 
     var station = document.getElementById("station_select").value;
     //alert(station);
@@ -89,6 +96,14 @@ function get_months(URLselect)
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
 	
+	//empty the display div
+	document.getElementById("display").innerHTML = "";
+	
+
+	//reset the infoPanel
+	document.getElementById("infoPanel").innerHTML = "";
+
+
     var station = document.getElementById("station_select").value;
 	var year = document.getElementById("year_select").value;
     //alert(station);
@@ -134,6 +149,11 @@ function get_days(URLselect)
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
 	
+	//empty the display div
+	document.getElementById("display").innerHTML = "";
+
+	//reset the infoPanel
+	document.getElementById("infoPanel").innerHTML = "";
 
 	//alert(station);
 	var url = "ajax/get_days.php?station="+station+"&year="+year+"&month="+month;
@@ -149,10 +169,29 @@ function get_days(URLselect)
             var day_select = document.getElementById("day_select");
             day_select.innerHTML = xmlhttp.responseText;
 			day_select.onchange = function() {
-				this.blur();
-				//innerTables();
-				display_date();
-				RoostToolInit();
+			
+				//if the user reselect day to a null value, we need to reset the canvas, infoPanel and display div
+				if(day_select.value == "null"){
+					
+					//reset canvas if set
+					document.getElementById("imgVR").style.display = "none";
+					document.getElementById("imgSW").style.display = "none";
+					document.getElementById("imgDZ").style.display = "none";
+					
+					//empty the display div
+					document.getElementById("display").innerHTML = "";
+					
+					//reset the infoPanel
+					document.getElementById("infoPanel").innerHTML = "";
+
+				//else we just call to create an new tool object and set the three point mode to it
+				}else{
+					this.blur();
+					//innerTables();
+					display_date();
+					RoostToolInit();
+				}
+
 				document.getElementById("bookmarkLink").style.display = "inline";
 			};
 			var dayURL = getURL("day");
@@ -164,6 +203,7 @@ function get_days(URLselect)
 						//innerTables();
 						display_date();
 						RoostToolInit();
+						break;
 					}
 				}
 			}
