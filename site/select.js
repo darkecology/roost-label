@@ -13,7 +13,7 @@ function get_stations(){
 		// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    
+    document.getElementById("bookmarkLink").style.display = "none";
     xmlhttp.onreadystatechange=function() {	
         if (xmlhttp.readyState==4 && xmlhttp.status==200){					
             var station_select = document.getElementById("station_select");
@@ -40,6 +40,7 @@ function get_years(URLselect)
 {
 	document.getElementById("month_select").innerHTML = reset_selection;
 	document.getElementById("day_select").innerHTML = reset_selection;
+	document.getElementById("bookmarkLink").style.display = "none";
 	//document.getElementById("canvasPanel").innerHTML = "";
 	document.getElementById("imgVR").style.display = "none";
 	document.getElementById("imgSW").style.display = "none";
@@ -83,6 +84,7 @@ function get_months(URLselect)
 {
 	document.getElementById("day_select").innerHTML = reset_selection;
 	//document.getElementById("canvasPanel").innerHTML = "";
+	document.getElementById("bookmarkLink").style.display = "none";
 	document.getElementById("imgVR").style.display = "none";
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
@@ -151,6 +153,7 @@ function get_days(URLselect)
 				//innerTables();
 				display_date();
 				RoostToolInit();
+				document.getElementById("bookmarkLink").style.display = "inline";
 			};
 			var dayURL = getURL("day");
 			if (dayURL != "" && URLselect){
