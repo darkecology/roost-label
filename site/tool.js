@@ -771,9 +771,18 @@ RoostSequence.prototype.updateInfoBox = function()
 	}
 
 	
+
+
+
+	//infoBoxComments.textarea.onchange = alert2;
+
 	//update comments
-	if(this.comments != null)
-		infoBoxComments.innerHTML = this.comments;
+	infoBoxComments.textarea.onkeypress = bindEvent(this, "onKeyDownOnComments");
+
+	infoBoxComments.textarea.onchange = bindEvent(this, "onChangeOnComments");
+
+	//if(this.comments != null)
+		infoBoxComments.textarea.value = this.comments;
 	
 
 	//update save button
@@ -793,6 +802,28 @@ RoostSequence.prototype.updateInfoBox = function()
 	
 	infoBoxDelete.onclick = bindEvent(this, "deleteEvent");
 
+};
+
+RoostSequence.prototype.onKeyDownOnComments = function(){
+	var infoBoxComments = document.getElementById("comments_"+this.sequenceIndex);
+	var infoBoxSave = document.getElementById("save_"+this.sequenceIndex);
+	var infoBoxRevert = document.getElementById("revert_"+this.sequenceIndex);
+
+	if(this.comments != infoBoxComments.textarea.value){
+		this.locallyChanged = 1;
+		infoBoxComments.textarea.onkeypress = null;
+		
+		infoBoxSave.removeAttribute('disabled');
+		//infoBoxSave.onclick = bindEvent(this, "saveEvent");
+		infoBoxRevert.removeAttribute('disabled');
+		//infoBoxRevert.onclick = bindEvent(this, "revertEvent" );	
+	}
+};
+
+RoostSequence.prototype.onChangeOnComments= function(){
+	var infoBoxComments = document.getElementById("comments_"+this.sequenceIndex);
+	this.comments = infoBoxComments.textarea.value;
+	this.locallyChanged = 1;	
 };
 
 RoostSequence.prototype.revertRoostSequence = function() 
@@ -1228,7 +1259,6 @@ RoostTool.prototype.resetToolObject = function(){
 	
 	//Get Sequences Information.
 	this.getSequences();
-
 	document.getElementById("prev").style.display = "none";
 };
 
@@ -1259,6 +1289,9 @@ RoostTool.prototype.getSequences = function() {
 		newSequence.proCircleEnd = 0;
 		newSequence.sequenceId = sequences[sequenceIndex].getElementsByTagName("SequenceID")[0].textContent; 
 		newSequence.comments = sequences[sequenceIndex].getElementsByTagName("Comments")[0].textContent;
+		if (newSequence.comments == "null")
+			newSequence.comments = "";
+		
 		var circles = sequences[sequenceIndex].getElementsByTagName("Circle");
 		for(var circleIndex = 0; circleIndex < circles.length; circleIndex++)
 		{
@@ -1798,12 +1831,13 @@ function addInfoBox(infoBoxIndx){
 	var tr23 = document.createElement("tr");
 
 	tr21.innerHTML = "<td>Comments:</td>";
-	tr22.innerHTML = "<td><textarea id=\"comments_" + infoBoxIndx + "\" cols=\"40\" rows=\"5\"></textarea></td>";
+	tr22.innerHTML = "<td><form id=\"comments_" + infoBoxIndx + "\"><textarea  name=\"textarea\" cols=\"40\" rows=\"5\"></textarea></form></td>";
 	tr23.innerHTML = "<td><button class=\"button\" type=\"button\" id=\"delete_" + infoBoxIndx + "\">Delete</button>"
 		+ "<button class=\"button\" type=\"button\" id=\"revert_" + infoBoxIndx + "\">Revert</button>"
 		+ "<button class=\"button\" type=\"button\" id=\"save_" + infoBoxIndx + "\">Save</button>"
 		+ "</td>";	
 
+	//tr22.addAttribute('onChange', 'alert2()');
 	table1.appendChild(tr11);
 	table1.appendChild(tr12);	
 	table1.appendChild(tr13);	
@@ -1820,4 +1854,7 @@ function addInfoBox(infoBoxIndx){
 
 	infoPanel.appendChild(newInfoBox);
 
+}
+function alert2(){
+	alert("mmmmm");
 }
