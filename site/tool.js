@@ -1005,13 +1005,13 @@ RoostSequence.prototype.deleteEvent = function()
 RoostSequence.prototype.deleteInfoBox = function(){
 	var infoPanelElement = document.getElementById("infoPanel");
 	var len = infoPanelElement.childNodes.length;
-
+	var indx;
 	for(var i = 0 ; i < len; i++){
 		if (this.sequenceIndex == 0)
 			indx = "0";
 		else
 			indx = this.sequenceIndex;
-		if(infoPanelElement.childNodes[i].id == indx){
+		if(infoPanelElement.childNodes[i].id != undefined && infoPanelElement.childNodes[i].id == indx){
 			infoPanelElement.removeChild(infoPanelElement.childNodes[i]);
 			break;
 		}
@@ -1408,7 +1408,11 @@ RoostTool.prototype.saveAll = function() {
 };
 
 RoostTool.prototype.resetAll = function() {
-	
+	var frameNumber = this.frame;
+	this.resetToolObject();
+	this.updateButtons();
+	this.moveToFrame(frameNumber);
+	this.updateCanvas();
 };
 
 RoostTool.prototype.updateButtons = function() {
