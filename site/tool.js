@@ -1029,7 +1029,7 @@ RoostSequence.prototype.deleteInfoBox = function(){
 
 RoostSequence.prototype.extendForward = function() 
 {
-	if (this.tool.frame < this.tool.frames_DV.length - 1 )
+	if (this.seq_end  < this.tool.frames_DV.length - 1 )
     {
 		this.tool.moveToFrame(this.seq_end + 1);
 		this.proCircleEnd = 1;
@@ -1041,7 +1041,7 @@ RoostSequence.prototype.extendForward = function()
 
 RoostSequence.prototype.extendBackward = function() 
 {
-    if (this.tool.frame > 0 )
+    if (this.seq_start  > 0 )
 	{
 		this.tool.moveToFrame(this.seq_start - 1);
 		this.proCircleStart = 1;
@@ -1134,6 +1134,7 @@ function RoostTool()
 	//Get Sequences Information.
 	this.getSequences();
 	
+	document.getElementById("prev").style.display = "none";
 };
 
 RoostTool.prototype.resetToolObject = function(){
