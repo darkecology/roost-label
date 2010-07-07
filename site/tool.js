@@ -958,7 +958,7 @@ RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 			var r = c[i].getElementsByTagName("R")[0].childNodes[0].nodeValue;
 			r = parseFloat(r);
 			var frameNumber = c[i].getElementsByTagName("FrameNumber")[0].childNodes[0].nodeValue;
-			frameNumber = parseFloat(frameNumber);
+			frameNumber = parseInt(frameNumber);
 			var circle = new RoostCircle(x, y, r, this);
 			this.insertCircle(circle, frameNumber);
 			if (i == 0)
@@ -1022,20 +1022,26 @@ RoostSequence.prototype.deleteInfoBox = function(){
 
 RoostSequence.prototype.extendForward = function() 
 {
-	this.tool.moveToFrame(this.seq_end + 1);
-	this.proCircleEnd = 1;
-	this.tool.updateCanvas();
-	this.updateInfoBox();
-	this.tool.updateButtons();
+	if (this.tool.frame < this.tool.frames_DV.length - 1 )
+    {
+		this.tool.moveToFrame(this.seq_end + 1);
+		this.proCircleEnd = 1;
+		this.tool.updateCanvas();
+		this.updateInfoBox();
+		this.tool.updateButtons();
+    }
 };
 
 RoostSequence.prototype.extendBackward = function() 
 {
-	this.tool.moveToFrame(this.seq_start - 1);
-	this.proCircleStart = 1;
-	this.tool.updateCanvas();
-	this.updateInfoBox();
-	this.tool.updateButtons();
+    if (this.tool.frame > 0 )
+	{
+		this.tool.moveToFrame(this.seq_start - 1);
+		this.proCircleStart = 1;
+		this.tool.updateCanvas();
+		this.updateInfoBox();
+		this.tool.updateButtons();    }
+
 };
 
 //------------------------------------------------------------------------
@@ -1247,7 +1253,7 @@ RoostTool.prototype.getSequences = function() {
 			x = parseFloat(x);
 			y = parseFloat(y);
 			r = parseFloat(r);
-
+			frameNumber = parseInt(frameNumber);
 			if (circleIndex == 0)
 			{
 				newSequence.seq_end = frameNumber;
@@ -1408,7 +1414,7 @@ RoostTool.prototype.resetAll = function() {
 RoostTool.prototype.updateButtons = function() {
 	
 	for(var i = 0 ; i < this.roostSeqObj.length; i++){
-		if(roostSeqObj[i] != null && roostSeqObj[i].locallyChanged){
+		if(this.roostSeqObj[i] != null && this.roostSeqObj[i].locallyChanged){
 			document.getElementById("saveAllButton").removeAttribute('disabled');
 			document.getElementById("resetButton").removeAttribute('disabled');
 			return;
