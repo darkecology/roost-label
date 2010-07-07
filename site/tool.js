@@ -1508,6 +1508,14 @@ RoostTool.prototype.prevFrame = function() {
 		this.loadFrame(--this.frame);
 		this.updateCanvas();
     }
+	if (this.frame == 0)
+	{
+		document.getElementById("prev").style.display = "none";
+	}
+	if (this.frame < this.frames_DV.length - 1)
+	{
+		document.getElementById("next").style.display = "inline";
+	}
 };
 
 RoostTool.prototype.nextFrame = function() {
@@ -1516,6 +1524,14 @@ RoostTool.prototype.nextFrame = function() {
 		this.loadFrame(++this.frame);
 		this.updateCanvas();
     }
+	if (this.frame == this.frames_DV.length - 1)
+	{
+		document.getElementById("next").style.display = "none";
+	}
+	if (this.frame > 0)
+	{
+		document.getElementById("prev").style.display = "inline";
+	}
 };
 
 RoostTool.prototype.threePointMode = function(){
