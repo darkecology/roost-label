@@ -996,7 +996,11 @@ RoostSequence.prototype.deleteEvent = function()
 		
 		//this.ajaxDeleteRoost();
 	}
-	
+	if (xmlhttp.responseText.trim() != "1")
+	{
+		alert("Error: Roost Sequence failed to be deleted");
+		return;
+	}
 	//delete infoBox
 	this.deleteInfoBox();
 	

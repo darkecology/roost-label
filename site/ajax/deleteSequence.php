@@ -19,15 +19,17 @@
 	}
 	
 	mysql_select_db('roostdb', $con);
-	echo "connected";
 	$sqlDeleteCircles = "DELETE FROM Circle_Table
 							WHERE SequenceID = \"$sequenceID\"";
 			
 	$sqlDeleteSequence = "DELETE FROM Sequence_Table
 							WHERE SequenceID = \"$sequenceID\"";
 	
-	$result = mysql_query($sqlDeleteCircles);
-	$result = mysql_query($sqlDeleteSequence);
-	
+	$resultCircle = mysql_query($sqlDeleteCircles);
+	$resultSequence = mysql_query($sqlDeleteSequence);
+	if ($resultCircle == 1 && $resultSequence == 1)
+	{
+		echo "1";
+	}
 ?>
 	
