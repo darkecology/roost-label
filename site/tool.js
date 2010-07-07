@@ -935,7 +935,7 @@ RoostSequence.prototype.saveEvent = function()
 
 RoostSequence.prototype.revertEvent = function() 
 {
-	if (this.sequenceID != null)
+	if (this.sequenceId != null)
 	{
 		//this.deleteEvent();
 		//this.tool.deleteRoostSequence(this.sequenceIndex);
@@ -957,34 +957,34 @@ RoostSequence.prototype.revertEvent = function()
 RoostSequence.prototype.retrieveRoostSequence = function() 
 {
 	
-	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceID;
+	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceId;
 	
 
 	xmlhttp= new XMLHttpRequest();
 	
-	xmlhttp.open("GET", url, true);
+	xmlhttp.open("GET", url, false);
 	
 	
 	// Tell the server you're sending it XML
 	//xmlhttp.setRequestHeader("Content-Type", "text/xml");
 	
 	// Set up a function for the server to run when it's done
-	xmlhttp.onreadystatechange = bindEvent(this, "retrieveRoostSequenceCallBack");
+	//xmlhttp.onreadystatechange = bindEvent(this, "retrieveRoostSequenceCallBack");
 	
 	// Send the request
 	xmlhttp.send();
-
+	
+	this.retrieveRoostSequenceCallBack();
 };
 
 RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 	
 	
-	if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
 		var xmlDoc = xmlhttp.responseXML;
 		
 		//create circles 
 		
-		this.comments = xmlDoc.getElementsByTagName("comments")[0].childNodes[0].textContent;
+		this.comments = xmlDoc.getElementsByTagName("comments")[0].textContent;
 		
 		c = xmlDoc.getElementsByTagName("circle");
 		for(var i = 0; i< c.length; i++){
@@ -1001,12 +1001,12 @@ RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 			this.insertCircle(circle, frameNumber);
 			if (i == 0)
 			{
-				this.seq_start = frameNumberr;
+				this.seq_start = frameNumber;
 			}
-			this.seq_end = frameNumberr;
+			this.seq_end = frameNumber;
 		}
 		
-	}
+	
 };
 
 
