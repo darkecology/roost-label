@@ -1220,6 +1220,7 @@ RoostTool.prototype.resetToolObject = function(){
 	//Get Sequences Information.
 	this.getSequences();
 
+	document.getElementById("prev").style.display = "none";
 };
 
 RoostTool.prototype.getSequences = function() {
@@ -1262,13 +1263,13 @@ RoostTool.prototype.getSequences = function() {
 			frameNumber = parseInt(frameNumber);
 			if (circleIndex == 0)
 			{
-				newSequence.seq_end = frameNumber;
+				newSequence.seq_start = frameNumber;
 			}
 			sequenceEnd = frameNumber;
 			var newCircle = new RoostCircle(x, y, r, newSequence);
 			newSequence.circles[frameNumber] = newCircle;
 		}
-		newSequence.seq_start = sequenceEnd;
+		newSequence.seq_end = sequenceEnd;
 		tool.roostSeqObj[tool.sequenceIndex] = newSequence;
 		tool.sequenceIndex++;
 		newSequence.updateInfoBox();
