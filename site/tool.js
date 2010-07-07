@@ -983,7 +983,7 @@ RoostSequence.prototype.deleteEvent = function()
 {
 	//ajax call to delete from the backend	
 	if(this.sequenceId != null){
-		var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceID;
+		var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceId;
 		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
 			xmlhttp=new XMLHttpRequest();
 		}
@@ -996,10 +996,14 @@ RoostSequence.prototype.deleteEvent = function()
 		
 		//this.ajaxDeleteRoost();
 	}
-	if (xmlhttp.responseText.trim() != "1")
-	{
-		alert("Error: Roost Sequence failed to be deleted");
-		return;
+	xmlhttp.onreadystatechange=function() {	
+        if (xmlhttp.readyState==4 && xmlhttp.status==200){					
+			if (xmlhttp.responseText.trim() != "1")
+			{
+				alert("Error: Roost Sequence failed to be deleted");
+				return;
+			}
+		}
 	}
 	//delete infoBox
 	this.deleteInfoBox();
