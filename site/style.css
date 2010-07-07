@@ -160,7 +160,7 @@ margin-left:80px;
 #year    {float: left; width: 150px; padding: 10px; }
 #month   {float: left; width: 150px; padding: 10px; }
 #day     {float: left; width: 150px; padding: 10px; }
-#visible {float: right; width:250px; padding-right:250px; }
+#visible {float: right; width:200px;  padding-right:10px;}
 
 #station_select {width: 70px;}
 #year_select {width: 55px;}

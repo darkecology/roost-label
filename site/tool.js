@@ -1279,18 +1279,27 @@ function visibilityChange() {
 	var visible = document.getElementById("visibility_select").value;
 	if (visible == 1) 
 	{
+		//change the width of canvas
+		document.getElementById("wrapper").style.width = "1240px";
+
 		document.getElementById("imgDZ").style.display = "block";
 		document.getElementById("imgVR").style.display = "none";
 		document.getElementById("imgSW").style.display = "none";
 	}
 	if (visible == 2) 
 	{
+		//change the width of canvas
+		document.getElementById("wrapper").style.width = "1240px";
+
 		document.getElementById("imgDZ").style.display = "block";
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "none";
 	}
 	if (visible == 3)
 	{
+		//change the width of canvas
+		document.getElementById("wrapper").style.width = "1860px";
+
 		document.getElementById("imgDZ").style.display = "block";
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "block";
