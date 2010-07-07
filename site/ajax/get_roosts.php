@@ -43,7 +43,8 @@ function report_error($text) {
 			WHERE StationNumber = \"$station\" 
 			AND Year = \"$year\"
 			AND Month = \"$month\"
-			AND Day = \"$day\"";
+			AND Day = \"$day\"
+			ORDER BY FrameNumber";
 			
 	$result = mysql_query($sql);
 	$xmlstr = "<?xml version='1.0' ?>\n".

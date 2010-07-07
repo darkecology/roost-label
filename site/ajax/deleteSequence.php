@@ -27,7 +27,7 @@
 	
 	$resultCircle = mysql_query($sqlDeleteCircles);
 	$resultSequence = mysql_query($sqlDeleteSequence);
-	if ($resultCircle == 1 && $resultSequence == 1)
+	if ($resultCircle >= 1 && $resultSequence >= 1)
 	{
 		echo "1";
 	}
