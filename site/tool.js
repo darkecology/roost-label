@@ -890,6 +890,8 @@ RoostSequence.prototype.insertCircle = function(circle, frameNumber)
 
 RoostSequence.prototype.saveEvent = function() 
 {
+	this.proCircleEnd = 0;
+	this.proCircleStart = 0;
 	this.locallyChanged = 0;
 	this.saveRoostSequence();
 	this.updateInfoBox();
@@ -1405,6 +1407,7 @@ RoostTool.prototype.saveAll = function() {
 			this.roostSeqObj[sequenceIndex].saveEvent();
 		}
 	}
+	this.updateButtons();
 };
 
 RoostTool.prototype.resetAll = function() {
@@ -1553,6 +1556,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			c.deleteHandle.undraw();
 			this.activeCircles.push(c);
 			c.roostSequence.updateInfoBox();
+			this.updateButtons();
 		}
 		
 
