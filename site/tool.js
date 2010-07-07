@@ -1590,6 +1590,12 @@ function RoostToolInit()
 		tool.threePointMode();
 	}
     document.onkeydown = keydown;    
+	
+
+	document.getElementById("saveAllButton").style.display = "inline";
+	document.getElementById("resetButton").style.display = "inline";
+
+
 	document.getElementById("saveAllButton").onclick = bindEvent(tool, "saveAll");
 	document.getElementById("resetButton").onclick = bindEvent(tool, "resetAll");
 

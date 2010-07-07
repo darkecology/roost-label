@@ -40,8 +40,15 @@ function get_years(URLselect)
 {
 	document.getElementById("month_select").innerHTML = reset_selection;
 	document.getElementById("day_select").innerHTML = reset_selection;
+
+	//disable bookmarkLink
 	document.getElementById("bookmarkLink").style.display = "none";
-	//document.getElementById("canvasPanel").innerHTML = "";
+
+	//hide the buttons
+	document.getElementById("resetButton").style.display = "none";
+	document.getElementById("saveAllButton").style.display = "none";
+	
+
 	document.getElementById("imgVR").style.display = "none";
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
@@ -90,8 +97,15 @@ function get_years(URLselect)
 function get_months(URLselect)
 {
 	document.getElementById("day_select").innerHTML = reset_selection;
-	//document.getElementById("canvasPanel").innerHTML = "";
+	
+	//disable bookmarkLink
 	document.getElementById("bookmarkLink").style.display = "none";
+
+	//hide the buttons
+	document.getElementById("resetButton").style.display = "none";
+	document.getElementById("saveAllButton").style.display = "none";
+
+	//hide the canvas images
 	document.getElementById("imgVR").style.display = "none";
 	document.getElementById("imgSW").style.display = "none";
 	document.getElementById("imgDZ").style.display = "none";
@@ -155,6 +169,14 @@ function get_days(URLselect)
 	//reset the infoPanel
 	document.getElementById("infoPanel").innerHTML = "";
 
+	//disable bookmarkLink
+	document.getElementById("bookmarkLink").style.display = "none";
+
+	//hide the buttons
+	document.getElementById("resetButton").style.display = "none";
+	document.getElementById("saveAllButton").style.display = "none";
+
+
 	//alert(station);
 	var url = "ajax/get_days.php?station="+station+"&year="+year+"&month="+month;
     if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -173,6 +195,9 @@ function get_days(URLselect)
 				//if the user reselect day to a null value, we need to reset the canvas, infoPanel and display div
 				if(day_select.value == "null"){
 					
+					//hide the buttons
+					document.getElementById("resetButton").style.display = "none";
+					document.getElementById("saveAllButton").style.display = "none";
 					//reset canvas if set
 					document.getElementById("imgVR").style.display = "none";
 					document.getElementById("imgSW").style.display = "none";
@@ -190,9 +215,10 @@ function get_days(URLselect)
 					//innerTables();
 					display_date();
 					RoostToolInit();
+					document.getElementById("bookmarkLink").style.display = "inline";
 				}
 
-				document.getElementById("bookmarkLink").style.display = "inline";
+				
 			};
 			var dayURL = getURL("day");
 			if (dayURL != "" && URLselect){
@@ -203,6 +229,7 @@ function get_days(URLselect)
 						//innerTables();
 						display_date();
 						RoostToolInit();
+						document.getElementById("bookmarkLink").style.display = "inline";
 						break;
 					}
 				}
