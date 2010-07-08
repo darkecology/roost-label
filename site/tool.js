@@ -825,10 +825,7 @@ RoostSequence.prototype.onChangeOnComments= function(){
 	this.locallyChanged = 1;	
 };
 
-RoostSequence.prototype.revertRoostSequence = function() 
-{
 
-};
 
 RoostSequence.prototype.saveRoostSequence = function() 
 {
@@ -1034,12 +1031,9 @@ RoostSequence.prototype.deleteEvent = function()
 				return;
 			}
 		}
-	}
+	};
 	//delete infoBox
-	this.deleteInfoBox();
-	
-	
-	
+	this.deleteInfoBox();	
 
 	//remove the data structure of this roost sequence
 	//delete from the canvas
@@ -1113,11 +1107,11 @@ function RoostTool()
 
     if (window.XMLHttpRequest)
     {// code for IE7+, Firefox, Chrome, Opera, Safari
-	var xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
     }
     else
     {// code for IE6, IE5
-	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
     
     this.xmlhttp = xmlhttp;
@@ -1132,7 +1126,7 @@ function RoostTool()
 	xmlhttp.open("GET",url_php_request,false);
     xmlhttp.send();
 	
-
+	
 	//call back 	
 	//---------------------------------------------
 	var ajaxStr = trim(xmlhttp.responseText);
@@ -1836,7 +1830,7 @@ function addInfoBox(infoBoxIndx){
 		+ "<button class=\"button\" type=\"button\" id=\"save_" + infoBoxIndx + "\">Save</button>"
 		+ "</td>";	
 
-	//tr22.addAttribute('onChange', 'alert2()');
+
 	table1.appendChild(tr11);
 	table1.appendChild(tr12);	
 	table1.appendChild(tr13);	
@@ -1853,7 +1847,4 @@ function addInfoBox(infoBoxIndx){
 
 	infoPanel.appendChild(newInfoBox);
 
-}
-function alert2(){
-	alert("mmmmm");
 }
