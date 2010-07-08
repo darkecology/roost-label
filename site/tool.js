@@ -102,7 +102,7 @@ function bindEvent(obj, method){
 	obj[method](e, this);
 	stopPropagation(e);
 	return false;
-    }
+    };
 }
 
 
@@ -627,7 +627,7 @@ function pointsToCircle(p)
 	if (dx12 == dx23 && dy12 == dy23)
 	{
 	    alert("Error: points must not be collinear");
-	    return;
+	    return 0;
 	}
 
 	done = true;
@@ -635,7 +635,7 @@ function pointsToCircle(p)
 	if (dy12 == 0 && dy23 == 0)
 	{
 	    alert("Error: points are collinear");
-	    return;
+	    return 0;
 	}
 	else if (dy12 == 0)
 	{
@@ -663,8 +663,8 @@ function pointsToCircle(p)
 
     if (Math.abs(slopeA - slopeB) < .001)
     {
-	alert("Error: points are collinear");
-	return;
+		alert("Error: points are collinear");
+		return 0;
     }
 
     var cx, cy, r;
@@ -674,12 +674,11 @@ function pointsToCircle(p)
 	if (r >= 250)
 	{
 		alert("Error: Radius must be less than 250px");
-		return;
+		return 0;
 	}
 
     return new RoostCircle(cx, cy, r);
-};
-
+}
 
 //------------------------------------------------------------------------
 // RoostSequence
@@ -777,7 +776,7 @@ RoostSequence.prototype.updateInfoBox = function()
 	//infoBoxComments.textarea.onchange = alert2;
 
 	//update comments
-	infoBoxComments.textarea.onkeypress = bindEvent(this, "onKeyDownOnComments");
+	infoBoxComments.textarea.onkeyup = bindEvent(this, "onKeyDownOnComments");
 
 	infoBoxComments.textarea.onchange = bindEvent(this, "onChangeOnComments");
 
@@ -811,12 +810,12 @@ RoostSequence.prototype.onKeyDownOnComments = function(){
 
 	if(this.comments != infoBoxComments.textarea.value){
 		this.locallyChanged = 1;
-		infoBoxComments.textarea.onkeypress = null;
+		infoBoxComments.textarea.onkeyup = null;
 		
 		infoBoxSave.removeAttribute('disabled');
-		//infoBoxSave.onclick = bindEvent(this, "saveEvent");
+		infoBoxSave.onclick = bindEvent(this, "saveEvent");
 		infoBoxRevert.removeAttribute('disabled');
-		//infoBoxRevert.onclick = bindEvent(this, "revertEvent" );	
+		infoBoxRevert.onclick = bindEvent(this, "revertEvent" );	
 	}
 };
 
@@ -935,7 +934,7 @@ RoostSequence.prototype.saveEvent = function()
 
 RoostSequence.prototype.revertEvent = function() 
 {
-	if (this.sequenceId != null)
+	if (this.sequenceID != null)
 	{
 		//this.deleteEvent();
 		//this.tool.deleteRoostSequence(this.sequenceIndex);
@@ -957,34 +956,34 @@ RoostSequence.prototype.revertEvent = function()
 RoostSequence.prototype.retrieveRoostSequence = function() 
 {
 	
-	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceId;
+	var url = "ajax/retrieve_roost.php?sequenceID="+this.sequenceID;
 	
 
 	xmlhttp= new XMLHttpRequest();
 	
-	xmlhttp.open("GET", url, false);
+	xmlhttp.open("GET", url, true);
 	
 	
 	// Tell the server you're sending it XML
 	//xmlhttp.setRequestHeader("Content-Type", "text/xml");
 	
 	// Set up a function for the server to run when it's done
-	//xmlhttp.onreadystatechange = bindEvent(this, "retrieveRoostSequenceCallBack");
+	xmlhttp.onreadystatechange = bindEvent(this, "retrieveRoostSequenceCallBack");
 	
 	// Send the request
 	xmlhttp.send();
-	
-	this.retrieveRoostSequenceCallBack();
+
 };
 
 RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 	
 	
+	if(xmlhttp.readyState ==4 && xmlhttp.status ==200){
 		var xmlDoc = xmlhttp.responseXML;
 		
 		//create circles 
 		
-		this.comments = xmlDoc.getElementsByTagName("comments")[0].textContent;
+		this.comments = xmlDoc.getElementsByTagName("comments")[0].childNodes[0].textContent;
 		
 		c = xmlDoc.getElementsByTagName("circle");
 		for(var i = 0; i< c.length; i++){
@@ -1001,12 +1000,12 @@ RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 			this.insertCircle(circle, frameNumber);
 			if (i == 0)
 			{
-				this.seq_start = frameNumber;
+				this.seq_start = frameNumberr;
 			}
-			this.seq_end = frameNumber;
+			this.seq_end = frameNumberr;
 		}
 		
-	
+	}
 };
 
 
