@@ -3,8 +3,8 @@
 <?php ini_set('error_reporting', E_ALL | E_NOTICE | E_STRICT); ?>
 <?php
 
-	$conn = mysql_connect('oniddb.cws.oregonstate.edu', 'almuallj-db', 'R87kFXtxi9pJo8ri');
-	$db = mysql_select_db('almuallj-db',$conn);
+	$conn = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
+	$db = mysql_select_db('roostdb',$conn);
 	$sql = "SELECT `station` FROM  `roost_table` GROUP BY `station`";
 	$all_stations = mysql_query($sql,$conn);
 	

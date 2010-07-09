@@ -17,8 +17,8 @@ if(isset($_GET["station"])){
 
 
 
-	$conn = mysql_connect('oniddb.cws.oregonstate.edu', 'almuallj-db', 'R87kFXtxi9pJo8ri');
-	$db = mysql_select_db('almuallj-db',$conn);
+	$conn = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
+	$db = mysql_select_db('roostdb',$conn);
 	$sql = "SELECT  `year` FROM  `roost_table` WHERE  `station` =  \"$station\" GROUP BY  `year` ";
 	$all_years = mysql_query($sql,$conn);
 	

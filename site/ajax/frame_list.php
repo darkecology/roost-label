@@ -29,13 +29,13 @@ function report_error($text) {
 	$day = $_GET["day"];	
 	}else {report_error("missing day parameter");}
 
-$con = mysql_connect('oniddb.cws.oregonstate.edu', 'almuallj-db', 'R87kFXtxi9pJo8ri');
+$con = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
 if (!$con)
   {
     die('Could not connect: ' . mysql_error());
   }
 
-mysql_select_db('almuallj-db', $con);
+mysql_select_db('roostdb', $con);
 
 $sql_DZ="SELECT `file_name`, `time` 
 			FROM  `roost_table` 
@@ -44,7 +44,7 @@ $sql_DZ="SELECT `file_name`, `time`
 				AND month = \"$month\" 
 				AND day = \"$day\" 
 				AND type = 'DZ' 
-			ORDER BY 'time'";
+			ORDER BY `time`";
 $sql_VR="SELECT `file_name`, `time` 
 			FROM  `roost_table` 
 			WHERE station = \"$station\" 
@@ -52,7 +52,7 @@ $sql_VR="SELECT `file_name`, `time`
 				AND month = \"$month\" 
 				AND day = \"$day\" 
 				AND type = 'VR' 
-			ORDER BY 'time'";
+			ORDER BY `time`";
 $sql_SW="SELECT `file_name`, `time` 
 			FROM  `roost_table` 
 			WHERE station = \"$station\" 
@@ -60,7 +60,7 @@ $sql_SW="SELECT `file_name`, `time`
 				AND month = \"$month\" 
 				AND day = \"$day\" 
 				AND type = 'SW' 
-			ORDER BY 'time'";
+			ORDER BY `time`";
 
 $sql_timeStamp="SELECT `time` 
 			FROM  `roost_table` 
@@ -69,7 +69,7 @@ $sql_timeStamp="SELECT `time`
 				AND month = \"$month\" 
 				AND day = \"$day\" 
 				AND type = 'SW' 
-			ORDER BY 'time'";
+			ORDER BY `time`";
 
 
 

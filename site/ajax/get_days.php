@@ -28,8 +28,8 @@
 		report_error("missing month parameter");
 		}
 	
-	$conn = mysql_connect('oniddb.cws.oregonstate.edu', 'almuallj-db', 'R87kFXtxi9pJo8ri');
-	$db = mysql_select_db('almuallj-db',$conn);
+	$conn = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
+	$db = mysql_select_db('roostdb',$conn);
 	$sql = "SELECT  `day` FROM  `roost_table` WHERE  `station` =  \"$station\" AND `year` =  \"$year\" AND `month` =  \"$month\" GROUP BY  `day`";
 	$all_days = mysql_query($sql,$conn);
 	
