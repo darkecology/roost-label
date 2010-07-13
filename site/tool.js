@@ -750,8 +750,12 @@ RoostSequence.prototype.updateInfoBox = function()
 	
 
 	//update the first time & last time
-	infoBoxFirstTime.innerHTML = tool.frames_timeStamp[this.seq_start];
-	infoBoxLastTime.innerHTML = tool.frames_timeStamp[this.seq_end];
+	var firstTime = tool.frames_timeStamp[this.seq_start];
+	var firstTimeParsed = firstTime.substring(0,2) + ":" + firstTime.substring(2,4) + ":" + firstTime.substring(4,6);
+	var lastTime = tool.frames_timeStamp[this.seq_end];
+	var lastTimeParsed = lastTime.substring(0,2) + ":" + lastTime.substring(2,4) + ":" + lastTime.substring(4,6);
+	infoBoxFirstTime.innerHTML = firstTimeParsed;
+	infoBoxLastTime.innerHTML = lastTimeParsed;
 
 	//update extend links
 	if(this.proCircleEnd){
