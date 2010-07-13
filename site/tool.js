@@ -1022,16 +1022,16 @@ RoostSequence.prototype.deleteEvent = function()
 		xmlhttp.send();	
 		
 		//this.ajaxDeleteRoost();
-	}
-	xmlhttp.onreadystatechange=function() {	
-        if (xmlhttp.readyState==4 && xmlhttp.status==200){					
-			if (xmlhttp.responseText.trim() != "1")
-			{
-				alert("Error: Roost Sequence failed to be deleted");
-				return;
+		xmlhttp.onreadystatechange=function() {	
+			if (xmlhttp.readyState==4 && xmlhttp.status==200){					
+				if (xmlhttp.responseText.trim() != "1")
+				{
+					alert("Error: Roost Sequence failed to be deleted");
+					return;
+				}
 			}
 		}
-	};
+	}
 	//delete infoBox
 	this.deleteInfoBox();	
 
@@ -1846,5 +1846,5 @@ function addInfoBox(infoBoxIndx){
 	
 
 	infoPanel.appendChild(newInfoBox);
-
+        
 }
