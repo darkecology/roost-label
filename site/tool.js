@@ -472,7 +472,6 @@ RoostCircle.prototype.remove = function(e)
 		}
 		
 		this.roostSequence.locallyChanged = 1;
-		this.roostSequence.updateInfoBox();
 	}
 	
 	if(this.strokeColor == "grey" && this.roostSequence.tool.frame == this.roostSequence.seq_end +1){
@@ -482,7 +481,7 @@ RoostCircle.prototype.remove = function(e)
 	if(this.strokeColor == "grey" && this.roostSequence.tool.frame == this.roostSequence.seq_start -1){
 		this.roostSequence.proCircleStart = 0;
 	}
-
+	this.roostSequence.updateInfoBox();
 };
 
 //--------------------
