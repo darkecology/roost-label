@@ -213,7 +213,7 @@ function get_days(URLselect)
 				}else{
 					this.blur();
 					//innerTables();
-					display_date();
+					//display_date();
 					RoostToolInit();
 					document.getElementById("bookmarkLink").style.display = "inline";
 				}
@@ -227,7 +227,7 @@ function get_days(URLselect)
 						day_select.options[i].selected = true;
 						day_select.blur();
 						//innerTables();
-						display_date();
+						//display_date();
 						RoostToolInit();
 						document.getElementById("bookmarkLink").style.display = "inline";
 						break;
@@ -265,15 +265,15 @@ document.getElementById("canvasPanel").innerHTML= "<table>"
 												  + "</table>";
 }
 
-function display_date(){
-	var station = document.getElementById("station_select").value;
-	var year = document.getElementById("year_select").value;
-	var month = document.getElementById("month_select").value;
-	var day = document.getElementById("day_select").value;
-	
-	var display = document.getElementById("display");
-	display.innerHTML = "<b class=\"display_sub\">Station:</b>"+ station + "<b class=\"display_sub\">Year:</b>"+year +"<b class=\"display_sub\">Month:</b>"+ month +"<b class=\"display_sub\">Day:</b>"+day +" ";
-}
+//function display_date(){
+//	var station = document.getElementById("station_select").value;
+//	var year = document.getElementById("year_select").value;
+//	var month = document.getElementById("month_select").value;
+//	var day = document.getElementById("day_select").value;
+//	
+//	var display = document.getElementById("display");
+//	display.innerHTML = "<b class=\"display_sub\">Station:</b>"+ station + "<b class=\"display_sub\">Year:</b>"+year +"<b class=\"display_sub\">Month:</b>"+ month +"<b class=\"display_sub\">Day:</b>"+day +" ";
+//}
 
 
 function getURL( name ){
