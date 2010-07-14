@@ -54,7 +54,7 @@ function get_years(URLselect)
 	document.getElementById("imgDZ").style.display = "none";
 	
 	//empty the display div
-	document.getElementById("display").innerHTML = "";
+	//document.getElementById("display").innerHTML = "";
 
 
 	//reset the infoPanel
@@ -111,7 +111,7 @@ function get_months(URLselect)
 	document.getElementById("imgDZ").style.display = "none";
 	
 	//empty the display div
-	document.getElementById("display").innerHTML = "";
+	//document.getElementById("display").innerHTML = "";
 	
 
 	//reset the infoPanel
@@ -164,7 +164,7 @@ function get_days(URLselect)
 	document.getElementById("imgDZ").style.display = "none";
 	
 	//empty the display div
-	document.getElementById("display").innerHTML = "";
+	//document.getElementById("display").innerHTML = "";
 
 	//reset the infoPanel
 	document.getElementById("infoPanel").innerHTML = "";
@@ -204,7 +204,7 @@ function get_days(URLselect)
 					document.getElementById("imgDZ").style.display = "none";
 					
 					//empty the display div
-					document.getElementById("display").innerHTML = "";
+					//document.getElementById("display").innerHTML = "";
 					
 					//reset the infoPanel
 					document.getElementById("infoPanel").innerHTML = "";
