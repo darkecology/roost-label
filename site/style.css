@@ -1,5 +1,4 @@
-div.pane 
-{
+div.pane {
 position: relative;
 z:index:-2;
 }
@@ -35,23 +34,6 @@ a:hover {color:#ffcc00;}
 
 
 
- 
-#wrapper {
-width:1860px;
-background-color:#f8f8f8;
-margin:0 auto;
-border:10px solid #ccc;
-}
-
-#header {
-text-align:center;
-width:auto;
-height:100px;
-margin:0 auto;
-margin-bottom:25px;
-border-bottom:1px solid #ccc;
-border-top:1px solid #ccc;
-}
 
 #header h2 {
 padding:10px;
@@ -84,14 +66,95 @@ width:1400px;
 padding:10px;
 }
 
-#select {
-width:auto;
-padding:10px;
-height: 40px;
-border-bottom:1px solid #ccc;
+ 
+#wrapper {
+width:1240px;
+background-color:#f8f8f8;
+margin:0 auto;
+border:10px solid #ccc;
 }
 
+#header {
+text-align:center;
+width:auto;
+height:100px;
+margin:0 auto;
+margin-bottom:5px;
+border-bottom:1px solid #ccc;
+border-top:1px solid #ccc;
+}
+		
+#panel {
+text-align:center;
+width:auto;
+height:60px;
+/*margin:0 auto;*/
+margin-bottom:5px;
+border-bottom:1px solid #ccc;
+/*border-top:1px solid #ccc;*/
+
+/*
+float:left;
+padding:5px;
+border-bottom:1px solid #ccc;
+vertical-align: middle;
+
+width:2200;
+height:1100px;
+margin:0 auto;
+margin-bottom:25px;
+border-bottom:1px solid #ccc;
+border-top:1px solid #ccc;
+*/
+
+}
+
+#select {
+float:left;
+width:700px;
+padding:10px;
+height: 40px;
+}
+
+#controller {
+float:left;
+float: middle; 
+width: 200px;
+text-align:center;
+vertical-align:middle;
+height:50px;
+}
+
+#next{
+position:relative;
+left:50px;
+
+}
+#prev{
+		
+position:fixed;
+float:left;
+}
+#url_visibility {			
+float:right;
+				
+}
+
+#visible {
+clear:both;
+margin-bottom:5px;
+float: right;
+width:200px;  
+padding-right:10px;
+}
+
+		
+#bookmark {			
+clear:both;						
+}
+		 		
 #canvasPanel {	
+clear:both;
 width:auto;
 min-height:650px;
 padding:10px;
@@ -121,20 +184,7 @@ border-top:1px solid #ccc;
 float:right;
 }
 
-#panel {
-	padding:10px;
-	border-bottom:1px solid #ccc;
-	vertical-align: middle;
-	height:50px;
-	width:auto;
-}
-#controller {
-	float: left; 
-	width: 200px;
-	text-align:center;
-	vertical-align:middle;
-	height:50px;
-	}
+
 #display {
 	float: left; width: 700px;
 	vertical-align: middle;
@@ -158,14 +208,14 @@ margin-left:80px;
 
 #station {float: left; width: 150px; padding: 10px; }
 #year    {float: left; width: 150px; padding: 10px; }
-#month   {float: left; width: 150px; padding: 10px; }
-#day     {float: left; width: 150px; padding: 10px; }
-#visible {float: right; width:200px;  padding-right:10px;}
+#month   {float: left; width: 125px; padding: 10px; }
+#day     {float: left; width: 125px; padding: 10px; }
 
-#station_select {width: 70px;}
-#year_select {width: 55px;}
-#month_select {width: 40px;}
-#day_select {width: 40px;}
+
+#station_select {width: 75px;}
+#year_select {width: 75px;}
+#month_select {width: 50px;}
+#day_select {width: 50px;}
 #visibility_select {width:100px;}
 
 #selection {width: 100px;}

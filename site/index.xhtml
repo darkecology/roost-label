@@ -33,64 +33,66 @@
             	<h2> Roost Labeling </h2>
             </div>
             
-            <div id="select">
-            
-                <form>
-                
-                    <div id="station">
-                        <strong>Station:</strong>
-                        <select id="station_select">
-                        	<option value="null" />
-                        </select>
-                    </div>
-                    
-                    <div id="year">
-                        <strong>Year:</strong>
-                        <select id="year_select">
-                        	<option value="null" />
-                        </select>
-                    </div>
-                    
-                    <div id="month">
-                        <strong>Month:</strong>
-                        <select id="month_select">
-                        	<option value="null" />
-                        </select>
-                    </div>
-                    
-                    <div id="day">
-                        <strong>Day:</strong>
-                        <select id="day_select">
-                        	<option value="null" />
-                        </select>
-                    </div>
+			<!--panel-->
+			<div id="panel">
+			  <div id="controller">
+				<a id="prev" href="javascript:prev();">Prev</a>
+				<a id="next" href="javascript:next();">Next</a>
+			  </div>
+			  <div id="select">
+				<form>
+			  <div id="station">
+				<strong>Station:</strong>
+				<select id="station_select">
+				  <option value="null" />
+				</select>
+			  </div>
+			  
+			  <div id="year">
+				<strong>Year:</strong>
+				<select id="year_select">
+				  <option value="null" />
+				</select>
+			  </div>
+			  
+			  <div id="month">
+				<strong>Month:</strong>
+				<select id="month_select">
+				  <option value="null" />
+				</select>
+			  </div>
+			  
+			  <div id="day">
+				<strong>Day:</strong>
+				<select id="day_select">
+				  <option value="null" />
+				</select>
+			  </div>
+			  </form>
+			  </div> <!-- end #select -->
+			  <div id="url_visibility">
+			  
+			  
+			  
+			  <div id="visible">
+				<form>
+				<strong>Visibility:</strong>
+				<select id="visibility_select">
+				  <option value="1">Reflectivity only</option>
+				  <option value="2" selected="selected">Reflectivity + Radial Velocity</option>
+				  <option value="3">Reflectivity + Radial Velocity + Spectrum Width</option>
+				</select>
+			  </form>
+			  </div><!-- end #visible -->
+			  <div id="bookmark">
+				
+				<a id="bookmarkLink" href=""> Show URL </a>
+				
+			  </div> <!-- end #bookmark -->
 
-					<div id="bookmark">
-					
-						<a id="bookmarkLink" href=""> Show URL </a>
-
-					</div>
-
-					<div id="visible">
-						<strong>Visibility:</strong>
-						<select id="visibility_select">
-							<option value="1">Reflectivity only</option>
-							<option value="2" selected="selected">Reflectivity + Radial Velocity</option>
-							<option value="3">Reflectivity + Radial Velocity + Spectrum Width</option>
-						</select>
-					</div>
-                </form>
-            
-            </div> <!-- end #select -->
-            <div id="panel">
-            	<div id="controller">
-					<a id="prev" href="javascript:prev();">Prev</a>
-					<a id="next" href="javascript:next();">Next</a>
-				</div>
-				<div id="display">
-					
-				</div>
-			</div>
+			  </div> <!-- end #url_visibility -->
+			
+			</div> <!-- end #panel -->
 			<div id="canvasPanel">
 				<table>
 					<tr>
