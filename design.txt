@@ -286,3 +286,4 @@ but register onmousmove and onmouseup events on the document so they
 are caught no matter where the mouse has moved to.
 
 
+ 
