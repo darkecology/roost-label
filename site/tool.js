@@ -913,11 +913,11 @@ RoostSequence.prototype.saveRoostSequenceCallBack = function(){
 RoostSequence.prototype.insertCircle = function(circle, frameNumber) 
 {
 	this.circles[frameNumber] = circle;
-	if(this.proCircleEnd && this.tool.frame == frameNumber)
+	if(this.proCircleEnd && this.circles[frameNumber - 1] != null)
 	{
 		this.seq_end++;
 	}
-	else if (this.proCircleStart && this.tool.frame == frameNumber)
+	else if (this.proCircleStart && this.circles[frameNumber + 1] != null)
 	{
 		this.seq_start--;
 	}
@@ -1410,13 +1410,23 @@ RoostTool.prototype.updateCanvas = function()
 					len++;
 			}
 			
-			if(len > 1){
-				if(this.frame == 0 || this.frame == curRoostSeq.tool.frames_DV.length-1){
-					for (var i = 0; i < this.svgElements.length; i++) {
+			if(len > 1)
+			{
+				if (curRoostSeq.circles[0] != null && this.frame == 0)
+				{
+					for (var i = 0; i < this.svgElements.length; i++)
+					{
+						curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
+					}					
+				}
+				else if (curRoostSeq.circles[curRoostSeq.tool.frames_DV.length-1] != null && this.frame == curRoostSeq.tool.frames_DV.length-1)
+				{
+					for (var i = 0; i < this.svgElements.length; i++)
+					{
 						curRoostSeq.circles[this.frame].drawDeleteHandle(this.svgElements[i]);	
 					}
 				}
-				
+			
 				
 				if(!curRoostSeq.proCircleStart && curRoostSeq.proCircleEnd)
 				{
