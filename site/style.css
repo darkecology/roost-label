@@ -126,14 +126,9 @@ height:50px;
 }
 
 #next{
-position:relative;
-left:50px;
-
 }
 #prev{
-		
-position:fixed;
-float:left;
+
 }
 #url_visibility {			
 float:right;
