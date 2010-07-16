@@ -27,9 +27,14 @@ body {
     padding:0;
 }
 
-a:link {color:#005CB9; font-size:14px; font-weight:bold;}
+a:link {color:#005CB9;}
 a:visited {color:#005CB9;}
 a:hover {color:#ffcc00;}
+
+a[disabled]{
+    color:Grey;
+    text-decoration:none; 
+}
 
 #wrapper {
     background-color:#f8f8f8;

@@ -1163,8 +1163,6 @@ function RoostTool()
 	
 	//Get Sequences Information.
 	this.getSequences();
-	
-	document.getElementById("prev").style.display = "none";
 };
 
 RoostTool.prototype.resetToolObject = function(){
@@ -1250,7 +1248,6 @@ RoostTool.prototype.resetToolObject = function(){
 	
 	//Get Sequences Information.
 	this.getSequences();
-	document.getElementById("prev").style.display = "none";
 };
 
 RoostTool.prototype.getSequences = function() {
@@ -1486,7 +1483,6 @@ RoostTool.prototype.updateButtons = function() {
 	}
 	document.getElementById("saveAllButton").setAttribute('disabled', 'disabled');
 	document.getElementById("resetButton").setAttribute('disabled', 'disabled');
-			
 };
 
 
@@ -1544,6 +1540,27 @@ RoostTool.prototype.loadFrame = function(idx) {
 		var elt = document.getElementById("img" + XX[i]);
 		elt.src = img_url;
     }
+
+	var prev = document.getElementById("prev");
+	var next = document.getElementById("next");
+
+	if (this.frame == 0)
+	{
+		prev.setAttribute("disabled", "true");
+	}
+	else
+	{
+		prev.removeAttribute("disabled");
+	}
+
+	if (this.frame >= this.frames_DV.length - 1)
+	{
+		next.setAttribute("disabled", "true");
+	}
+	else
+	{
+		next.removeAttribute("disabled");
+	}
 };
 
 RoostTool.prototype.prevFrame = function() {
@@ -1552,14 +1569,6 @@ RoostTool.prototype.prevFrame = function() {
 		this.loadFrame(--this.frame);
 		this.updateCanvas();
     }
-	if (this.frame == 0)
-	{
-		document.getElementById("prev").style.display = "none";
-	}
-	if (this.frame < this.frames_DV.length - 1)
-	{
-		document.getElementById("next").style.display = "inline";
-	}
 };
 
 RoostTool.prototype.nextFrame = function() {
@@ -1568,14 +1577,6 @@ RoostTool.prototype.nextFrame = function() {
 		this.loadFrame(++this.frame);
 		this.updateCanvas();
     }
-	if (this.frame == this.frames_DV.length - 1)
-	{
-		document.getElementById("next").style.display = "none";
-	}
-	if (this.frame > 0)
-	{
-		document.getElementById("prev").style.display = "inline";
-	}
 };
 
 RoostTool.prototype.threePointMode = function(){

@@ -13,7 +13,7 @@ function get_stations(){
 		// code for IE6, IE5
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    document.getElementById("bookmarkLink").style.display = "none";
+	document.getElementById("bookmarkLink").setAttribute("disabled", "true");
     xmlhttp.onreadystatechange=function() {	
         if (xmlhttp.readyState==4 && xmlhttp.status==200){					
             var station_select = document.getElementById("station_select");
@@ -42,7 +42,7 @@ function get_years(URLselect)
 	document.getElementById("day_select").innerHTML = reset_selection;
 
 	//disable bookmarkLink
-	document.getElementById("bookmarkLink").style.display = "none";
+	document.getElementById("bookmarkLink").setAttribute("disabled", "true");
 
 	//hide the buttons
 	document.getElementById("resetButton").style.display = "none";
@@ -99,7 +99,7 @@ function get_months(URLselect)
 	document.getElementById("day_select").innerHTML = reset_selection;
 	
 	//disable bookmarkLink
-	document.getElementById("bookmarkLink").style.display = "none";
+	document.getElementById("bookmarkLink").setAttribute("disabled", "true");
 
 	//hide the buttons
 	document.getElementById("resetButton").style.display = "none";
@@ -170,7 +170,7 @@ function get_days(URLselect)
 	document.getElementById("infoPanel").innerHTML = "";
 
 	//disable bookmarkLink
-	document.getElementById("bookmarkLink").style.display = "none";
+	document.getElementById("bookmarkLink").setAttribute("disabled", "true");
 
 	//hide the buttons
 	document.getElementById("resetButton").style.display = "none";
@@ -212,10 +212,8 @@ function get_days(URLselect)
 				//else we just call to create an new tool object and set the three point mode to it
 				}else{
 					this.blur();
-					//innerTables();
-					//display_date();
 					RoostToolInit();
-					document.getElementById("bookmarkLink").style.display = "inline";
+					document.getElementById("bookmarkLink").removeAttribute("disabled");
 				}
 
 				
@@ -226,10 +224,8 @@ function get_days(URLselect)
 					if (day_select.options[i].value == dayURL){
 						day_select.options[i].selected = true;
 						day_select.blur();
-						//innerTables();
-						//display_date();
 						RoostToolInit();
-						document.getElementById("bookmarkLink").style.display = "inline";
+						document.getElementById("bookmarkLink").removeAttribute("disabled");
 						break;
 					}
 				}
@@ -240,40 +236,6 @@ function get_days(URLselect)
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
 }
-
-function innerTables(){
-document.getElementById("canvasPanel").innerHTML= "<table>"
-												  + "<tr>"
-												  + "<td>"
-												  + "<div class=\"pane\"><img id=\"imgDZ\" src=\"\"/>"
-												  + "<div class=\"canvas\" id=\"canvasDZ\">"
-												  + "<svg:svg id=\"svgDZ\"></svg:svg>"
-												  + "</div>"
-												  + "</div>"
-												  + "</td>"
-												  + "<td>"
-												  + "<div class=\"pane\">"
-												  + "<img id=\"imgVR\" src=\"\"/>"
-												  + "<div class=\"canvas\" id=\"canvasVR\">"
-												  + "<svg:svg id=\"svgVR\" width=\"100%\" height=\"100%\"></svg:svg>"
-												  + "</div></div></td><td>"
-												  + "<div class=\"pane\">"
-												  + "<img id=\"imgSW\" src=\"\"/>"
-												  + "<div class=\"canvas\" id=\"canvasSW\">"
-												  + "<svg:svg id=\"svgSW\" width=\"100%\" height=\"100%\"></svg:svg>"
-												  + "</div></div></td></tr><tr/>"
-												  + "</table>";
-}
-
-//function display_date(){
-//	var station = document.getElementById("station_select").value;
-//	var year = document.getElementById("year_select").value;
-//	var month = document.getElementById("month_select").value;
-//	var day = document.getElementById("day_select").value;
-//	
-//	var display = document.getElementById("display");
-//	display.innerHTML = "<b class=\"display_sub\">Station:</b>"+ station + "<b class=\"display_sub\">Year:</b>"+year +"<b class=\"display_sub\">Month:</b>"+ month +"<b class=\"display_sub\">Day:</b>"+day +" ";
-//}
 
 
 function getURL( name ){
