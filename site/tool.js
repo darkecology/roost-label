@@ -1103,9 +1103,10 @@ function RoostTool()
     //this.annotations = [];
 	this.roostSeqObj = [];
 	this.activeCircles = [];
-    this.controlPoints = [];
-    this.markers = [];
+	this.controlPoints = [];
+	this.markers = [];
 	this.sequenceIndex = 0;
+	this.hiddenCircles = 0;
     // AJAX call to get list of frames and then navigate to initial frame
 
     if (window.XMLHttpRequest)
@@ -1586,7 +1587,8 @@ RoostTool.prototype.nextFrame = function() {
 
 function setThreePointMode(){
 	tool.threePointMode();
-}
+};
+
 RoostTool.prototype.threePointMode = function(){
     for (var i = 0; i < this.canvasElements.length; i++)
     {
@@ -1653,6 +1655,23 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 		this.controlPoints = [];
 		this.markers = [];
     }
+};
+
+function hideCircles(){
+	if(!tool.hiddenCircles)
+	{
+		document.getElementById('svgDZ').style.visibility = 'hidden';
+		document.getElementById('svgVR').style.visibility = 'hidden';
+		document.getElementById('svgSW').style.visibility = 'hidden';
+		tool.hiddenCircles = 1;
+	}
+	else
+	{
+		document.getElementById('svgDZ').style.visibility = 'visible';
+		document.getElementById('svgVR').style.visibility = 'visible';
+		document.getElementById('svgSW').style.visibility = 'visible';
+		tool.hiddenCircles = 0;
+	}
 };
 
 //------------------------------------------------------------------------
