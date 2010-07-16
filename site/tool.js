@@ -731,6 +731,7 @@ RoostSequence.prototype.updateInfoBox = function()
 		infoBoxId.innerHTML = this.tool.station+"_"+this.tool.year+this.tool.month+this.tool.day+"_"+this.sequenceId;
 	}
 
+
 	//update location label
 	infoBoxXcoord.innerHTML = parseFloat(this.circles[this.seq_start].x.toFixed(3));
 	infoBoxYcoord.innerHTML = parseFloat(this.circles[this.seq_start].y.toFixed(3));

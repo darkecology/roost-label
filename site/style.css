@@ -24,7 +24,7 @@ body {
     font-family: small Arial,Sans-serif;
     color:#333;
     margin:0;
-    padding:0;
+    padding:0px;
 }
 
 a:link {color:#005CB9;}
@@ -34,6 +34,7 @@ a:hover {color:#ffcc00;}
 a[disabled]{
     color:Grey;
     text-decoration:none; 
+    cursor: default;
 }
 
 #wrapper {
@@ -72,6 +73,7 @@ a[disabled]{
     float:left;
     text-align:center;
     vertical-align:middle;
+    padding: 5px;
 }
 
 #next{
@@ -96,7 +98,7 @@ a[disabled]{
     clear:both;
     width:auto;
     min-height:650px;
-    padding:10px;
+    padding:5px;
 }
 
 #infoPanel{
@@ -104,7 +106,7 @@ a[disabled]{
     width:auto;
     min-height:185px;
     border-top:1px solid #ccc;
-
+    padding: 5px;
 }
 
 .infoBox{
@@ -155,7 +157,7 @@ a[disabled]{
 #year_select {width: 75px;}
 #month_select {width: 50px;}
 #day_select {width: 50px;}
-#visibility_select {width:100px;}
+#visibility_select {width:80px;}
 
 #selection {width: 100px;}
 #sidebar {
