@@ -33,10 +33,10 @@
 	<div id="controlsRight">
 	  <a id="bookmarkLink" href="" style="padding-left:100px">Show URL</a> |
 	  <strong>Visibility:</strong>
-	  <select title="DZ: Reflectivity -- SW: Spectrum Width -- VR: Radial Velocity" id="visibility_select">
-	    <option title="DZ: Reflectivity" value="1">DZ</option>
-	    <option title="VR: Radial Velocity" value="2" selected="selected">DZ+VR</option>
-	    <option title="SW: Spectrum Width" value="3">DZ+VR+SW</option>
+	  <select id="visibility_select">
+	    <option value="1">DZ</option>
+	    <option value="2" selected="selected">DZ+VR</option>
+	    <option value="3">DZ+VR+SW</option>
 	  </select>
 	</div> <!-- end #controlsRight -->
 	<strong>Station:</strong>
@@ -64,13 +64,15 @@
       <div id="controller">
 	<a id="prev" disabled="true" href="javascript:prev();">Prev</a>
 	<a id="next" disabled="true" href="javascript:next();">Next</a>
+	<span id="frameSpan" style="visibility:hidden"></span>
       </div>
 
       <div id="canvasPanel">
 	<table>
 	  <tr>
 	    
-	    <td>	      
+	    <td>
+	      
 	      <div class="pane">
 		<img id="imgDZ" src=""/>
 		<div class="canvas" id="canvasDZ">

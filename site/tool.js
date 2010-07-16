@@ -733,8 +733,8 @@ RoostSequence.prototype.updateInfoBox = function()
 
 
 	//update location label
-	infoBoxXcoord.innerHTML = parseFloat(this.circles[this.seq_start].x.toFixed(3));
-	infoBoxYcoord.innerHTML = parseFloat(this.circles[this.seq_start].y.toFixed(3));
+	infoBoxXcoord.innerHTML = parseInt(this.circles[this.seq_start].x);
+	infoBoxYcoord.innerHTML = parseInt(this.circles[this.seq_start].y);
 	
 	/*test
 	if (this.seq_start == null)
@@ -762,6 +762,8 @@ RoostSequence.prototype.updateInfoBox = function()
 	if(this.proCircleEnd){
 		infoBoxExtendForwardLink.innerHTML = "still editing ...";
 		infoBoxExtendForwardLink.setAttribute('disabled', 'disabled');
+		infoBoxExtendForwardLink.setAttribute('href', '');
+		infoBoxExtendForwardLink.setAttribute('onclick', 'return false');
 	}else{
 		infoBoxExtendForwardLink.onclick = bindEvent(this, "extendForward");
 		infoBoxExtendForwardLink.innerHTML = "extend forward";
@@ -771,6 +773,8 @@ RoostSequence.prototype.updateInfoBox = function()
 	if(this.proCircleStart){
 		infoBoxExtendBackwardLink.innerHTML = "still editing ...";
 		infoBoxExtendBackwardLink.setAttribute('disabled', 'disabled');
+		infoBoxExtendBackwardLink.setAttribute('href', '');
+		infoBoxExtendBackwardLink.setAttribute('onclick', 'return false');
 	}else{
 		infoBoxExtendBackwardLink.onclick = bindEvent(this, "extendBackward");
 		infoBoxExtendBackwardLink.innerHTML = "extend backward";
@@ -1150,7 +1154,7 @@ function RoostTool()
 	this.loadFrame(this.frame);
 	//------------------------------------------
 
-
+	document.getElementById("frameSpan").style.visibility = "visible";
 
 
 	//var station = gup('station');
@@ -1567,6 +1571,9 @@ RoostTool.prototype.loadFrame = function(idx) {
 	{
 		next.removeAttribute("disabled");
 	}
+	
+	var frameSpan = document.getElementById("frameSpan");
+	frameSpan.innerHTML = "Frame " + this.frame + " of " + (this.frames_DV.length - 1);
 };
 
 RoostTool.prototype.prevFrame = function() {
