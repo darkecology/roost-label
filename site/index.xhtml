@@ -4,179 +4,150 @@
       xmlns:svg="http://www.w3.org/2000/svg" 
       xmlns:xlink="http://www.w3.org/1999/xlink">
 
-    <head>
+  <head>
     
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        
-        <meta name="description" content="" />
-        
-        <meta name="keywords" content="" />
-        
-        <meta name="author" content="" />
-        
-        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
-        
-        <title>Roost Labeling</title>
-    	
-		<script type="text/javascript" src="tool.js"/>
-			    
-        <script type="text/javascript" src="select.js"/>
-        
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />    
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
     
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+    
+    <title>Roost Labeling</title>
+    
+    <script type="text/javascript" src="tool.js"/>
+    <script type="text/javascript" src="select.js"/>
+    
+  </head>
+  
+  <body onload="starter();">
+    
+    <div id="wrapper">
+
+      <div id="header">
+        <h2> Roost Labeling </h2>
+      </div>
+
+      <div id="controlBar">
+
+	<div id="controlsRight">
+
+	  <a id="bookmarkLink" href="blah">Show URL</a> |
+	    <strong>Visibility:</strong>
+	    <select id="visibility_select">
+	      <option value="1">Reflectivity only</option>
+	      <option value="2" selected="selected">Reflectivity + Radial Velocity</option>
+	      <option value="3">Reflectivity + Radial Velocity + Spectrum Width</option>
+	    </select>
+	</div> <!-- end #controlsRight -->
+
 	
-    </head>
+	<strong>Station:</strong>
+	<select id="station_select">
+	  <option value="null"></option>
+	</select>
+	
+	<strong>Year:</strong>
+	<select id="year_select">
+	  <option value="null"></option>
+	</select>
+	
+	<strong>Month:</strong>
+	<select id="month_select">
+	  <option value="null"></option>
+	</select>
+	
+	<strong>Day:</strong>
+	<select id="day_select">
+	  <option value="null"></option>
+	</select>
+	  
+      </div> <!-- end #controlBar -->
+      
+      <div id="controller">
+	<a id="prev" href="javascript:prev();">Prev</a>
+	<a id="next" href="javascript:next();">Next</a>
+      </div>
+
+      <div id="canvasPanel">
+	<table>
+	  <tr>
+	    
+	    <td>
+	      
+	      <div class="pane">
+		<img id="imgDZ" src=""/>
+		<div class="canvas" id="canvasDZ">
+		  <svg:svg id="svgDZ"></svg:svg>
+		</div>
+	      </div>
+	    </td>
+	    
+	    <td>
+	      <div class="pane">
+		<img id="imgVR" src=""/>  	    
+		<div class="canvas" id="canvasVR"> 
+		  <svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
+		</div>
+	      </div>
+	    </td>
+	    
+	    <td>
+	      <div class="pane">
+		<img id="imgSW" src=""/>  	    
+		<div class="canvas" id="canvasSW"> 
+		  <svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
+		</div>
+	      </div>
+	    </td>
+	    
+	  </tr>
+	  <tr/>
+	</table>
+      </div>	
+
+      <div id="infoPanel">
+	<!--<div class="infoBox">
+		 
+		 <table>
+		   <tr>
+		     <td id="infoBoxId">KDOX-20091001-1</td>
+		     <td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
+		   </tr>
+		   <tr>
+		     <td>First appears: <span id="firstTime">10:22:33</span></td>
+		     <td>( <a id="jjj">still editing ...</a> ) </td>
+		   </tr>
+		   <tr>
+		     <td>Last appears: <span id="lastTime">11:03:30</span></td>
+		     <td>( <a href="">extend forward</a> ) </td>
+		   </tr>
+		 </table>
+		 <table>
+		   <tr>
+		     <td>Comments:</td>
+		   </tr>
+		   <tr>
+		     <td><textarea id="comment" cols="40" rows="5"></textarea></td>
+		   </tr>
+		   <tr>
+		     <td>
+		       <button class="button" type="button">Delete</button>
+		       <button class="button" type="button">Revert</button>
+		       <button class="button" type="button">Save</button>
+		     </td>
+		   </tr>
+		 </table>
+	</div>-->
+      </div>
+
+      <div id="infoPanelController">
+	<button id="saveAllButton" class="button" type="button">Save All</button>
+	<button id="resetButton" class="button" type="button">Reset</button>
+      </div>      
+      
+    </div> <!-- End #wrapper -->
     
-    <body onload="starter();">
-    
-        <div id="wrapper">
-            <div id="header">
-            	<h2> Roost Labeling </h2>
-            </div>
-            
-			<!--panel-->
-			<div id="panel">
-			  <div id="controller">
-				<a id="prev" href="javascript:prev();">Prev</a>
-				<a id="next" href="javascript:next();">Next</a>
-			  </div>
-			  <div id="select">
-				<form>
-			  <div id="station">
-				<strong>Station:</strong>
-				<select id="station_select">
-				  <option value="null" />
-				</select>
-			  </div>
-			  
-			  <div id="year">
-				<strong>Year:</strong>
-				<select id="year_select">
-				  <option value="null" />
-				</select>
-			  </div>
-			  
-			  <div id="month">
-				<strong>Month:</strong>
-				<select id="month_select">
-				  <option value="null" />
-				</select>
-			  </div>
-			  
-			  <div id="day">
-				<strong>Day:</strong>
-				<select id="day_select">
-				  <option value="null" />
-				</select>
-			  </div>
-			  </form>
-			  </div> <!-- end #select -->
-			  <div id="url_visibility">
-			  
-			  
-			  
-			  <div id="visible">
-				<form>
-				<strong>Visibility:</strong>
-				<select id="visibility_select">
-				  <option value="1">Reflectivity only</option>
-				  <option value="2" selected="selected">Reflectivity + Radial Velocity</option>
-				  <option value="3">Reflectivity + Radial Velocity + Spectrum Width</option>
-				</select>
-			  </form>
-			  </div><!-- end #visible -->
-			  <div id="bookmark">
-				
-				<a id="bookmarkLink" href=""> Show URL </a>
-				
-			  </div> <!-- end #bookmark -->
-
-			  </div> <!-- end #url_visibility -->
-			
-			</div> <!-- end #panel -->
-			<div id="canvasPanel">
-				<table>
-					<tr>
-					
-						<td>
-						
-							<div class="pane">
-								<img id="imgDZ" src=""/>
-								<div class="canvas" id="canvasDZ">
-									<svg:svg id="svgDZ"></svg:svg>
-								</div>
-							</div>
-						</td>
-						
-						<td>
-							<div class="pane">
-								<img id="imgVR" src=""/>  	    
-								<div class="canvas" id="canvasVR"> 
-									<svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
-								</div>
-							</div>
-						</td>
-						
-						<td>
-							<div class="pane">
-								<img id="imgSW" src=""/>  	    
-								<div class="canvas" id="canvasSW"> 
-									<svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
-								</div>
-							</div>
-						</td>
-						
-						</tr>
-					<tr/>
-				</table>
-			</div>	
-			<div id="infoPanel">
-				<!--<div class="infoBox">
-				
-				  <table>
-					<tr>
-					  <td id="infoBoxId">KDOX-20091001-1</td>
-					  <td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
-					</tr>
-					<tr>
-					  <td>First appears: <span id="firstTime">10:22:33</span></td>
-					  <td>( <a id="jjj">still editing ...</a> ) </td>
-					</tr>
-					<tr>
-					  <td>Last appears: <span id="lastTime">11:03:30</span></td>
-					  <td>( <a href="">extend forward</a> ) </td>
-					</tr>
-				  </table>
-				  <table>
-					<tr>
-					  <td>Comments:</td>
-					</tr>
-					<tr>
-					  <td><textarea id="comment" cols="40" rows="5"></textarea></td>
-					</tr>
-					<tr>
-					  <td>
-						<button class="button" type="button">Delete</button>
-						<button class="button" type="button">Revert</button>
-						<button class="button" type="button">Save</button>
-					  </td>
-					</tr>
-				  </table>
-				</div>-->
-			</div>
-			<div id="infoPanelController">
-				<button id="saveAllButton" class="button" type="button">Save All</button>
-				<button id="resetButton" class="button" type="button">Reset</button>
-				
-
-
-			</div>
-
-			
-			
-            
-            
-        </div> <!-- End #wrapper -->
-    
-    </body>
+  </body>
 
 </html>

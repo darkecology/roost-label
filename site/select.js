@@ -1,5 +1,5 @@
 var tool;
-var reset_selection = "<option value=\"null\" />";
+var reset_selection = "<option value=\"null\"/>";
 
 function starter(){
 	get_stations();
