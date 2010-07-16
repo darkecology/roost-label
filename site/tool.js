@@ -1584,6 +1584,9 @@ RoostTool.prototype.nextFrame = function() {
     }
 };
 
+function setThreePointMode(){
+	tool.threePointMode();
+}
 RoostTool.prototype.threePointMode = function(){
     for (var i = 0; i < this.canvasElements.length; i++)
     {
@@ -1636,6 +1639,10 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			this.activeCircles.push(c);
 			c.roostSequence.updateInfoBox();
 			this.updateButtons();
+			for (var i = 0; i < this.canvasElements.length; i++)
+			{
+				this.canvasElements[i].onmousedown = "";
+			}
 		}
 		
 
@@ -1666,7 +1673,6 @@ function RoostToolInit()
 		
 	}else{
 		tool = new RoostTool();
-		tool.threePointMode();
 	}
     document.onkeydown = keydown;    
 	

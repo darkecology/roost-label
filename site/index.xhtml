@@ -31,8 +31,7 @@
       <div id="controlBar">
 
 	<div id="controlsRight">
-
-	  <a id="bookmarkLink" href="">Show URL</a> |
+	  <a id="bookmarkLink" href="" style="padding-left:100px">Show URL</a> |
 	  <strong>Visibility:</strong>
 	  <select id="visibility_select">
 	    <option value="1">DZ</option>
@@ -40,8 +39,6 @@
 	    <option value="3">DZ+VR+SW</option>
 	  </select>
 	</div> <!-- end #controlsRight -->
-
-	
 	<strong>Station:</strong>
 	<select id="station_select">
 	  <option value="null"></option>
@@ -61,9 +58,8 @@
 	<select id="day_select">
 	  <option value="null"></option>
 	</select>
-	  
+	<button id="newCircleButton" onclick="setThreePointMode();" class="button" type="button" style="width:100px ">New Circle</button>
       </div> <!-- end #controlBar -->
-      
       <div id="controller">
 	<a id="prev" disabled="true" href="javascript:prev();">Prev</a>
 	<a id="next" disabled="true" href="javascript:next();">Next</a>
