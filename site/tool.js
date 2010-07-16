@@ -761,16 +761,20 @@ RoostSequence.prototype.updateInfoBox = function()
 	//update extend links
 	if(this.proCircleEnd){
 		infoBoxExtendForwardLink.innerHTML = "still editing ...";
+		infoBoxExtendForwardLink.setAttribute('disabled', 'disabled');
 	}else{
 		infoBoxExtendForwardLink.onclick = bindEvent(this, "extendForward");
 		infoBoxExtendForwardLink.innerHTML = "extend forward";
+		infoBoxExtendForwardLink.removeAttribute('disabled');
 	}
 		
 	if(this.proCircleStart){
 		infoBoxExtendBackwardLink.innerHTML = "still editing ...";
+		infoBoxExtendBackwardLink.setAttribute('disabled', 'disabled');
 	}else{
 		infoBoxExtendBackwardLink.onclick = bindEvent(this, "extendBackward");
 		infoBoxExtendBackwardLink.innerHTML = "extend backward";
+		infoBoxExtendBackwardLink.removeAttribute('disabled');
 	}
 
 	
@@ -1823,9 +1827,9 @@ function addInfoBox(infoBoxIndx){
 	tr11.appendChild(td112);
 	
 
-	tr12.innerHTML = "<td>First Appears:<span id=\"firstTime_" + infoBoxIndx + "\">00:00:00</span></td><td>(<a id=\"extendBackwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
+	tr12.innerHTML = "<td>First Appears:<span id=\"firstTime_" + infoBoxIndx + "\">00:00:00</span></td><td>(<a id=\"extendBackwardLink_" + infoBoxIndx + "\" href=\"\">still editing...</a>)</td>";
 	
-	tr13.innerHTML = "<td>Last Appears:<span id=\"lastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\">still editing...</a>)</td>";
+	tr13.innerHTML = "<td>Last Appears:<span id=\"lastTime_" + infoBoxIndx + "\">24:59:59</span></td><td>(<a id=\"extendForwardLink_" + infoBoxIndx + "\" href=\"\">still editing...</a>)</td>";
 	
 
 	//second table
