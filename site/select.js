@@ -191,7 +191,7 @@ function get_days(URLselect)
             var day_select = document.getElementById("day_select");
             day_select.innerHTML = xmlhttp.responseText;
 			day_select.onchange = function() {
-			
+				document.getElementById("canvasPanel").style.backgroundColor = '#FFFFFF';
 				//if the user reselect day to a null value, we need to reset the canvas, infoPanel and display div
 				if(day_select.value == "null"){
 					
@@ -220,6 +220,7 @@ function get_days(URLselect)
 			};
 			var dayURL = getURL("day");
 			if (dayURL != "" && URLselect){
+				document.getElementById("canvasPanel").style.backgroundColor = '#FFFFFF';
 				for( var i = 0 ; i < day_select.length; i++){
 					if (day_select.options[i].value == dayURL){
 						day_select.options[i].selected = true;
@@ -232,7 +233,7 @@ function get_days(URLselect)
 			}
         }
     };
-               
+
     xmlhttp.open("GET",url,true);
     xmlhttp.send();				
 }

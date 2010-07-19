@@ -801,8 +801,14 @@ RoostSequence.prototype.updateInfoBox = function()
 		infoBoxSave.removeAttribute('disabled');
 		//infoBoxSave.setAttribute('onclick', 'alert("binding")');
 		infoBoxSave.onclick = bindEvent(this, "saveEvent");
-
-		infoBoxRevert.removeAttribute('disabled');
+		if (this.sequenceId != null)
+		{
+			infoBoxRevert.removeAttribute('disabled');
+		}
+		else
+		{
+			infoBoxRevert.setAttribute('disabled', 'disabled');			
+		}
 		infoBoxRevert.onclick = bindEvent(this, "revertEvent" );
 
 
@@ -1573,7 +1579,7 @@ RoostTool.prototype.loadFrame = function(idx) {
 	}
 	
 	var frameSpan = document.getElementById("frameSpan");
-	frameSpan.innerHTML = "Frame " + this.frame + " of " + (this.frames_DV.length - 1);
+	frameSpan.innerHTML = "Frame " + (this.frame + 1) + " of " + this.frames_DV.length;
 };
 
 RoostTool.prototype.prevFrame = function() {

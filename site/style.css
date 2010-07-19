@@ -54,6 +54,7 @@ a[disabled]{
     padding: 5px;
     margin-bottom:5px;
     border-bottom:1px solid #ccc;
+    width:1220px;
 }
 
 #controlsLeft {
@@ -63,7 +64,7 @@ a[disabled]{
 
 #controlsRight {
     float:right;
-    text-aligh:right;
+    text-align:right;
 }
 
 #controller {
@@ -96,6 +97,7 @@ a[disabled]{
     width:auto;
     min-height:650px;
     padding:5px;
+    background-color:rgb(216,216,216);
 }
 
 #infoPanel{
