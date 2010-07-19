@@ -1374,6 +1374,7 @@ function visibilityChange() {
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "block";
 	}
+	this.blur();
 };
 
 RoostTool.prototype.updateCanvas = function() 
@@ -1726,7 +1727,7 @@ function RoostToolInit()
 		tool = new RoostTool();
 	}
     document.onkeydown = keydown;    
-	
+	window.focus();
 
 	document.getElementById("saveAllButton").style.display = "inline";
 	document.getElementById("resetButton").style.display = "inline";
@@ -1747,9 +1748,15 @@ function keydown(e)
     }
     else if (e.keyCode == 37)
     {
-		prev();
-		return false;
-    }else {
+	prev();
+	return false;
+    }
+    else if(e.keyCode == 72)
+    {
+	hideCircles();
+	return false;
+    }
+    else {
 		return true;
 	}
 }
