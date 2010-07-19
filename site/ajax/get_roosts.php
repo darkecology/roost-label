@@ -44,7 +44,7 @@ function report_error($text) {
 			AND Year = \"$year\"
 			AND Month = \"$month\"
 			AND Day = \"$day\"
-			ORDER BY FrameNumber";
+			ORDER BY SequenceID, FrameNumber";
 			
 	$result = mysql_query($sql);
 	$xmlstr = "<?xml version='1.0' ?>\n".
