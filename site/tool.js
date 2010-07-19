@@ -521,6 +521,7 @@ RoostCircle.prototype.finishResize = function(e, callObj)
 	//we need ot update the info box so the user can save changes 
 	this.roostSequence.locallyChanged = 1;
 	this.roostSequence.updateInfoBox();
+	this.roostSequence.tool.updateButtons();
 	this.redraw();
 	document.onmouseup = null;
 };
@@ -574,6 +575,7 @@ RoostCircle.prototype.finishDrag = function(e, callObj)
 	//actually we need to update infobox everytime 
 	//if(this.roostSequence.tool.frame==this.roostSequence.seq_start)
 	this.roostSequence.updateInfoBox();
+	this.roostSequence.tool.updateButtons();
 	document.onmouseup = null;
 };
 
@@ -810,6 +812,7 @@ RoostSequence.prototype.updateInfoBox = function()
 			infoBoxRevert.setAttribute('disabled', 'disabled');			
 		}
 		infoBoxRevert.onclick = bindEvent(this, "revertEvent" );
+		window.onbeforeunload = function(){ return 'There are some unsaved changes.' }
 
 
 	}else{
@@ -940,32 +943,42 @@ RoostSequence.prototype.insertCircle = function(circle, frameNumber)
 
 RoostSequence.prototype.saveEvent = function() 
 {
-	this.proCircleEnd = 0;
-	this.proCircleStart = 0;
-	this.locallyChanged = 0;
-	this.saveRoostSequence();
-	this.updateInfoBox();
+	var confirmation=confirm("Would you like to save?");
+	if (confirmation==true)
+	{
+		window.onbeforeunload = null;
+		this.proCircleEnd = 0;
+		this.proCircleStart = 0;
+		this.locallyChanged = 0;
+		this.saveRoostSequence();
+		this.updateInfoBox();
+	}
 };
 
 RoostSequence.prototype.revertEvent = function() 
 {
-	if (this.sequenceId != null)
+	var confirmation=confirm("Would you like to revert?");
+	if (confirmation==true)
 	{
-		//this.deleteEvent();
-		//this.tool.deleteRoostSequence(this.sequenceIndex);
-		this.circles = [];
-		this.proCircleStart = 0;
-		this.proCircleEnd = 0;
-		this.retrieveRoostSequence();
-		this.locallyChanged = 0;
-		this.updateInfoBox();
+		if (this.sequenceId != null)
+		{
+			//this.deleteEvent();
+			//this.tool.deleteRoostSequence(this.sequenceIndex);
+			this.circles = [];
+			this.proCircleStart = 0;
+			this.proCircleEnd = 0;
+			this.retrieveRoostSequence();
+			this.locallyChanged = 0;
+			window.onbeforeunload = null;
+			this.updateInfoBox();
+		}
+		else 
+		{
+			this.deleteEvent();
+		}
+		this.tool.updateCanvas();
+		this.tool.updateButtons();
 	}
-	else 
-	{
-		this.deleteEvent();
-	}
-	this.tool.updateCanvas();
-	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.retrieveRoostSequence = function() 
@@ -1021,37 +1034,40 @@ RoostSequence.prototype.retrieveRoostSequenceCallBack = function(){
 
 RoostSequence.prototype.deleteEvent = function() 
 {
-	//ajax call to delete from the backend	
-	if(this.sequenceId != null){
-		var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceId;
-		if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
-			xmlhttp=new XMLHttpRequest();
-		}
-		else
-		{// code for IE6, IE5
-			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		}
-		xmlhttp.open("GET",url,true);
-		xmlhttp.send();	
-		
-		//this.ajaxDeleteRoost();
-		xmlhttp.onreadystatechange=function() {	
-			if (xmlhttp.readyState==4 && xmlhttp.status==200){					
-				if (xmlhttp.responseText.trim() != "1")
-				{
-					alert("Error: Roost Sequence failed to be deleted");
-					return;
+	var confirmation=confirm("Would you like to delete?");
+	if (confirmation==true)
+	{
+		//ajax call to delete from the backend	
+		if(this.sequenceId != null){
+			var url = "ajax/deleteSequence.php?sequenceID="+this.sequenceId;
+			if (window.XMLHttpRequest){// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			}
+			else
+			{// code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();	
+			
+			//this.ajaxDeleteRoost();
+			xmlhttp.onreadystatechange=function() {	
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){					
+					if (xmlhttp.responseText.trim() != "1")
+					{
+						alert("Error: Roost Sequence failed to be deleted");
+						return;
+					}
 				}
 			}
 		}
+		//delete infoBox
+		this.deleteInfoBox();	
+	
+		//remove the data structure of this roost sequence
+		//delete from the canvas
+		this.tool.deleteRoostSequence(this.sequenceIndex);
 	}
-	//delete infoBox
-	this.deleteInfoBox();	
-
-	//remove the data structure of this roost sequence
-	//delete from the canvas
-	this.tool.deleteRoostSequence(this.sequenceIndex);
-
 };
 
 RoostSequence.prototype.deleteInfoBox = function(){
@@ -1179,12 +1195,15 @@ function RoostTool()
 	
 	//Get Sequences Information.
 	this.getSequences();
+	document.getElementById("saveAllButton").setAttribute('disabled', 'disabled');
+	document.getElementById("resetButton").setAttribute('disabled', 'disabled');
 };
 
 RoostTool.prototype.resetToolObject = function(){
 	//empty the infoPanel
 	document.getElementById("infoPanel").innerHTML = "";
-	
+	document.getElementById("saveAllButton").setAttribute('disabled', 'disabled');
+	document.getElementById("resetButton").setAttribute('disabled', 'disabled');
 
 	//undraw all circles
 	for(var i = 0; i < this.activeCircles.length; i++)
