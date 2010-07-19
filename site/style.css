@@ -98,6 +98,7 @@ a[disabled]{
     min-height:650px;
     padding:5px;
     background-color:rgb(216,216,216);
+    overflow:scroll;
 }
 
 #infoPanel{

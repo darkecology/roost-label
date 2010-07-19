@@ -1368,8 +1368,6 @@ function visibilityChange() {
 	if (visible == 3)
 	{
 		//change the width of canvas
-		document.getElementById("wrapper").style.width = "1860px";
-
 		document.getElementById("imgDZ").style.display = "block";
 		document.getElementById("imgVR").style.display = "block";
 		document.getElementById("imgSW").style.display = "block";
@@ -1726,7 +1724,7 @@ function RoostToolInit()
 	}else{
 		tool = new RoostTool();
 	}
-    document.onkeydown = keydown;    
+	document.onkeydown = keydown;    
 	window.focus();
 
 	document.getElementById("saveAllButton").style.display = "inline";
@@ -1741,22 +1739,23 @@ function RoostToolInit()
 
 function keydown(e)
 {
-    if (e.keyCode == 39)
-    {
-		next();
-		return false;
-    }
-    else if (e.keyCode == 37)
-    {
-	prev();
-	return false;
-    }
-    else if(e.keyCode == 72)
-    {
-	hideCircles();
-	return false;
-    }
-    else {
+	if (e.keyCode == 39)
+	{
+		    next();
+		    return false;
+	}
+	else if (e.keyCode == 37)
+	{
+	    prev();
+	    return false;
+	}
+	else if(e.keyCode == 72)
+	{
+	    hideCircles();
+	    return false;
+	}
+	else
+	{
 		return true;
 	}
 }
