@@ -96,12 +96,15 @@ function inherits(child, parent)
 
 /* Return an anonymous function that can be called later with the
  * effect of calling obj.method() */
-function bindEvent(obj, method){
+function bindEvent(obj, method, passthru){
     return function(e) {
 	e = getEvent(e);
-	obj[method](e, this);
+	var ret = obj[method](e, this);
 	stopPropagation(e);
-	return false;
+	if (passthru) 
+		return ret;
+	else
+		return false;
     };
 }
 
@@ -812,8 +815,6 @@ RoostSequence.prototype.updateInfoBox = function()
 			infoBoxRevert.setAttribute('disabled', 'disabled');			
 		}
 		infoBoxRevert.onclick = bindEvent(this, "revertEvent" );
-		window.onbeforeunload = function(){ return 'There are some unsaved changes.' }
-
 
 	}else{
 		infoBoxSave.setAttribute('disabled', 'disabled');
@@ -946,7 +947,6 @@ RoostSequence.prototype.saveEvent = function()
 	var confirmation=confirm("Would you like to save?");
 	if (confirmation==true)
 	{
-		window.onbeforeunload = null;
 		this.proCircleEnd = 0;
 		this.proCircleStart = 0;
 		this.locallyChanged = 0;
@@ -969,7 +969,6 @@ RoostSequence.prototype.revertEvent = function()
 			this.proCircleEnd = 0;
 			this.retrieveRoostSequence();
 			this.locallyChanged = 0;
-			window.onbeforeunload = null;
 			this.updateInfoBox();
 		}
 		else 
@@ -1284,6 +1283,17 @@ RoostTool.prototype.resetToolObject = function(){
 	//Get Sequences Information.
 	this.getSequences();
 };
+
+RoostTool.prototype.onbeforeunload = function()
+{
+	for (var i = 0; i < this.roostSeqObj.length; i++)
+	{
+		if (this.roostSeqObj[i].locallyChanged)
+		{
+			return "There are unsaved changes";
+		}
+	}
+}
 
 RoostTool.prototype.getSequences = function() {
 	var xmlDoc;
@@ -1623,7 +1633,8 @@ function setThreePointMode(){
 RoostTool.prototype.threePointMode = function(){
     for (var i = 0; i < this.canvasElements.length; i++)
     {
-	this.canvasElements[i].onmousedown = bindEvent(this, "threePointClick");
+		this.canvasElements[i].onmousedown = bindEvent(this, "threePointClick");
+		this.canvasElements[i].style.cursor = "crosshair";
     }
 };
 
@@ -1675,6 +1686,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
 			for (var i = 0; i < this.canvasElements.length; i++)
 			{
 				this.canvasElements[i].onmousedown = "";
+				this.canvasElements[i].style.cursor = "default";
 			}
 		}
 		
@@ -1727,14 +1739,13 @@ function RoostToolInit()
 	document.onkeydown = keydown;    
 	window.focus();
 
+	window.onbeforeunload = bindEvent(tool, "onbeforeunload", true);
+
 	document.getElementById("saveAllButton").style.display = "inline";
 	document.getElementById("resetButton").style.display = "inline";
 
-
 	document.getElementById("saveAllButton").onclick = bindEvent(tool, "saveAll");
 	document.getElementById("resetButton").onclick = bindEvent(tool, "resetAll");
-
-
 }
 
 function keydown(e)
