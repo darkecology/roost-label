@@ -1,0 +1,68 @@
+
+MAP
+
+  NAME KSGF
+  IMAGECOLOR 0 0 0
+  TRANSPARENT ON  
+
+  EXTENT 314470.18 3971048.17 614470.18 4271048.17
+  SIZE 600 600
+
+  PROJECTION
+   'proj=utm'
+   'ellps=WGS84'
+   'datum=WGS84'
+   'zone=15'
+   'no_defs'
+  END
+
+  LAYER
+      NAME 'counties'
+      TYPE POLYGON
+      STATUS ON
+      DATA '/nfs/phantom/u5/sheldon/svn/trunk/convert/maps/c_15jl09.shp'
+      METADATA
+	'wms_title' 'counties'
+      END
+      TRANSPARENCY 100
+      PROJECTION
+	'proj=longlat'
+	'ellps=WGS84'
+	'datum=WGS84'
+	'no_defs'
+      END
+
+      CLASS
+	 STYLE
+	   SYMBOL 0
+           WIDTH  2
+           OUTLINECOLOR 128 128 128
+	 END
+      END
+  END
+
+
+  LAYER
+      NAME 'states'
+      TYPE POLYGON
+      STATUS ON
+      DATA '/nfs/phantom/u5/sheldon/svn/trunk/convert/maps/s_01au07.shp'
+      METADATA
+	'wms_title' 'states'
+      END
+      TRANSPARENCY 100
+      PROJECTION
+      'proj=longlat'
+      'ellps=WGS84'
+      'datum=WGS84'
+      'no_defs'
+      END
+      CLASS
+	 STYLE
+	   SYMBOL 0
+	   WIDTH 1
+	   OUTLINECOLOR 255 255 255
+	 END
+      END
+  END 
+END
