@@ -35,7 +35,7 @@ MAP
       CLASS
 	 STYLE
 	   SYMBOL 0
-           WIDTH  2
+           WIDTH  1
            OUTLINECOLOR 128 128 128
 	 END
       END
