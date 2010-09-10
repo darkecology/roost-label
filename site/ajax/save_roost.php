@@ -1,75 +1,66 @@
-<?php ini_set('display_errors', 'On'); ?>
-<?php ini_set('display_startup_errors', 'On'); ?>
-<?php ini_set('error_reporting', E_ALL | E_NOTICE | E_STRICT); ?>
 <?php
 
+require 'common.php';
 
+$station = get_param('station');
+$year    = get_param('year');
+$month   = get_param('month');
+$day     = get_param('day');
 
-	#echo "jjj";
-	$postXML = trim(file_get_contents('php://input'));
+if (! (isset($station) && isset($year) && isset($month) && isset($day)))
+{
+    die("(station, year, month, day) are required");
+}
 
+$request = trim(file_get_contents('php://input'));
 
-	$xmlObj = simplexml_load_string($postXML);
-	#new SimpleXMLElement($postXML);
-	#echo $postXML;
-	#$postXML2 = "<profile><name>jafer</name></profile>";
-	#$xmlObj2 = simplexml_load_string($postXML2);
-	
-	$station = $xmlObj->station;
-	$year = $xmlObj->year;
-	$month = $xmlObj->month;
-	$day = $xmlObj->day;
-	$userID = $xmlObj->userId;
-	$comments = $xmlObj->comments;
-	$sequenceID = $xmlObj->sequenceId;
-	
+$roostobj = json_decode($request);
 
+$sequence_id = $roostobj->sequence_id;
+$conn = roostdb_connect();
 
-	$conn = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
-	$db = mysql_select_db('roostdb',$conn);
-	
-	if($sequenceID == 'null'){
-	
-		$sqlSequence="INSERT INTO `Sequence_Table` (`SequenceID`, `StationNumber`, `Year`, `Month`, `Day`, `UserID`, `Comments`)
-    	       VALUES (NULL, \"$station\", \"$year\", \"$month\", \"$day\", \"$userID\", \"$comments\")";
-		mysql_query($sqlSequence, $conn);   	
-		$sequenceID = mysql_insert_id();
+// The following statement will insert or replace, as necessary
+if (isset($sequence_id))
+{
+    $sql = <<<EOF
+	REPLACE INTO sequences (sequence_id, station, scan_date, comments)
+	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments")
+EOF;
+    $result = mysql_query($sql);
+    if (!$result) die('Invalid query: ' . mysql_error());
 
-	
-		foreach($xmlObj->circle as $node){
-			$xcoord = $node->x;			
-			$ycoord = $node->y;			
-			$rcoord = $node->r;
-			$frameNumber = $node->frameNumber;			
-			$sqlCircles="INSERT INTO `Circle_Table` (`CircleID`, `SequenceID`, `FrameNumber`, `X`, `Y`, `R`)
-           VALUES (NULL, \"$sequenceID\", \"$frameNumber\", \"$xcoord\", \"$ycoord\", \"$rcoord\")";   	
-		   	mysql_query($sqlCircles);
-		}	
-	}else{
-		$sqlDeleteCircles = "DELETE FROM Circle_Table
-                           WHERE SequenceID = \"$sequenceID\"";
-		mysql_query($sqlDeleteCircles);
+    $sql = "DELETE FROM circles WHERE sequence_id = $sequence_id";
+    $result = mysql_query($sql);
+    if (!$result) die('Invalid query: ' . mysql_error());
+}
+else
+{
+    $sql = <<<EOF
+	INSERT INTO sequences (sequence_id, station, scan_date, comments)
+	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments")
+EOF;
+    $result = mysql_query($sql);
+    if (!$result) die('Invalid query: ' . mysql_error());
+    $sequence_id = mysql_insert_id();
+}
 
+// Add new circles
+foreach($roostobj->circles as $circle){
+    $sql = <<<EOF
+	INSERT INTO circles (sequence_id, scan_time, x, y, r)
+	VALUES ($sequence_id, "$circle->scan_time", $circle->x, $circle->y, $circle->r)
+EOF;
+    $result = mysql_query($sql);
+    if (!$result) die('Invalid query: ' . mysql_error());
+}
 
-		foreach($xmlObj->circle as $node){
-			$xcoord = $node->x;			
-			$ycoord = $node->y;			
-			$rcoord = $node->r;
-			$frameNumber = $node->frameNumber;			
-			$sqlCircles="INSERT INTO `Circle_Table` (`CircleID`, `SequenceID`, `FrameNumber`, `X`, `Y`, `R`)
-           VALUES (NULL, \"$sequenceID\", \"$frameNumber\", \"$xcoord\", \"$ycoord\", \"$rcoord\")";   	
-		   	mysql_query($sqlCircles);
-		}	
+mysql_close($conn);
 
-		$sqlComments = "UPDATE Sequence_Table set Comments=\"$comments\"
-                           WHERE SequenceID = \"$sequenceID\"";
-		mysql_query($sqlComments);
+$msg = "";
 
-	}   	
+$retval = array('sequence_id' => $sequence_id,
+		'message' => $msg);
 
-	mysql_close($conn);
+print(json_encode($retval));
 
-	echo $sequenceID;
 ?>
-
-

@@ -1,78 +1,63 @@
-<?php ini_set('display_errors', 'On'); ?>
-<?php ini_set('display_startup_errors', 'On'); ?>
-<?php ini_set('error_reporting', E_ALL | E_NOTICE | E_STRICT); ?>
 <?php
-function report_error($text) { 
-     # add other stuff you may want here 
-     $str1 = 'Error:'; //example of addon to beginning 
-     $str2 = '; filename:get_roosts.php'; //example of addon to end 
-     die($str1.'<br />'.$text.'<br />'.$str2); 
-} 
 
-	if(isset($_GET["station"]))
-	{
-	$station = $_GET["station"];
-	}else {report_error("missing station parameter");}
-	
-	if(isset($_GET["year"]) )
-	{
-	$year = $_GET["year"];
-	}else {report_error("missing year parameter");}
-	
-	if(isset($_GET["month"]) )
-	{
-	$month = $_GET["month"];
-	}else {report_error("missing month parameter");}
-	
-	if(isset($_GET["day"]) )
-	{
-	$day = $_GET["day"];	
-	}else {report_error("missing day parameter");}
+require 'common.php';
 
-	$con = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
-	if (!$con)
-	{
-		die('Could not connect: ' . mysql_error());
-	}
+$station = get_param('station');
+$year    = get_param('year');
+$month   = get_param('month');
+$day     = get_param('day');
+$sequence_id = get_param('sequence_id');
+
+if (! ( (isset($station) && isset($year) && isset($month) && isset($day)) || isset($sequence_id) ))
+{
+    die("Either (station, year, month, day) or (sequence_id) are required");
+}
+
+$con = roostdb_connect();
+
+if (isset($sequence_id))
+{
+    $and_clause = "AND s.sequence_id = $sequence_id\n";
+}
+else
+{
+    $and_clause = <<<EOF
+	AND s.station = '$station'
+	AND s.scan_date = '$year-$month-$day'
+EOF;
 	
-	mysql_select_db('roostdb', $con);
-	
-	$sql = "SELECT `Sequence_Table`.SequenceID, UserID, Comments, FrameNumber, X, Y, R
-			FROM `Sequence_Table` LEFT JOIN `Circle_Table` 
-			ON `Sequence_Table`.SequenceID = `Circle_Table`.SequenceID
-			WHERE StationNumber = \"$station\" 
-			AND Year = \"$year\"
-			AND Month = \"$month\"
-			AND Day = \"$day\"
-			ORDER BY SequenceID, FrameNumber";
-			
-	$result = mysql_query($sql);
-	$xmlstr = "<?xml version='1.0' ?>\n".
-		  // optionally you can specify a xml-stylesheet for presenting the results. just uncoment the following line and change the stylesheet name.
-		  /* "<?xml-stylesheet type='text/xsl' href='xml_style.xsl' ?>\n". */
-		  "<RoostSequences></RoostSequences>";
-		  
-	$xml = new SimpleXMLElement($xmlstr);
-	$currentSequenceID = -1;
-	$newSequence = null;
-	while($row = mysql_fetch_array($result))
-	{
-		if($currentSequenceID==-1 || $row['SequenceID'] != $currentSequenceID)
-		{
-			$currentSequenceID = $row['SequenceID'];
-			$newSequence = $xml->addChild("Sequence" . $currentSequenceID);
-			$newSequence->addChild("SequenceID", $row['SequenceID']);
-			$newSequence->addChild("UserID", $row['UserID']);
-			$newSequence->addChild("Comments", $row['Comments']);
-		}
-		$newCircle = $newSequence->addChild("Circle");
-		$newCircle->addChild("FrameNumber", $row['FrameNumber']);
-		$newCircle->addChild("X", $row['X']);
-		$newCircle->addChild("Y", $row['Y']);
-		$newCircle->addChild("R", $row['R']);
-	}
-	// insert the header to tell the browser how to read the document
-    header("Content-type: text/xml");
-    // print the SimpleXMLElement as a XML well-formed string
-    echo $xml->asXML();
+}
+
+$circle_sql = <<<EOF
+    SELECT s.sequence_id, s.comments, c.scan_time, c.x, c.y, c.r
+    FROM sequences s, circles c
+    WHERE s.sequence_id = c.sequence_id
+    $and_clause
+    ORDER BY s.sequence_id, c.scan_time
+EOF;
+
+$sequences = array();
+
+$result = mysql_query($circle_sql);
+if (!$result) {
+    die('Invalid query: ' . mysql_error());
+}
+
+while($row = mysql_fetch_array($result))
+{
+    $sid = $row['sequence_id'];
+    $sequences[$sid]['sequence_id'] = $sid;
+    $sequences[$sid]['comments'] = $row['comments'];
+
+    $circle = array();
+    $circle['scan_time'] = $row['scan_time'];
+    $circle['x'] = $row['x'];
+    $circle['y'] = $row['y'];
+    $circle['r'] = $row['r'];
+    $sequences[$sid]['circles'][] = $circle;
+}
+
+mysql_close($con);
+print json_encode(array_values($sequences));
+
 ?>

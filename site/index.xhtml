@@ -14,31 +14,30 @@
     <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
     
     <title>Roost Labeling</title>
+
+    <!-- Yahoo YUI (for getElementsByClassName) -->
+    <script src="http://yui.yahooapis.com/2.8.1/build/yahoo/yahoo-min.js"></script>
+    <script src="http://yui.yahooapis.com/2.8.1/build/dom/dom-min.js"></script>
     
+    <!-- Proj4js map projections -->
+    <script type="text/javascript" src="proj4js/lib/proj4js-compressed.js"></script>
+
+    <script type="text/javascript" src="ajax.js"/>
     <script type="text/javascript" src="tool.js"/>
     <script type="text/javascript" src="select.js"/>
     
   </head>
   
-  <body onload="starter();">
+  <body id="body" onload="starter();">
     
-    <div id="wrapper" style="width:1240px">
+    <div id="wrapper">
 
       <div id="header">
-        <h2> Roost Labeling </h2>
+        <h2 id="title"> Roost Labeling </h2>
       </div>
 
       <div id="controlBar">
 
-	<div id="controlsRight">
-	  <a id="bookmarkLink" href="" style="padding-left:100px">Show URL</a> |
-	  <strong>Visibility:</strong>
-	  <select id="visibility_select">
-	    <option value="1">DZ</option>
-	    <option value="2" selected="selected">DZ+VR</option>
-	    <option value="3">DZ+VR+SW</option>
-	  </select>
-	</div> <!-- end #controlsRight -->
 	<strong>Station:</strong>
 	<select id="station_select">
 	  <option value="null"></option>
@@ -59,90 +58,107 @@
 	  <option value="null"></option>
 	</select>
 	
-	<button id="newCircleButton" onclick="setThreePointMode();" style="margin-left:50px;">New Roost</button>
-	<button id="newCircleButton" onclick="hideCircles();">Hide/Show Roosts</button>
+	<span id="frameCounter" style="visibility:hidden">
+	  <strong>Frame</strong>: <span id="frameNum"></span> of <span id="totalFrames">27</span>
+	  (<a id="prevButton" disabled="true" href="javascript:prev();">Prev</a>
+	  <a id="nextButton" disabled="true" href="javascript:next();">Next</a>)
+	</span>
+
       </div> <!-- end #controlBar -->
-      <div id="controller">
-	<a id="prev" disabled="true" href="javascript:prev();">Prev</a>
-	<a id="next" disabled="true" href="javascript:next();">Next</a>
-	<span id="frameSpan" style="visibility:hidden"></span>
+      
+      <div id="frameInfoBar">
+
+	<span class="left">
+	  <button id="newCircleButton" onclick="setThreePointMode();">New Roost</button> |
+	  <span style="text-decoration:underline">C</span>ircles 
+	  <input type="checkbox" id="circleToggle" value="true" checked="checked" onchange="updateLayers();"/>
+	  <span style="text-decoration:underline">M</span>aps 
+	  <input type="checkbox" id="mapToggle" value="true" checked="checked" onchange="updateLayers();"/>
+	</span>
+
+	<div id="frameTitle" style="visibility:hidden">
+ 	  <strong>Minutes from sunrise:</strong> <span id="minutesFromSunrise"></span>,
+	  <strong>Scan time:</strong> <span id="frameTimeStamp"></span> UTC, 
+	  <strong>VCP:</strong> <span id="vcp"></span>
+	</div>
       </div>
 
-      <div id="canvasPanel">
+      <div id="radarCanvas">
+
 	<table>
 	  <tr>
-	    
-	    <td>
-	      
-	      <div class="pane">
-		<img id="imgDZ" src=""/>
-		<div class="canvas" id="canvasDZ">
-		  <svg:svg id="svgDZ"></svg:svg>
-		</div>
-	      </div>
-	    </td>
-	    
-	    <td>
-	      <div class="pane">
-		<img id="imgVR" src=""/>  	    
-		<div class="canvas" id="canvasVR"> 
-		  <svg:svg id="svgVR" width="100%" height="100%"></svg:svg>
-		</div>
-	      </div>
-	    </td>
-	    
-	    <td>
-	      <div class="pane">
-		<img id="imgSW" src=""/>  	    
-		<div class="canvas" id="canvasSW"> 
-		  <svg:svg id="svgSW" width="100%" height="100%"></svg:svg>
-		</div>
-	      </div>
-	    </td>
-	    
-	  </tr>
-	  <tr/>
-	</table>
-      </div>	
+	    <td id="radarPaneTemplate" class="radarPane hidden">	      
+	      <span>
+		Product:
+		<select class="productSelect">
+		</select>
+	      </span>
+	      <br class="clearing"/>
 
-      <div id="infoPanel">
-	<!--<div class="infoBox">
-		 
-		 <table>
-		   <tr>
-		     <td id="infoBoxId">KDOX-20091001-1</td>
-		     <td>Location( <span id="xcoord">30</span> , <span id="ycoord">30</span> )</td>
-		   </tr>
-		   <tr>
-		     <td>First appears: <span id="firstTime">10:22:33</span></td>
-		     <td>( <a id="jjj">still editing ...</a> ) </td>
-		   </tr>
-		   <tr>
-		     <td>Last appears: <span id="lastTime">11:03:30</span></td>
-		     <td>( <a href="">extend forward</a> ) </td>
-		   </tr>
-		 </table>
-		 <table>
-		   <tr>
-		     <td>Comments:</td>
-		   </tr>
-		   <tr>
-		     <td><textarea id="comment" cols="40" rows="5"></textarea></td>
-		   </tr>
-		   <tr>
-		     <td>
-		       <button class="button" type="button">Delete</button>
-		       <button class="button" type="button">Revert</button>
-		       <button class="button" type="button">Save</button>
-		     </td>
-		   </tr>
-		 </table>
-	</div>-->
+	      <div class="canvas">
+		<div class="radarLayer">
+		  <img class="radarImage" src=""/>
+		</div>
+		<div class="mapLayer">
+		  <img class="mapImage" src=""/>
+		</div>
+		<div class="graphicsLayer">
+		  <svg:svg class="svg"></svg:svg>
+		</div>
+	      </div>
+	    </td>
+
+	  </tr>
+	</table>
       </div>
 
-      <div id="infoPanelController">
-	<button id="saveAllButton" class="button" type="button">Save All</button>
-	<button id="resetButton" class="button" type="button">Reset</button>
+      <div id="infoPanel">
+	
+	<table id="roostSequenceTable" class="pretty" style="visibility:hidden">
+	  <tr>
+	    <th>Sequence ID</th>
+	    <th>Image Location</th>
+	    <th>Latitude</th>
+	    <th>Longitude</th>
+	    <th>First<br/>Appears</th>
+	    <th>Last<br/>Appears</th>
+	    <th>Comments</th>
+	    <th>Extend Backward</th>
+	    <th>Extend Forward</th>
+	    <th>Delete</th>
+	    <th>Revert</th>
+	    <th>Save</th>
+	  </tr>
+
+	  <tr class="hidden" id="infoBoxTemplate">
+	    <td class="sequenceId">ID</td>
+	    <td>
+	      (<span class="xcoord">x</span>, <span class="ycoord">y</span>)
+	    </td>
+	    <td class="lat">lat</td>
+	    <td class="lon">lon</td>
+	    <td class="firstTime">Appears</td>
+	    <td class="lastTime">Disappears</td>
+	    <td>	
+	      <form class="comments"> 
+	       	<input name="textbox" size="30" maxlength="1024"/> 
+	      </form> 
+	    </td>
+	    <td><a class="extendBackward" href=""></a></td>
+	    <td><a class="extendForward" href=""></a></td>
+	    <td><button class="button deleteButton" type="button">Delete</button></td>
+	    <td><button class="button revertButton" type="button">Revert</button></td>
+	    <td><button class="button saveButton" type="button">Save</button></td>
+	  </tr>
+
+	</table>
+
+      </div>
+
+      <div id="bottomButtons">
+	<button id="saveAllButton" class="right" type="button" disabled="disabled">Save All</button>
+	<button id="resetButton" class="right" type="button" disabled="disabled">Reset</button>
+	<br class="clearing"/>
       </div>      
       
     </div> <!-- End #wrapper -->
