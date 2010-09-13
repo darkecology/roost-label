@@ -1888,28 +1888,33 @@ function ResetTool()
 
 function keydown(e)
 {
-    if (e.keyCode == 39)
+    if (e.keyCode == 39)		// right arrow
     {
 		next();
 		return false;
     }
-    else if (e.keyCode == 37)
+    else if (e.keyCode == 37)	// left arrow
     {
         prev();
         return false;
     }
-    else if(e.keyCode == 67)
+    else if(e.keyCode == 67)	// c
     {
 		var e = document.getElementById("circleToggle");
 		e.checked = !e.checked;
         updateLayers();
         return false;
     }
-    else if(e.keyCode == 77)
+    else if(e.keyCode == 77)	// m
     {
 		var e = document.getElementById("mapToggle");
 		e.checked = !e.checked;
         updateLayers();
+        return false;
+    }
+    else if(e.keyCode == 78)	// n
+    {
+		setThreePointMode();
         return false;
     }
     else
