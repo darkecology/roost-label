@@ -1309,9 +1309,7 @@ function RoostTool()
 	}
 
 	this.resetZoom();
-
-    this.frame = 0;
-    this.loadFrame(this.frame);
+	this.moveToTime(-30);
 }
 
 // convert from viewport coordinates to image coordinates
@@ -1667,6 +1665,12 @@ RoostTool.prototype.moveToFrame = function(frameNum) {
     this.loadFrame(frameNum);
     this.frame = frameNum;
 	this.updateCanvas();
+};
+
+RoostTool.prototype.moveToTime = function(time)
+{
+	for (var i = 0; i < this.frames.length-1 && this.frames[i+1].minutes_from_sunrise < time; i++);
+	this.moveToFrame(i);
 };
 
 RoostTool.prototype.loadFrame = function(idx) {
