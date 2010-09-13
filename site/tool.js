@@ -35,18 +35,18 @@ function getMouse(event, obj)
     var x,y;
     if (IsNetscape())
     {
-    x = event.layerX;
-    y = event.layerY;
+		x = event.layerX;
+		y = event.layerY;
     }
     else if (IsMicrosoft())
     {
-    x = event.x + obj.scrollLeft;
-    y = event.y + obj.scrollTop;
+		x = event.x + obj.scrollLeft;
+		y = event.y + obj.scrollTop;
     }
     else
     {
-    x = event.offsetX;
-    y = event.offsetY;
+		x = event.offsetX;
+		y = event.offsetY;
     }
     return new Point(x, y);
 }
@@ -75,15 +75,18 @@ function inherits(child, parent)
 
 /* Return an anonymous function that can be called later with the
  * effect of calling obj.method() */
-function bindEvent(obj, method, passthru){
+function bindEvent(obj, method, options) {
+
+	if (!options) options = {};
     return function(e) {
-    e = getEvent(e);
-    var ret = obj[method](e, this);
-    stopPropagation(e);
-    if (passthru) 
-        return ret;
-    else
-        return false;
+		options.pageElement = this;
+		e = getEvent(e);
+		var ret = obj[method](e, options);
+		stopPropagation(e);
+		if (options.passthru) 
+			return ret;
+		else
+			return false;
     };
 }
 
@@ -92,13 +95,13 @@ function bindEvent(obj, method, passthru){
 // Interface Graphic
 //------------------------------------------------------------------------
 
-function Graphic(x, y)
+function Graphic(x, y, scale)
 {
     this.x = x;
     this.y = y;
     this.renderings = [];
+	this.scale = scale ? scale : 1;
 }
-
 
 Graphic.prototype.move = function(dx, dy)
 {
@@ -116,8 +119,8 @@ Graphic.prototype.draw = function(obj)
 {
     if (!obj)
     {
-    alert("Error: null object");
-    return;
+		alert("Error: null object");
+		return;
     }
 
     var r = this.newRendering(obj);
@@ -134,7 +137,7 @@ Graphic.prototype.redraw = function()
 {
     for (var i = 0; i < this.renderings.length; i++)
     {
-    this.renderings[i].render();
+		this.renderings[i].render();
     }
 };
 
@@ -142,7 +145,7 @@ Graphic.prototype.undraw = function()
 {
     for (var i = 0; i < this.renderings.length; i++)
     {
-    this.renderings[i].unrender();
+		this.renderings[i].unrender();
     }
     this.renderings = [];
 };
@@ -151,7 +154,7 @@ Graphic.prototype.listen = function(eventname, obj, methodname)
 {
     for (var i = 0; i < this.renderings.length; i++)
     {
-    this.renderings[i].listen(eventname, obj, methodname);
+		this.renderings[i].listen(eventname, obj, methodname);
     }
 };
 
@@ -159,10 +162,14 @@ Graphic.prototype.setStyle = function(property, value)
 {
     for (var i = 0; i < this.renderings.length; i++)
     {
-    this.renderings[i].setStyle(property, value);
+		this.renderings[i].setStyle(property, value);
     }
 };
 
+Graphic.prototype.setScale = function(scale)
+{
+	this.scale = scale;
+};
 
 //------------------------------------------------------------------------
 // Interface Rendering
@@ -184,7 +191,7 @@ Rendering.prototype.unrender = function()
 {
     if (this.renderElt)
     {
-    this.parentElt.removeChild(this.renderElt);
+		this.parentElt.removeChild(this.renderElt);
     }
 };
     
@@ -207,11 +214,13 @@ function Circle(cx, cy, r)
     this.r = r;
 
     // default appearance properties
-    this.strokeWidth = 4;
+    this.strokeWidth = 6;
     this.strokeOpacity = 1;
     this.strokeColor = "red";
     this.fill = "none";
     this.fillOpacity = 1; 
+	this.fixedScale = false;
+	this.fixedStrokeWidth = true;
 }
 inherits(Circle, Graphic);
 
@@ -238,13 +247,19 @@ SVGCircle.prototype.render = function()
     var svgCircle = this.renderElt;
     var circle = this.graphicObj;
 
+	var r = circle.r;
+	if (circle.fixedScale) r = (r/circle.scale).toFixed(8);
+
+	var strokeWidth = circle.strokeWidth;
+	if (circle.fixedStrokeWidth) strokeWidth = strokeWidth/circle.scale;
+
     svgCircle.setAttributeNS(null, "cx", circle.x);
     svgCircle.setAttributeNS(null, "cy", circle.y);
-    svgCircle.setAttributeNS(null, "r",  circle.r);
+    svgCircle.setAttributeNS(null, "r",  r);
     svgCircle.setAttributeNS(null, "fill",         circle.fill);
     svgCircle.setAttributeNS(null, "fill-opacity", circle.fillOpacity);
     svgCircle.setAttributeNS(null, "stroke",       circle.strokeColor);
-    svgCircle.setAttributeNS(null, "stroke-width", circle.strokeWidth);
+    svgCircle.setAttributeNS(null, "stroke-width", strokeWidth);
     svgCircle.setAttributeNS(null, "stroke-opacity", circle.strokeOpacity);
 };
 
@@ -317,9 +332,12 @@ function XMarker(x, y, w)
     this.y = y;
     this.w = w;
 
-    this.strokeWidth = 4;
+    this.strokeWidth = 6;
     this.strokeColor = "red";
     this.opacity = 1;
+
+	this.fixedScale = true;
+	this.fixedStrokeWidth = false;
 }
 inherits(XMarker, Graphic);
 
@@ -330,7 +348,7 @@ XMarker.prototype.newRendering = function(parentElt)
 
 
 //------------------------------------------------------------------------
-// class SVGCircle: render a circle using SVG
+// class SVGx: an x marker
 //------------------------------------------------------------------------
 
 function SVGx(parentElt, graphicObj)
@@ -342,6 +360,10 @@ function SVGx(parentElt, graphicObj)
 
     this.renderElt = document.createElementNS(svgNS, "g");
     this.renderElt.setAttributeNS(null, "transform", 'translate(' + mark.x + ',' + mark.y + ')');
+
+	var scale = (1/graphicObj.scale).toFixed(4);
+    this.scaleElt = document.createElementNS(svgNS, "g");
+    this.scaleElt.setAttributeNS(null, "transform", 'scale(' + scale + ')');
 
     this.line1 = document.createElementNS(svgNS, "line");
     this.line1.setAttributeNS(null, "x1", -mark.w/2);
@@ -355,8 +377,10 @@ function SVGx(parentElt, graphicObj)
     this.line2.setAttributeNS(null, "x2",  mark.w/2);
     this.line2.setAttributeNS(null, "y2", -mark.w/2);
 
-    this.renderElt.appendChild(this.line1);
-    this.renderElt.appendChild(this.line2);
+    this.scaleElt.appendChild(this.line1);
+    this.scaleElt.appendChild(this.line2);
+
+	this.renderElt.appendChild(this.scaleElt);
 
     parentElt.appendChild(this.renderElt);    
 }
@@ -368,7 +392,14 @@ SVGx.prototype.render = function(svgText)
 
     this.renderElt.setAttributeNS(null, "transform", 'translate(' + mark.x + ',' + mark.y + ')');
 
-    this.renderElt.setAttributeNS(null, "stroke-width", mark.strokeWidth);
+	var scale = 1;
+	if (mark.fixedScale) scale = (1/mark.scale).toFixed(4);
+	
+	var strokeWidth = mark.strokeWidth;
+	if (mark.fixedStrokeWidth) strokeWidth = (mark.strokeWidth/mark.scale).toFixed(4);
+	
+    this.scaleElt.setAttributeNS(null, "transform", 'scale(' + scale + ')');
+    this.renderElt.setAttributeNS(null, "stroke-width", strokeWidth);
     this.renderElt.setAttributeNS(null, "stroke",       mark.strokeColor);
     this.renderElt.setAttributeNS(null, "opacity",      mark.opacity);
 };
@@ -384,9 +415,11 @@ function Point(x, y)
 
 function CircleMarker(x, y)
 {
-    Circle.call(this, x, y, 5);
+    Circle.call(this, x, y, 6);
     this.strokeWidth = 0;
     this.fill = this.strokeColor;
+	this.fixedScale = true;
+	this.fixedStrokeWidth = false;
 }
 inherits(CircleMarker, Circle);
 
@@ -394,21 +427,22 @@ inherits(CircleMarker, Circle);
 // class RoostCircle: a circle that can be edited
 //------------------------------------------------------------------------
 
-function RoostCircle(cx, cy, r, roostSequence)
+function RoostCircle(cx, cy, r, roostSequence, scale)
 {
     cx = parseFloat(cx.toFixed(3));
     cy = parseFloat(cy.toFixed(3));
     r = parseFloat(r.toFixed(3));
     Circle.call(this, cx, cy, r);
-    this.deleteHandle = new XMarker(cx, cy, 8);
+    this.deleteHandle = new XMarker(cx, cy, 12);
     this.radiusHandle = new CircleMarker(cx, cy - r);
     this.roostSequence = roostSequence;
+	this.setScale(scale ? scale : 1);
 }
 inherits(RoostCircle, Circle);
 
 RoostCircle.prototype.clone = function()
 {
-    return new RoostCircle(this.x, this.y, this.r, this.roostSequence);
+    return new RoostCircle(this.x, this.y, this.r, this.roostSequence, this.scale);
 }
 
 RoostCircle.prototype.draw = function(obj)
@@ -431,6 +465,12 @@ RoostCircle.prototype.drawDeleteHandle = function(obj){
     this.deleteHandle.setStyle("cursor", "pointer");
 };
 
+RoostCircle.prototype.setScale = function(scale)
+{
+    this.deleteHandle.setScale(scale);
+    this.radiusHandle.setScale(scale);
+    Circle.prototype.setScale.call(this, scale);
+};
 
 RoostCircle.prototype.redraw = function()
 {
@@ -460,18 +500,18 @@ RoostCircle.prototype.isProvisional = function()
 //--------------------
 // Resize
 //--------------------
-RoostCircle.prototype.startResize = function(e, callObj)
+RoostCircle.prototype.startResize = function(e, options)
 {
-    this.canvas = getCanvas(callObj);
+    this.canvas = getCanvas(options.pageElement);
     this.canvas.onmousemove = bindEvent(this, "resize");
     this.strokeOpacity = .5;
     document.onmouseup = bindEvent(this, "finishResize");
     this.redraw();
 };
 
-RoostCircle.prototype.resize = function(e, callObj)
+RoostCircle.prototype.resize = function(e, options)
 {
-    var p = getMouse(e, this.canvas);
+    var p = tool.viewportToImage(getMouse(e, this.canvas));
     var dx = p.x - this.x;
     var dy = p.y - this.y;
     this.r = Math.sqrt(dx*dx + dy*dy);
@@ -479,7 +519,7 @@ RoostCircle.prototype.resize = function(e, callObj)
     this.redraw();
 };
 
-RoostCircle.prototype.finishResize = function(e, callObj)
+RoostCircle.prototype.finishResize = function(e, options)
 {
     this.strokeOpacity = 1;
     this.canvas.onmousemove = null;
@@ -491,22 +531,22 @@ RoostCircle.prototype.finishResize = function(e, callObj)
 //--------------------
 // Drag
 //--------------------
-RoostCircle.prototype.startDrag = function(e, callObj)
+RoostCircle.prototype.startDrag = function(e, options)
 {
-    this.canvas = getCanvas(callObj);
+    this.canvas = getCanvas(options.pageElement);
     this.canvas.onmousemove = bindEvent(this, "drag");
     document.onmouseup = bindEvent(this, "finishDrag");
 
-    var p = getMouse(e, this.canvas);
+    var p = tool.viewportToImage(getMouse(e, this.canvas));
     this.offsetx = p.x - this.x;
     this.offsety = p.y - this.y;
     this.strokeOpacity = .5;
     this.redraw();
 };
 
-RoostCircle.prototype.drag = function(e, callObj)
+RoostCircle.prototype.drag = function(e)
 {
-    var p = getMouse(e, this.canvas);    
+    var p = tool.viewportToImage(getMouse(e, this.canvas));
     var dx = p.x - this.offsetx - this.x;
     var dy = p.y - this.offsety - this.y;
 
@@ -516,7 +556,7 @@ RoostCircle.prototype.drag = function(e, callObj)
     this.redraw();
 };
 
-RoostCircle.prototype.finishDrag = function(e, callObj)
+RoostCircle.prototype.finishDrag = function(e)
 {
     this.strokeOpacity = 1;
     this.canvas.onmousemove = null;
@@ -624,7 +664,7 @@ function pointsToCircle(p)
         return 0;
     }
 
-    return new RoostCircle(cx, cy, r);
+	return new RoostCircle(cx, cy, r);
 }
 
 
@@ -697,7 +737,7 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 		var y = parseFloat(jsonSeq.circles[j].y);
 		var r = parseFloat(jsonSeq.circles[j].r);
 		var frame_number = this.tool.scantime2frameidx(jsonSeq.circles[j].scan_time);
-		var c = new RoostCircle(x, y, r, this);
+		var c = new RoostCircle(x, y, r, this, this.tool.scale);
 		this.insertCircle(c, frame_number);
 	}
 };
@@ -1034,10 +1074,21 @@ RoostSequence.prototype._delete = function()
 	this.tool.removeSequence(this);
 };
 
+RoostSequence.prototype.setScale = function(scale) 
+{
+	for (var i = this.seq_start; i <= this.seq_end; i++)
+		this.circles[i].setScale(scale);
+
+	for (var i = 0; i < this.activeCircles.length; i++)
+	{
+		this.activeCircles[i].setScale(scale);
+		this.activeCircles[i].redraw();
+	}
+
+};
 
 RoostSequence.prototype.retrieveRoostSequence = function() 
 {
-
     var url = "ajax/get_roosts.php?sequence_id="+this.databaseID;
 	xmlhttp = ajax_get(url);
     var sequences = JSON.parse(xmlhttp.responseText);
@@ -1083,7 +1134,7 @@ RoostSequence.prototype.extendBackward = function()
 //  - Renders the pane of a RoostTool
 //------------------------------------------------------------------------
 
-function RadarPane(station, products, defaultProduct)
+function RadarPane(station, products, defaultProduct, tool)
 {
 	this.products = products; // general info about available products
 	this.frameInfo = null;		// info about products for this frame
@@ -1099,9 +1150,31 @@ function RadarPane(station, products, defaultProduct)
 	this.mapImage.src = "static-maps/" + station + ".gif";
 
 	this.radarImage = getElementByClassName("radarImage", this.elt);
-    this.canvas = getElementByClassName("graphicsLayer", this.elt);
+    this.canvas = getElementByClassName("canvas", this.elt);
+    this.scaleGroup = getElementByClassName("scaleGroup", this.elt);
+    this.translateGroup = getElementByClassName("translateGroup", this.elt);
     this.svg = getElementByClassName("svg", this.elt);
-	
+    this.resetZoom = getElementByClassName("resetZoom",  this.elt);
+    this.zoomIn   = getElementByClassName("zoomIn",   this.elt);
+    this.zoomOut  = getElementByClassName("zoomOut",  this.elt);
+    this.panNorth = getElementByClassName("panNorth", this.elt);
+    this.panSouth = getElementByClassName("panSouth", this.elt);
+    this.panEast  = getElementByClassName("panEast",  this.elt);
+    this.panWest  = getElementByClassName("panWest",  this.elt);
+
+	// Install handlers
+
+	this.canvas.onmousedown = bindEvent(tool, "startDragCanvas");
+
+	this.resetZoom.onclick    = bindEvent(tool, "resetZoom");
+	this.zoomIn.onmousedown   = bindEvent(tool, "zoomIn");
+	this.zoomOut.onmousedown  = bindEvent(tool, "zoomOut");
+
+	this.panNorth.onmousedown = bindEvent(tool, "panNorth");
+	this.panSouth.onmousedown = bindEvent(tool, "panSouth");
+	this.panEast.onmousedown  = bindEvent(tool, "panEast");
+	this.panWest.onmousedown  = bindEvent(tool, "panWest");
+
 	this.productSelect = getElementByClassName("productSelect", this.elt);
 	this.options = {};
 	for (var prod in products)
@@ -1117,6 +1190,7 @@ function RadarPane(station, products, defaultProduct)
 		this.options[prod] = option;
 	}
 	this.productSelect.onchange = bindEvent(this, "selectProduct");
+	this.imageSize = tool.imageSize;
 }
 
 RadarPane.prototype.updateFrame = function(frameInfo)
@@ -1152,9 +1226,37 @@ RadarPane.prototype.selectProduct = function()
 	this.productSelect.blur();
 };
 
+
+RadarPane.prototype.updateTransform = function(scale, origin)
+{
+	var transform = "scale(" + scale + ")";
+	this.scaleGroup.setAttributeNS(null, "transform", transform);
+
+	var w = Math.round(this.imageSize.x*scale) + "px";
+	var h = Math.round(this.imageSize.y*scale) + "px";
+
+	this.mapImage.style.width  = w;
+	this.mapImage.style.height = h;
+
+	this.radarImage.style.width  = w;
+	this.radarImage.style.height = h;
+
+	var dx = Math.round(origin.x);
+	var dy = Math.round(origin.y);
+
+	var transform = "translate(" + dx + "," + dy + ")";
+	this.translateGroup.setAttributeNS(null, "transform", transform);
+
+	this.mapImage.style.left = dx + "px";
+	this.mapImage.style.top  = dy + "px";
+
+	this.radarImage.style.left = dx + "px";
+	this.radarImage.style.top  = dy + "px";
+};
+
 RadarPane.prototype.updateVisibility = function()
 {
-	this.canvas.style.visibility = document.getElementById("circleToggle").checked ? "visible" : "hidden";
+	this.svg.style.visibility = document.getElementById("circleToggle").checked ? "visible" : "hidden";
 	this.mapImage.style.visibility = document.getElementById("mapToggle").checked ? "visible" : "hidden";
 };
 
@@ -1191,14 +1293,150 @@ function RoostTool()
 	this.defaultProducts = ["DZ_0.5_DEG", "VR_0.5_DEG", "SW_0.5_DEG"];
 	this.nPanes = 2;
 	this.panes = [];	
+
+	this.imageSize = {x: 600, y: 600};
+	var viewport = document.getElementById("viewport");
+	this.viewportSize = {x: viewport.offsetWidth, y: viewport.offsetHeight};
+
+	this.origin = {x:0, y:0};	// location of image origin in viewport coordinates
+	this.scale = 1;
+	this.zoomFactor = 1.2;
+	this.panStep = 30;
+
 	for (var i = 0; i < this.nPanes; i++)
 	{
-		this.panes[i] = new RadarPane(this.station, this.products, this.defaultProducts[i]);
+		this.panes[i] = new RadarPane(this.station, this.products, this.defaultProducts[i], this);
 	}
+
+	this.resetZoom();
 
     this.frame = 0;
     this.loadFrame(this.frame);
 }
+
+// convert from viewport coordinates to image coordinates
+RoostTool.prototype.viewportToImage = function(p)
+{
+	q = {};
+	q.x = (p.x - this.origin.x)/this.scale;
+	q.y = (p.y - this.origin.y)/this.scale;
+	return q;
+};
+
+// convert from image coordinates to viewport coordinates
+RoostTool.prototype.imageToViewport = function(p)
+{
+	q = {};
+	q.x = p.x*this.scale + this.origin.x;
+	q.y = p.y*this.scale + this.origin.y;
+	return q;
+};
+
+
+RoostTool.prototype.resetZoom = function()
+{
+	this.scale = 1;
+	this.setCenter({x: this.imageSize.x/2, y:this.imageSize.y/2});
+	this.updateTransform();
+}
+
+// set viewport center in image coordinates
+RoostTool.prototype.setCenter = function(p)
+{
+	var viewportCenter = {x: this.viewportSize.x/2, y: this.viewportSize.y/2};
+
+	// adjust origin so q is at center
+	q = this.imageToViewport(p);
+	this.origin.x += viewportCenter.x - q.x;
+	this.origin.y += viewportCenter.y - q.y;
+};
+
+RoostTool.prototype.getCenter = function()
+{
+	// get image coordinates for viewport center
+
+	var viewportCenter = {x: this.viewportSize.x/2, 
+						  y: this.viewportSize.y/2};
+	return this.viewportToImage(viewportCenter);
+};
+
+RoostTool.prototype.zoomTo = function(scale)
+{
+	// zoom around the center
+	var center = this.getCenter();
+	this.scale = scale;
+	this.setCenter(center);
+	this.updateTransform();
+};
+
+RoostTool.prototype.zoomIn = function()
+{
+	this.zoomTo(this.scale*this.zoomFactor);
+};
+
+RoostTool.prototype.zoomOut = function()
+{
+	this.zoomTo(this.scale/this.zoomFactor);
+};
+
+RoostTool.prototype.panNorth = function() { 
+	this.origin.y -= this.panStep;
+	this.updateTransform();
+};
+
+RoostTool.prototype.panSouth = function() { 
+	this.origin.y += this.panStep;
+	this.updateTransform();
+};
+
+RoostTool.prototype.panEast = function() { 
+	this.origin.x += this.panStep;
+	this.updateTransform();
+};
+
+RoostTool.prototype.panWest = function() { 
+	this.origin.x -= this.panStep;
+	this.updateTransform();
+};
+
+RoostTool.prototype.updateTransform = function()
+{
+	for (var i = 0; i < this.roostSeqObj.length; i++)
+		this.roostSeqObj[i].setScale(this.scale);
+
+	for (var i = 0; i < this.panes.length; i++)
+	{
+		this.panes[i].updateTransform(this.scale, this.origin);
+	}
+};
+
+RoostTool.prototype.startDragCanvas = function(e, options)
+{
+    this.canvas = options.pageElement;
+    this.canvas.onmousemove = bindEvent(this, "dragCanvas");
+    document.onmouseup = bindEvent(this, "finishDragCanvas");
+	
+	this.canvas.style.cursor = "-moz-grabbing";
+
+    var p = getMouse(e, this.canvas);
+    this.offsetx = p.x - this.origin.x;
+    this.offsety = p.y - this.origin.y;
+};
+
+RoostTool.prototype.dragCanvas = function(e)
+{
+    var p = getMouse(e, this.canvas);
+	this.origin.x = p.x - this.offsetx;
+	this.origin.y = p.y - this.offsety;
+	this.updateTransform();
+};
+
+RoostTool.prototype.finishDragCanvas = function(e)
+{
+	this.canvas.style.cursor = "default";
+	this.canvas.onmousemove = null;
+    document.onmouseup = null;
+};
 
 /*--------------------------------------------------
  * Initialization that requires AJAX
@@ -1502,6 +1740,8 @@ function setThreePointMode(){
 };
 
 RoostTool.prototype.threePointMode = function(){
+	document.getElementById("circleToggle").checked = true;
+	updateLayers();
     for (var i = 0; i < this.panes.length; i++)
     {
         this.panes[i].canvas.onmousedown = bindEvent(this, "threePointClick");
@@ -1509,16 +1749,17 @@ RoostTool.prototype.threePointMode = function(){
     }
 };
 
-RoostTool.prototype.threePointClick = function(event, obj) {
+RoostTool.prototype.threePointClick = function(event, options) {
 
-    var p = getMouse(event, obj);
+    var p = this.viewportToImage(getMouse(event, options.pageElement));
 
     if (this.controlPoints.length >= 3)
     {
-    throw new Error("too many existing control points");
+		throw new Error("too many existing control points");
     }
 
     var mark = new CircleMarker(p.x, p.y);
+	mark.setScale(this.scale);
     
     for (var i = 0; i < this.panes.length; i++) {
 		mark.draw(this.panes[i].svg);
@@ -1530,7 +1771,8 @@ RoostTool.prototype.threePointClick = function(event, obj) {
     if (this.controlPoints.length == 3)
     {
     // create a new Circle object (modify this to create a new RoostSequence object instead)
-        var c = pointsToCircle(this.controlPoints); 
+        var c = pointsToCircle(this.controlPoints);
+		c.setScale(this.scale);
         if (c)
         {
             var newRoostSequence = new RoostSequence(); 
@@ -1552,7 +1794,7 @@ RoostTool.prototype.threePointClick = function(event, obj) {
             this.updateButtons();
             for (var i = 0; i < this.panes.length; i++)
             {
-                this.panes[i].canvas.onmousedown = "";
+                this.panes[i].canvas.onmousedown = bindEvent(this, "startDragCanvas");
                 this.panes[i].canvas.style.cursor = "default";
             }
         }

@@ -87,7 +87,7 @@
 
 	<table>
 	  <tr>
-	    <td id="radarPaneTemplate" class="radarPane hidden">	      
+	    <td id="radarPaneTemplate" class="radarPane hidden">
 	      <span>
 		Product:
 		<select class="productSelect">
@@ -95,15 +95,31 @@
 	      </span>
 	      <br class="clearing"/>
 
-	      <div class="canvas">
+	      <div id="viewport" class="viewport">
+		<div class="panZoomControls">
+		  <img class="zoomIn" src="http://openlayers.org/api/img/zoom-plus-mini.png"/>
+		  <img class="resetZoom" src="http://openlayers.org/api/img/zoom-world-mini.png"/>
+		  <img class="zoomOut" src="http://openlayers.org/api/img/zoom-minus-mini.png"/>
+		  <img class="panNorth" src="http://openlayers.org/api/img/north-mini.png"/>
+		  <img class="panSouth" src="http://openlayers.org/api/img/south-mini.png"/>
+		  <img class="panEast"  src="http://openlayers.org/api/img/east-mini.png"/>
+		  <img class="panWest"  src="http://openlayers.org/api/img/west-mini.png"/>
+		</div>
+
 		<div class="radarLayer">
-		  <img class="radarImage" src=""/>
+		  <img class="radarImage map" src=""/>
 		</div>
 		<div class="mapLayer">
-		  <img class="mapImage" src=""/>
+		  <img class="mapImage map" src=""/>
 		</div>
-		<div class="graphicsLayer">
-		  <svg:svg class="svg"></svg:svg>
+		<div class="canvas">
+		  <svg:svg>
+		    <svg:g transform="translate(0,0)" class="translateGroup">
+		      <svg:g transform="scale(0)" class="scaleGroup">
+			<svg:g class="svg"/>
+		      </svg:g>
+		    </svg:g>
+		  </svg:svg>
 		</div>
 	      </div>
 	    </td>
