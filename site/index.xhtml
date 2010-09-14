@@ -132,15 +132,26 @@
 	
 	<table id="roostSequenceTable" class="pretty" style="visibility:hidden">
 	  <tr>
-	    <th>Sequence ID</th>
-	    <th>Image Location</th>
-	    <th>Latitude</th>
-	    <th>Longitude</th>
-	    <th>First<br/>Appears</th>
-	    <th>Last<br/>Appears</th>
-	    <th>Comments</th>
-	    <th>Extend Backward</th>
-	    <th>Extend Forward</th>
+	    <th rowspan="2">ID</th>
+	    <th colspan="2">Image Location</th>
+	    <th colspan="2" >Map Location</th>
+	    <th colspan="3">First Appears</th>
+	    <th colspan="3">Last Appears</th>
+	    <th rowspan="2">Comments</th>
+	    <th colspan="3">Actions</th>
+	  </tr>
+
+	  <tr>
+	    <th>x</th>
+	    <th>y</th>
+	    <th>lat</th>
+	    <th>lon</th>
+	    <th>UTC</th>
+	    <th>sunrise</th>
+	    <th>extend</th>
+	    <th>UTC</th>
+	    <th>sunrise</th>
+	    <th>extend</th>
 	    <th>Delete</th>
 	    <th>Revert</th>
 	    <th>Save</th>
@@ -148,20 +159,21 @@
 
 	  <tr class="hidden" id="infoBoxTemplate">
 	    <td class="sequenceId">ID</td>
+	    <td class="xcoord">x</td>
+	    <td class="ycoord">y</td>
+	    <td><a target="_googlemaps" class="lat">y</a></td>
+	    <td><a target="_googlemaps" class="lon">x</a></td>
+	    <td><a class="firstTimeStamp" href="">00:00:00</a></td>
+	    <td><a class="firstTimeSunrise" href="">-3</a></td>
+	    <td><button type="button" class="button extendBackward">Go</button></td>
+	    <td><a class="lastTimeStamp" href="">00:00:00</a></td>
+	    <td><a class="lastTimeSunrise" href="">-3</a></td>
+	    <td><button type="button" class="button extendForward">Go</button></td>
 	    <td>
-	      (<span class="xcoord">x</span>, <span class="ycoord">y</span>)
-	    </td>
-	    <td class="lat">lat</td>
-	    <td class="lon">lon</td>
-	    <td class="firstTime">Appears</td>
-	    <td class="lastTime">Disappears</td>
-	    <td>	
 	      <form class="comments"> 
 	       	<input name="textbox" size="30" maxlength="1024"/> 
 	      </form> 
 	    </td>
-	    <td><a class="extendBackward" href=""></a></td>
-	    <td><a class="extendForward" href=""></a></td>
 	    <td><button class="button deleteButton" type="button">Delete</button></td>
 	    <td><button class="button revertButton" type="button">Revert</button></td>
 	    <td><button class="button saveButton" type="button">Save</button></td>

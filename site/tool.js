@@ -689,7 +689,12 @@ function InfoBox(){
     this.ycoord = getElementByClassName("ycoord", this.infoBoxElt);
     this.lat = getElementByClassName("lat", this.infoBoxElt);
     this.lon = getElementByClassName("lon", this.infoBoxElt);
-    this.firstTime = getElementByClassName("firstTime", this.infoBoxElt);
+    this.firstTimeLink = getElementByClassName("firstTimeLink", this.infoBoxElt);
+	this.firstTimeStamp = getElementByClassName("firstTimeStamp", this.infoBoxElt);
+	this.firstTimeSunrise = getElementByClassName("firstTimeSunrise", this.infoBoxElt);
+    this.lastTimeLink = getElementByClassName("lastTimeLink", this.infoBoxElt);
+	this.lastTimeStamp = getElementByClassName("lastTimeStamp", this.infoBoxElt);
+	this.lastTimeSunrise = getElementByClassName("lastTimeSunrise", this.infoBoxElt);
     this.lastTime = getElementByClassName("lastTime", this.infoBoxElt);
     this.extendBackward = getElementByClassName("extendBackward", this.infoBoxElt);
     this.extendForward = getElementByClassName("extendForward", this.infoBoxElt);
@@ -891,7 +896,9 @@ RoostSequence.prototype.newInfoBox = function()
 	this.updateInfoBox();
 }
 
-
+/*------------------------------------------------------------
+ * updateInfoBox: render info box
+ *------------------------------------------------------------*/
 RoostSequence.prototype.updateInfoBox = function() 
 {
     if (this.databaseID != null){
@@ -905,41 +912,48 @@ RoostSequence.prototype.updateInfoBox = function()
 	var loc = {x: this.circles[this.seq_start].x,
 			   y: this.circles[this.seq_start].y };
 
-	var loc_longlat = this.tool.pixel_to_longlat(loc);
+	var longlat = this.tool.pixel_to_longlat(loc);
+
+	var lon = longlat.x;
+	var lat = longlat.y;
 
     // update location label
     this.infoBox.xcoord.innerHTML = this.circles[this.seq_start].x.toFixed(0);
     this.infoBox.ycoord.innerHTML = this.circles[this.seq_start].y.toFixed(0);
 
-    this.infoBox.lon.innerHTML = loc_longlat.x.toFixed(4);
-    this.infoBox.lat.innerHTML = loc_longlat.y.toFixed(4);
+	this.infoBox.lon.href = "http://maps.google.com?q=" + lat.toFixed(8) + "," + lon.toFixed(8);
+	this.infoBox.lat.href = "http://maps.google.com?q=" + lat.toFixed(8) + "," + lon.toFixed(8);
+    this.infoBox.lon.innerHTML = lon.toFixed(4);
+    this.infoBox.lat.innerHTML = lat.toFixed(4);
     
     // update the first time & last time
-    this.infoBox.firstTime.innerHTML = this.tool.getTimeStamp(this.seq_start);
-    this.infoBox.lastTime.innerHTML = this.tool.getTimeStamp(this.seq_end);
+	var frame = this.tool.frames[this.seq_start];
+    this.infoBox.firstTimeStamp.onclick = bindEvent(this, "moveToFirst");
+    this.infoBox.firstTimeStamp.innerHTML = frame.scan_time;
+    this.infoBox.firstTimeSunrise.onclick = bindEvent(this, "moveToFirst");
+	this.infoBox.firstTimeSunrise = frame.minutes_from_sunrise;
+
+	frame = this.tool.frames[this.seq_end];
+    this.infoBox.lastTimeStamp.onclick = bindEvent(this, "moveToLast");
+    this.infoBox.lastTimeStamp.innerHTML = frame.scan_time;
+    this.infoBox.lastTimeSunrise.onclick = bindEvent(this, "moveToLast");
+	this.infoBox.lastTimeSunrise = frame.minutes_from_sunrise;
+
+	this.infoBox.extendBackward.onclick = bindEvent(this, "extendBackward");
+	this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
 
     // update extend links
     if(this.proCircleEnd) {
-        this.infoBox.extendForward.innerHTML = "still editing ...";
         this.infoBox.extendForward.setAttribute('disabled', 'disabled');
-        this.infoBox.extendForward.setAttribute('href', '');
-        this.infoBox.extendForward.setAttribute('onclick', 'return false');
     }
     else {
-        this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
-        this.infoBox.extendForward.innerHTML = "extend forward";
         this.infoBox.extendForward.removeAttribute('disabled');
     }
     
     if(this.proCircleStart) {
-        this.infoBox.extendBackward.innerHTML = "still editing ...";
         this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
-        this.infoBox.extendBackward.setAttribute('href', '');
-        this.infoBox.extendBackward.setAttribute('onclick', 'return false');
     }
     else{
-        this.infoBox.extendBackward.onclick = bindEvent(this, "extendBackward");
-        this.infoBox.extendBackward.innerHTML = "extend backward";
         this.infoBox.extendBackward.removeAttribute('disabled');
     }
 
@@ -1010,6 +1024,7 @@ RoostSequence.prototype.saveEvent = function()
 {
 	var confirmation=confirm("Would you like to save?");
 	if (confirmation) this.save();
+	this.infoBox.saveButton.blur();
 	return confirmation;
 };
 
@@ -1026,6 +1041,7 @@ RoostSequence.prototype.revertEvent = function()
 {
 	var confirmation=confirm("Would you like to revert?");
 	if (confirmation) this.revert();
+	this.infoBox.revertButton.blur();
 	return confirmation;
 };
 
@@ -1051,6 +1067,7 @@ RoostSequence.prototype.revert = function()
 
 RoostSequence.prototype.deleteEvent = function() 
 {
+	this.infoBox.deleteButton.blur();
 	var confirmation=confirm("Would you like to delete?");
 	if (confirmation == true) { 
 		this._delete(); 
@@ -1105,6 +1122,16 @@ RoostSequence.prototype.deleteInfoBox = function() {
     }
 };
 
+RoostSequence.prototype.moveToFirst = function() 
+{
+	this.tool.moveToFrame(this.seq_start);
+}
+
+RoostSequence.prototype.moveToLast = function() 
+{
+	this.tool.moveToFrame(this.seq_end);
+}
+
 RoostSequence.prototype.extendForward = function() 
 {
     if (this.seq_end  < this.tool.frames.length - 1 )
@@ -1113,11 +1140,12 @@ RoostSequence.prototype.extendForward = function()
         this.proCircleEnd = 1;
         this.tool.updateCanvas();
         this.updateInfoBox();
+		this.infoBox.extendForward.blur();
         this.tool.updateButtons();
     }
 };
 
-RoostSequence.prototype.extendBackward = function() 
+RoostSequence.prototype.extendBackward = function(e, options) 
 {
     if (this.seq_start  > 0 )
     {
@@ -1125,7 +1153,8 @@ RoostSequence.prototype.extendBackward = function()
         this.proCircleStart = 1;
         this.tool.updateCanvas();
         this.updateInfoBox();
-        this.tool.updateButtons();    
+		this.infoBox.extendBackward.blur();
+        this.tool.updateButtons();
 	}
 };
 
@@ -1511,7 +1540,7 @@ RoostTool.prototype.getTimeStamp = function(frame_number)
 	else 
 	{
 		var frame = this.frames[frame_number];
-		return frame.minutes_from_sunrise;
+		return frame.scan_time.substring(0,5) + " / " + frame.minutes_from_sunrise;
 	}
 };
 
@@ -1621,6 +1650,9 @@ RoostTool.prototype.resetAll = function() {
 };
 
 RoostTool.prototype.updateButtons = function() {
+
+    document.getElementById("saveAllButton").blur();
+    document.getElementById("resetButton").blur();
     
     for(var i = 0 ; i < this.roostSeqObj.length; i++){
         if(this.roostSeqObj[i].locallyChanged){
@@ -1662,8 +1694,8 @@ RoostTool.prototype.removeSequence = function(obj)
 };
 
 RoostTool.prototype.moveToFrame = function(frameNum) {
-    this.loadFrame(frameNum);
     this.frame = frameNum;
+    this.loadFrame(frameNum);
 	this.updateCanvas();
 };
 
@@ -1867,10 +1899,10 @@ function RoostToolInit()
     if (tool != null) tool.destroy();
 	tool = new RoostTool();
     tool.getSequences();
-    document.onkeydown = keydown;    
+    window.onkeydown = keydown;    
     window.focus();
 
-    window.onbeforeunload = bindEvent(tool, "onbeforeunload", true);
+    window.onbeforeunload = bindEvent(tool, "onbeforeunload", {passthru: true});
 
     document.getElementById("saveAllButton").style.display = "inline";
     document.getElementById("resetButton").style.display = "inline";

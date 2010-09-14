@@ -163,12 +163,12 @@ body {
 {
     padding: 2px;
     border:1px solid #ccc;
+    font-size: small;
 }
 
-#roostSequenceTable td
-{
-    text-align: right;
-}
+#roostSequenceTable td    { text-align: right; }
+#roostSequenceTable td a  { text-decoration: none; color: blue; }
+#roostSequenceTable .sequenceId { width: 55px };
 
 #bottomButtons{
     padding: 5px;
