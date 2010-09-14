@@ -495,7 +495,21 @@ RoostCircle.prototype.remove = function(e)
 RoostCircle.prototype.isProvisional = function()
 {
 	return this.strokeColor == "grey";
-}
+};
+
+RoostCircle.prototype.highlight = function()
+{
+	this.fill = "green";
+	this.fillOpacity = 0.7;
+	this.redraw();
+};
+
+RoostCircle.prototype.unhighlight = function()
+{
+	this.fill = "none";
+	this.opacity = 1;
+	this.redraw();
+};
 
 //--------------------
 // Resize
@@ -896,6 +910,18 @@ RoostSequence.prototype.newInfoBox = function()
 	this.updateInfoBox();
 }
 
+RoostSequence.prototype.highlight = function() 
+{
+	for (var i=0; i < this.activeCircles.length; i++)
+		this.activeCircles[i].highlight();
+};
+
+RoostSequence.prototype.unhighlight = function() 
+{
+	for (var i=0; i < this.activeCircles.length; i++)
+		this.activeCircles[i].unhighlight();
+};
+
 /*------------------------------------------------------------
  * updateInfoBox: render info box
  *------------------------------------------------------------*/
@@ -908,6 +934,9 @@ RoostSequence.prototype.updateInfoBox = function()
 	{
 		this.infoBox.sequenceId.innerHTML = "<i>unsaved</i>";
 	}
+
+	this.infoBox.infoBoxElt.onmouseover = bindEvent(this, "highlight");
+	this.infoBox.infoBoxElt.onmouseout  = bindEvent(this, "unhighlight");
 
 	var loc = {x: this.circles[this.seq_start].x,
 			   y: this.circles[this.seq_start].y };
@@ -931,13 +960,13 @@ RoostSequence.prototype.updateInfoBox = function()
     this.infoBox.firstTimeStamp.onclick = bindEvent(this, "moveToFirst");
     this.infoBox.firstTimeStamp.innerHTML = frame.scan_time;
     this.infoBox.firstTimeSunrise.onclick = bindEvent(this, "moveToFirst");
-	this.infoBox.firstTimeSunrise = frame.minutes_from_sunrise;
+	this.infoBox.firstTimeSunrise.innerHTML = frame.minutes_from_sunrise;
 
 	frame = this.tool.frames[this.seq_end];
     this.infoBox.lastTimeStamp.onclick = bindEvent(this, "moveToLast");
     this.infoBox.lastTimeStamp.innerHTML = frame.scan_time;
     this.infoBox.lastTimeSunrise.onclick = bindEvent(this, "moveToLast");
-	this.infoBox.lastTimeSunrise = frame.minutes_from_sunrise;
+	this.infoBox.lastTimeSunrise.innerHTML = frame.minutes_from_sunrise;
 
 	this.infoBox.extendBackward.onclick = bindEvent(this, "extendBackward");
 	this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
