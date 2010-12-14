@@ -1,4 +1,10 @@
 DirectoryIndex index.xhtml
+
+RewriteEngine on
+RewriteCond %{HTTP_USER_AGENT} .*MSIE.*
+RewriteCond %{REQUEST_URI} \.xhtml$
+RewriteRule .* - [T=text/html]
+
 #php_value display_errors 1
 #php_value display_startup_errors 1
 #php_value error_log /nfs/phantom/u5/sheldon/spectre/phplog/phplog.txt
