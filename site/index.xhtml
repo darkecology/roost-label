@@ -25,6 +25,7 @@
     <script type="text/javascript" src="ajax.js"/>
     <script type="text/javascript" src="tool.js"/>
     <script type="text/javascript" src="select.js"/>
+    <script type="text/javascript" src="Users.js"/>
     
   </head>
   
@@ -63,7 +64,15 @@
 	  (<a id="prevButton" disabled="true" href="javascript:prev();">Prev</a>
 	  <a id="nextButton" disabled="true" href="javascript:next();">Next</a>)
 	</span>
-
+	<div id="userLoginDiv" style="float:right">
+	  User Name: <input type="text" id="userName" size="10" maxlength="32"/>
+	  Password: <input type="password" id="password" size="10" maxlength="32"/>
+	  <button id="loginButton" class="button" type="button">Login</button>
+	  <button id="newUserButton" class="button" type="button">New User</button>
+	</div>
+	<div id="userLogoutDiv" style="float:right; visibility:hidden">
+	  <button id="loginButton" class="button" type="button">Logout</button>
+	</div>
       </div> <!-- end #controlBar -->
       
       <div id="frameInfoBar">

@@ -2060,3 +2060,8 @@ function getElementByClassName(classname, parent)
         return null;
 }
 
+var user;
+function UserInit()
+{
+    user = new User()
+}

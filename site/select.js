@@ -6,6 +6,7 @@ function starter()
 	ResetTool();
 	selector = new Selector();
 	selector.updateAllDropdowns();
+	UserInit();
 }
 
 function Selector()
