@@ -70,13 +70,23 @@ User.prototype.newUser = function()
     var loginUserName = document.getElementById("userName").value;
     var password = document.getElementById("password").value;
     //Call Ajax New User
-    alert("Creating new user " + loginUserName);
-    var validNewUser = false;
-    if(validNewUser)
+    var url = "ajax/new_user.php";
+    xmlhttp= new XMLHttpRequest();	
+    xmlhttp.open("POST", url, false);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.send("username=" + loginUserName + "&password=" + password)
+    var responseText = xmlhttp.responseText;
+    var splitArray = responseText.split(';');
+    if(splitArray[0] == 0)
     {
-        this.storeUserID(this.userID);
-        this.updateDiv();
+        alert("New user creation failed");
+        return;
     }
+    this.userName = loginUserName;
+    this.permission = 1;
+    this.userID = splitArray[1];
+    this.storeUserID(this.userID);
+    this.updateDiv();
 }
 
 
@@ -84,15 +94,26 @@ User.prototype.login = function()
 {
     var loginUserName = document.getElementById("userName").value;
     var password = document.getElementById("password").value;
-    alert("Logging in " + loginUserName);
     //Call Ajax Login
+    var url = "ajax/user_login.php";
+    xmlhttp= new XMLHttpRequest();	
+    xmlhttp.open("POST", url, false);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.send("username=" + loginUserName + "&password=" + password);
+    var responseText = xmlhttp.responseText;
+    var splitArray = responseText.split(';');
     
-    var loginPassed = false;
-    if(loginPassed)
+    if(splitArray[0] == 0)
     {
-        this.storeUserID(this.userID);
-        this.updateDiv();       
+        alert("Login Failed");
+        return;
     }
+    
+    this.userID = splitArray[1].substr(8);
+    this.permission = splitArray[2].substr(12);
+    this.userName = loginUserName;
+    this.storeUserID(this.userID);
+    this.updateDiv();
 }
 
 User.prototype.logout = function()
@@ -157,14 +178,4 @@ User.prototype.updateDiv = function()
         var userLoginDiv = document.getElementById("userLoginDiv");
         userLoginDiv.style.display = 'block';    
     }
-}
-
-User.prototype.addLoginDiv = function()
-{
-    
-}
-
-User.prototype.addLogoutDiv = function()
-{
-    
 }
