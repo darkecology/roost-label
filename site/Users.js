@@ -1,5 +1,5 @@
 
-var actions = {EditRoost: 1, CreateRoost: 2}
+var actions = {EditRoost: 1, CreateRoost: 2};
 function User()
 {
     this.permission = 0;
