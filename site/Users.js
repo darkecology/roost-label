@@ -114,15 +114,17 @@ User.prototype.login = function()
     this.userName = loginUserName;
     this.storeUserID(this.userID);
     this.updateDiv();
+    tool.updateCanvas();
+    for(var i = 0; i < tool.roostSeqObj.length; i++)
+    {
+        tool.roostSeqObj[i].updateInfoBox();
+    }
 }
 
 User.prototype.logout = function()
 {
     this.deleteUserID();
-    this.userID = 0;
-    this.userName = "";
-    this.permission = 0;
-    this.updateDiv();
+    window.location.reload();
 }
 
 User.prototype.getUserID = function()

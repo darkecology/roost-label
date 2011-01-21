@@ -981,7 +981,7 @@ RoostSequence.prototype.updateInfoBox = function()
 	this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
 
     // update extend links
-    if (!this.proCircleEnd && (user != null && user.checkPermission("Willia", user.userAction.EditRoost))) {
+    if (!this.proCircleEnd && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost))) {
         this.infoBox.extendForward.removeAttribute('disabled');
     }
     else
@@ -989,7 +989,7 @@ RoostSequence.prototype.updateInfoBox = function()
 	this.infoBox.extendForward.setAttribute('disabled', 'disabled');
     }
     
-    if(!this.proCircleStart && (user != null && user.checkPermission("Willia", user.userAction.EditRoost)))
+    if(!this.proCircleStart && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost)))
     {
 	this.infoBox.extendBackward.removeAttribute('disabled');
     }
@@ -1028,7 +1028,7 @@ RoostSequence.prototype.updateInfoBox = function()
         this.infoBox.revertButton.setAttribute('disabled', 'disabled');
     }
     
-    if(user != null && user.checkPermission("Willia", user.userAction.EditRoost))
+    if(user != null && user.checkPermission(this.userID, user.userAction.EditRoost))
     {
 	this.infoBox.deleteButton.removeAttribute('disabled');
     }
@@ -1831,11 +1831,14 @@ function setThreePointMode(){
 RoostTool.prototype.threePointMode = function(){
 	document.getElementById("circleToggle").checked = true;
 	updateLayers();
-    for (var i = 0; i < this.panes.length; i++)
-    {
-        this.panes[i].canvas.onmousedown = bindEvent(this, "threePointClick");
-        this.panes[i].canvas.style.cursor = "crosshair";
-    }
+    if(user.checkPermission("", user.userAction.CreateRoost))
+	{
+		for (var i = 0; i < this.panes.length; i++)
+		{
+			this.panes[i].canvas.onmousedown = bindEvent(this, "threePointClick");
+			this.panes[i].canvas.style.cursor = "crosshair";
+		}
+	}
 };
 
 RoostTool.prototype.threePointClick = function(event, options) {
