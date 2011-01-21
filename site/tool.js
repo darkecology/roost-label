@@ -1867,7 +1867,8 @@ RoostTool.prototype.threePointClick = function(event, options) {
 		c.setScale(this.scale);
         if (c)
         {
-            var newRoostSequence = new RoostSequence(); 
+            var newRoostSequence = new RoostSequence();
+			newRoostSequence.userID = user.userID;
 			newRoostSequence.insertCircle(c, this.frame);
             c.roostSequence = newRoostSequence;
             newRoostSequence.locallyChanged = 1;
