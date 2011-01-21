@@ -715,6 +715,7 @@ function InfoBox(){
     this.lastTime = getElementByClassName("lastTime", this.infoBoxElt);
     this.extendBackward = getElementByClassName("extendBackward", this.infoBoxElt);
     this.extendForward = getElementByClassName("extendForward", this.infoBoxElt);
+    this.username = getElementByClassName("username", this.infoBoxElt);
     this.comments = getElementByClassName("comments", this.infoBoxElt);
     this.saveButton = getElementByClassName("saveButton", this.infoBoxElt);
     this.revertButton = getElementByClassName("revertButton", this.infoBoxElt);
@@ -997,8 +998,12 @@ RoostSequence.prototype.updateInfoBox = function()
 	this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
     }
 
+	//update username
+	
+	this.infoBox.username.innerHTML = this.username;
+
     //update comments
-    this.infoBox.comments.textbox.onkeydown = function(e) {stopPropagation(e); return true;}
+    this.infoBox.comments.textbox.onkeydown = function(e) {stopPropagation(e); return true;};
     this.infoBox.comments.textbox.onkeyup = bindEvent(this, "onKeyDownOnComments");
     this.infoBox.comments.textbox.onchange = bindEvent(this, "onChangeOnComments");
     this.infoBox.comments.textbox.value = this.comments;
