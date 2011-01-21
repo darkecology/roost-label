@@ -25,7 +25,7 @@ function GetBrowserInfo() {
     else if(IsNetscape() || IsSafari()) {
         bversion = parseInt(navigator.appVersion);
         //check for Safari.  
-        if(navigator.userAgent.match('Safari')) bname = 'Safari';
+		if(navigator.userAgent.match('Safari')) bname = 'Safari';
     }
     else bversion = 0;
 }
@@ -734,6 +734,8 @@ function RoostSequence()
     this.comments = null;
     this.circles = [];
     this.activeCircles = [];
+	this.username = "";
+	this.userID = 0;
 }
 
 RoostSequence.prototype.destroy = function()
@@ -749,6 +751,9 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 	this.proCircleEnd = 0;
 	this.databaseID = jsonSeq.sequence_id;
 	this.comments = jsonSeq.comments;
+	this.userID = jsonSeq.user_id;
+	this.username = jsonSeq.username;
+	
 	
 	for (var j = 0; j < jsonSeq.circles.length; j++)
 	{
@@ -2063,5 +2068,5 @@ function getElementByClassName(classname, parent)
 var user;
 function UserInit()
 {
-    user = new User()
+	user = new User();
 }
