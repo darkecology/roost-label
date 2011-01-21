@@ -3,10 +3,10 @@ var reset_selection = "<option value=\"null\"/>";
 var selector;
 function starter()
 {
+	UserInit();
 	ResetTool();
 	selector = new Selector();
 	selector.updateAllDropdowns();
-	UserInit();
 }
 
 function Selector()

@@ -447,17 +447,20 @@ RoostCircle.prototype.clone = function()
 
 RoostCircle.prototype.draw = function(obj)
 {
-    Circle.prototype.draw.call(this, obj);
-    this.setStyle("cursor", "move");
-    this.listen("onmousedown", this, "startDrag");
-
-    this.radiusHandle.draw(obj);
-    this.radiusHandle.setStyle("cursor", "pointer");
-    this.radiusHandle.listen("onmousedown", this, "startResize");
-
-    this.deleteHandle.draw(obj);
-    this.deleteHandle.listen("onmousedown", this, "remove");
-    this.deleteHandle.setStyle("cursor", "pointer");
+	Circle.prototype.draw.call(this, obj);
+	if(user.checkPermission(this.roostSequence.userID, user.userAction.EditRoost))
+	{
+		this.setStyle("cursor", "move");
+		this.listen("onmousedown", this, "startDrag");
+		
+		this.radiusHandle.draw(obj);
+		this.radiusHandle.setStyle("cursor", "pointer");
+		this.radiusHandle.listen("onmousedown", this, "startResize");
+		
+		this.deleteHandle.draw(obj);
+		this.deleteHandle.listen("onmousedown", this, "remove");
+		this.deleteHandle.setStyle("cursor", "pointer");
+	}
 };
 RoostCircle.prototype.drawDeleteHandle = function(obj){
     this.deleteHandle.draw(obj);
@@ -977,18 +980,21 @@ RoostSequence.prototype.updateInfoBox = function()
 	this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
 
     // update extend links
-    if(this.proCircleEnd) {
-        this.infoBox.extendForward.setAttribute('disabled', 'disabled');
-    }
-    else {
+    if (!this.proCircleEnd && (user != null && user.checkPermission("Willia", user.userAction.EditRoost))) {
         this.infoBox.extendForward.removeAttribute('disabled');
     }
-    
-    if(this.proCircleStart) {
-        this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
+    else
+    {
+	this.infoBox.extendForward.setAttribute('disabled', 'disabled');
     }
-    else{
-        this.infoBox.extendBackward.removeAttribute('disabled');
+    
+    if(!this.proCircleStart && (user != null && user.checkPermission("Willia", user.userAction.EditRoost)))
+    {
+	this.infoBox.extendBackward.removeAttribute('disabled');
+    }
+    else
+    {
+	this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
     }
 
     //update comments
@@ -1016,7 +1022,15 @@ RoostSequence.prototype.updateInfoBox = function()
         this.infoBox.saveButton.setAttribute('disabled', 'disabled');
         this.infoBox.revertButton.setAttribute('disabled', 'disabled');
     }
-
+    
+    if(user != null && user.checkPermission("Willia", user.userAction.EditRoost))
+    {
+	this.infoBox.deleteButton.removeAttribute('disabled');
+    }
+    else
+    {
+	this.infoBox.deleteButton.setAttribute('disabled', 'disabled');
+    }
     this.infoBox.deleteButton.onclick = bindEvent(this, "deleteEvent");
 };
 

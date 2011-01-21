@@ -44,7 +44,7 @@ User.prototype.checkPermission = function(roostUserName, action)
     {
         if(action == actions.EditRoost)
         {
-            if(userName == roostUserName)
+            if(this.userID == roostUserName)
             {
                 return true;
             }
