@@ -10,8 +10,11 @@ function User()
     document.getElementById("loginButton").onclick = bindEvent(this,"login");
     document.getElementById("newUserButton").onclick = bindEvent(this,"newUser");
     document.getElementById("logoutButton").onclick = bindEvent(this,"logout");
+    document.getElementById("newAccountButton").onclick = bindEvent(this, "newUserCreation");
     document.getElementById("userName").onkeydown = function(e) {stopPropagation(e); return true;};
     document.getElementById("password").onkeydown = function(e) {stopPropagation(e); return true;};
+    document.getElementById("newUserName").onkeydown = function(e) {stopPropagation(e); return true;};
+    document.getElementById("newUserPassword").onkeydown = function(e) {stopPropagation(e); return true;};
     var cookieFound = this.getUserID();
     if(cookieFound)
     {
@@ -68,8 +71,16 @@ User.prototype.checkPermission = function(roostUserName, action)
 
 User.prototype.newUser = function()
 {
-    var loginUserName = document.getElementById("userName").value;
-    var password = document.getElementById("password").value;
+    var newUserDiv = document.getElementById("newUserDiv");
+    newUserDiv.style.display = 'block';
+    var pageDivWrapper = document.getElementById("pageDivWrapper");
+    pageDivWrapper.style.display = 'none';
+}
+
+User.prototype.newUserCreation = function()
+{
+    var loginUserName = document.getElementById("newUserName").value;
+    var password = document.getElementById("newUserPassword").value;
     //Call Ajax New User
     var url = "ajax/new_user.php";
     xmlhttp= new XMLHttpRequest();	
@@ -88,8 +99,12 @@ User.prototype.newUser = function()
     this.userID = splitArray[1];
     this.storeUserID(this.userID);
     this.updateDiv();
+    
+    var newUserDiv = document.getElementById("newUserDiv");
+    newUserDiv.style.display = 'none';
+    var pageDivWrapper = document.getElementById("pageDivWrapper");
+    pageDivWrapper.style.display = 'block';
 }
-
 
 User.prototype.login = function()
 {
