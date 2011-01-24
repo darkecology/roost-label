@@ -10,7 +10,8 @@ function User()
     document.getElementById("loginButton").onclick = bindEvent(this,"login");
     document.getElementById("newUserButton").onclick = bindEvent(this,"newUser");
     document.getElementById("logoutButton").onclick = bindEvent(this,"logout");
-    
+    document.getElementById("userName").onkeydown = function(e) {stopPropagation(e); return true;};
+    document.getElementById("password").onkeydown = function(e) {stopPropagation(e); return true;};
     var cookieFound = this.getUserID();
     if(cookieFound)
     {
