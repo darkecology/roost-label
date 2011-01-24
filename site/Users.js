@@ -11,6 +11,7 @@ function User()
     document.getElementById("newUserButton").onclick = bindEvent(this,"newUser");
     document.getElementById("logoutButton").onclick = bindEvent(this,"logout");
     document.getElementById("newAccountButton").onclick = bindEvent(this, "newUserCreation");
+    document.getElementById("cancelButton").onclick = bindEvent(this, "cancelNewUserCreation");
     document.getElementById("userName").onkeydown = function(e) {stopPropagation(e); return true;};
     document.getElementById("password").onkeydown = function(e) {stopPropagation(e); return true;};
     document.getElementById("newUserName").onkeydown = function(e) {stopPropagation(e); return true;};
@@ -75,6 +76,10 @@ User.prototype.newUser = function()
     newUserDiv.style.display = 'block';
     var pageDivWrapper = document.getElementById("pageDivWrapper");
     pageDivWrapper.style.display = 'none';
+    var newAccountButton = document.getElementById("newAccountButton");
+    newAccountButton.removeAttribute('disabled');
+    var cancelButton = document.getElementById("cancelButton");
+    cancelButton.removeAttribute('disabled');
 }
 
 User.prototype.newUserCreation = function()
@@ -96,7 +101,7 @@ User.prototype.newUserCreation = function()
     }
     this.userName = loginUserName;
     this.permission = 1;
-    this.userID = splitArray[1];
+    this.userID = splitArray[1].substr(8);
     this.storeUserID(this.userID);
     this.updateDiv();
     
@@ -105,7 +110,13 @@ User.prototype.newUserCreation = function()
     var pageDivWrapper = document.getElementById("pageDivWrapper");
     pageDivWrapper.style.display = 'block';
 }
-
+User.prototype.cancelNewUserCreation = function()
+{
+    var newUserDiv = document.getElementById("newUserDiv");
+    newUserDiv.style.display = 'none';
+    var pageDivWrapper = document.getElementById("pageDivWrapper");
+    pageDivWrapper.style.display = 'block';
+}
 User.prototype.login = function()
 {
     var loginUserName = document.getElementById("userName").value;
