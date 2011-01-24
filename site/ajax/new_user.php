@@ -37,7 +37,8 @@
 		if (!$result) {
 			echo "0;Invalid query: " . mysql_error();
 		}else{
-			echo "1";
+			$userID = mysql_insert_id();
+			echo "1; userID=$userID";
 		}	
 		
 		mysql_close($con);
