@@ -16,6 +16,8 @@ $request = trim(file_get_contents('php://input'));
 
 $roostobj = json_decode($request);
 
+$userID = $roostobj->userID;
+
 $sequence_id = $roostobj->sequence_id;
 $conn = roostdb_connect();
 
@@ -36,8 +38,8 @@ EOF;
 else
 {
     $sql = <<<EOF
-	INSERT INTO sequences (sequence_id, station, scan_date, comments)
-	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments")
+	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id)
+	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());

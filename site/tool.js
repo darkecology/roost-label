@@ -777,6 +777,7 @@ RoostSequence.prototype.toJSONString = function()
 	obj.sequence_id = this.databaseID;
 	obj.comments = this.comments;
 	obj.circles = [];
+	obj.userID = this.userID;
 
     for(var i = this.seq_start; i <= this.seq_end; i++)
 	{
