@@ -1717,7 +1717,10 @@ RoostTool.prototype.updateButtons = function() {
     
     for(var i = 0 ; i < this.roostSeqObj.length; i++){
         if(this.roostSeqObj[i].locallyChanged){
-            document.getElementById("saveAllButton").removeAttribute('disabled');
+			if(user.checkPermission(this.userID, user.userAction.CreateRoost))
+			{
+				document.getElementById("saveAllButton").removeAttribute('disabled');
+			}
             document.getElementById("resetButton").removeAttribute('disabled');
             return;
         }
