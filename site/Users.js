@@ -3,8 +3,8 @@ var actions = {EditRoost: 1, CreateRoost: 2};
 function User()
 {
     this.permission = 0;
-    this.userName = "";
-    this.userID = 0;
+    this.userName = "guest";
+    this.userID = -1;
     this.userAction = actions;
     
     document.getElementById("loginButton").onclick = bindEvent(this,"login");
@@ -43,7 +43,13 @@ User.prototype.checkPermission = function(roostUserName, action)
 {
     if(this.permission == 0)
     {
-        return false;
+        if(action == actions.EditRoost)
+        {
+            if(this.userID == roostUserName)
+            {
+                return true;
+            }
+        }
     }
     else if(this.permission == 1)
     {

@@ -1011,8 +1011,15 @@ RoostSequence.prototype.updateInfoBox = function()
     
     //update buttons
     if(this.locallyChanged){
-        this.infoBox.saveButton.removeAttribute('disabled');
-        this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");
+		if(user.checkPermission(this.userID, user.userAction.EditRoost) && user.checkPermission(this.userID, user.userAction.CreateRoost))
+		{
+			this.infoBox.saveButton.removeAttribute('disabled');
+			this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");			
+		}
+		else
+		{
+			this.infoBox.saveButton.setAttribute('disabled', 'disabled');
+		}
         if (this.databaseID != null)
         {
             this.infoBox.revertButton.removeAttribute('disabled');
@@ -1031,13 +1038,13 @@ RoostSequence.prototype.updateInfoBox = function()
     
     if(user != null && user.checkPermission(this.userID, user.userAction.EditRoost))
     {
-	this.infoBox.deleteButton.removeAttribute('disabled');
+		this.infoBox.deleteButton.removeAttribute('disabled');
     }
     else
     {
-	this.infoBox.deleteButton.setAttribute('disabled', 'disabled');
+		this.infoBox.deleteButton.setAttribute('disabled', 'disabled');
     }
-    this.infoBox.deleteButton.onclick = bindEvent(this, "deleteEvent");
+	this.infoBox.deleteButton.onclick = bindEvent(this, "deleteEvent");
 };
 
 RoostSequence.prototype.onKeyDownOnComments = function()
@@ -1832,13 +1839,14 @@ function setThreePointMode(){
 RoostTool.prototype.threePointMode = function(){
 	document.getElementById("circleToggle").checked = true;
 	updateLayers();
-    if(user.checkPermission("", user.userAction.CreateRoost))
+    for (var i = 0; i < this.panes.length; i++)
 	{
-		for (var i = 0; i < this.panes.length; i++)
-		{
-			this.panes[i].canvas.onmousedown = bindEvent(this, "threePointClick");
-			this.panes[i].canvas.style.cursor = "crosshair";
-		}
+		this.panes[i].canvas.onmousedown = bindEvent(this, "threePointClick");
+		this.panes[i].canvas.style.cursor = "crosshair";
+	}
+	if(!user.checkPermission("", user.userAction.CreateRoost))
+	{
+		alert("New roosts created by guests cannot be saved");
 	}
 };
 
@@ -1869,8 +1877,16 @@ RoostTool.prototype.threePointClick = function(event, options) {
         if (c)
         {
             var newRoostSequence = new RoostSequence();
-			newRoostSequence.userID = user.userID;
-			newRoostSequence.username = user.userName;
+			if(!user.checkPermission("", user.userAction.CreateRoost))
+			{
+				newRoostSequence.userID = -1;
+				newRoostSequence.username = "guest";
+			}
+			else
+			{
+				newRoostSequence.userID = user.userID;
+				newRoostSequence.username = user.userName;				
+			}
 			newRoostSequence.insertCircle(c, this.frame);
             c.roostSequence = newRoostSequence;
             newRoostSequence.locallyChanged = 1;
