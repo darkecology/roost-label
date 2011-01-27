@@ -43,6 +43,24 @@ Selector.prototype.installHandlers = function()
 // Called when user changes any of the boxes
 Selector.prototype.selectionChange = function()
 {
+	if(tool != null)
+	{
+		for (var i = 0; i < tool.roostSeqObj.length; i++)
+		{
+			if (tool.roostSeqObj[i].locallyChanged)
+			{
+				var answer = confirm("There are unsaved changes. Are you sure you want to change the date?");
+				if(answer)
+				{
+					break;
+				}
+				else
+				{
+					return;
+				}
+			}
+		}
+	}
 	ResetTool();
 	for (var key in this.selectElts) {
 		this.selectElts[key].blur();
