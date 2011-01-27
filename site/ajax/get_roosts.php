@@ -17,7 +17,10 @@ $con = roostdb_connect();
 
 if (isset($sequence_id))
 {
-    $and_clause = "AND s.sequence_id = $sequence_id\n";
+    $and_clause = <<<EOF
+	  AND s.sequence_id = '$sequence_id'
+	  AND u.userID = s.user_id
+EOF;
 }
 else
 {
