@@ -31,13 +31,12 @@ function User()
         
         if(splitArray[0] == 0)
         {
-            alert("Getting login from cookie failed");
             return;
         }
         this.userName = splitArray[1].substr(10);
         this.permission = splitArray[2].substr(12);
-        this.updateDiv();
     }
+    this.updateDiv();
 }
 User.prototype.checkPermission = function(roostUserName, action)
 {
@@ -172,7 +171,6 @@ User.prototype.getUserID = function()
         var c_end=document.cookie.indexOf(";",c_start);
         if (c_end==-1) c_end=document.cookie.length;
         this.userID = unescape(document.cookie.substring(c_start,c_end));
-        alert("" + unescape(document.cookie.substring(c_start,c_end)));
         return unescape(document.cookie.substring(c_start,c_end));
         }
       }
@@ -206,7 +204,7 @@ User.prototype.updateDiv = function()
         var helloSpan = document.getElementById("helloSpan");
         helloSpan.innerHTML = this.userName;
     }
-    if(this.userName == "")
+    if(this.userName == "guest")
     {
         var userLogoutDiv = document.getElementById("userLogoutDiv");
         userLogoutDiv.style.display = 'none';  
