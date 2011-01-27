@@ -24,7 +24,7 @@ function User()
 	xmlhttp= new XMLHttpRequest();	
 	xmlhttp.open("POST", url, false);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xmlhttp.send("userID=" + this.userID)
+        xmlhttp.send("userID=" + this.userID);
         var responseText = xmlhttp.responseText;
         
         var splitArray = responseText.split(';');
@@ -75,6 +75,37 @@ User.prototype.checkPermission = function(roostUserName, action)
     return false;
 }
 
+User.prototype.displayError = function(errorNum){
+	switch(parseInt(errorNum)){
+	case 0:
+		alert("Please enter a username and a password to signup");
+		break;
+		
+	case 1:
+		alert("Username already exist");
+		break;
+
+	case 2:
+		alert("Database Error: please contact admin");
+		break;
+		
+	case 3:
+		alert("Use ID doesn't Exist: please contact admin");
+		break;
+		
+	case 4:
+		alert("usernaem and/or password do not match. Please try again");
+		break;		
+  
+	case 5:
+		alert("Please type in both username and password to login");
+		break;
+
+	default:
+		alert("unknown error");
+	}
+};
+
 User.prototype.newUser = function()
 {
     var newUserDiv = document.getElementById("newUserDiv");
@@ -91,18 +122,26 @@ User.prototype.newUserCreation = function()
 {
     var loginUserName = document.getElementById("newUserName").value;
     var password = document.getElementById("newUserPassword").value;
+	
+	if(loginUserName == "" || password ==""){
+		this.displayError(0);
+		return;
+	}
+
     //Call Ajax New User
     var url = "ajax/new_user.php";
     xmlhttp= new XMLHttpRequest();	
     xmlhttp.open("POST", url, false);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.send("username=" + loginUserName + "&password=" + password)
+    xmlhttp.send("username=" + loginUserName + "&password=" + password);
     var responseText = xmlhttp.responseText;
     var splitArray = responseText.split(';');
     if(splitArray[0] == 0)
     {
-        alert("New user creation failed");
-        return;
+		this.displayError(splitArray[1]);
+		return;
+		
+		
     }
     this.userName = loginUserName;
     this.permission = 1;
@@ -114,18 +153,26 @@ User.prototype.newUserCreation = function()
     newUserDiv.style.display = 'none';
     var pageDivWrapper = document.getElementById("pageDivWrapper");
     pageDivWrapper.style.display = 'block';
-}
+};
+
 User.prototype.cancelNewUserCreation = function()
 {
     var newUserDiv = document.getElementById("newUserDiv");
     newUserDiv.style.display = 'none';
     var pageDivWrapper = document.getElementById("pageDivWrapper");
     pageDivWrapper.style.display = 'block';
-}
+};
+
 User.prototype.login = function()
 {
     var loginUserName = document.getElementById("userName").value;
     var password = document.getElementById("password").value;
+
+	if(loginUserName == "" || password ==""){
+		this.displayError(5);
+		return;
+	}
+	
     //Call Ajax Login
     var url = "ajax/user_login.php";
     xmlhttp= new XMLHttpRequest();	
@@ -137,8 +184,8 @@ User.prototype.login = function()
     
     if(splitArray[0] == 0)
     {
-        alert("Login Failed");
-        return;
+		this.displayError(splitArray[1]);
+		return;
     }
     
     this.userID = splitArray[1].substr(8);

@@ -12,9 +12,10 @@
 	//if not both are sent along with the request; return 0 for error and a message
 
 	if ($username == NULL or $hashedPassword == NULL) {
-		echo "0; username and password are required via(_POST)";
+		echo "0; 0;username and password are required via(_POST)";
 		return;
 	}
+
 
 	//check for username conflict in database
 
@@ -23,10 +24,10 @@
 	$result = mysql_query($usernameCheckSQL);
 		
 	if (!$result) {
-		echo "0;Invalid query: " . mysql_error() . "";
+		echo "0; 2;Invalid query: " . mysql_error() . "";
 		return;
 	}elseif(mysql_num_rows($result)){
-		echo "0; username is already used, try another username";
+		echo "0; 1; username is already used, try another username";
 	}else{
 		//else enter the username and hashed password in the database
 
@@ -35,7 +36,7 @@
 		$result = mysql_query($newUsernameSQL);
 		
 		if (!$result) {
-			echo "0;Invalid query: " . mysql_error();
+			echo "0;2;Invalid query: " . mysql_error();
 		}else{
 			$userID = mysql_insert_id();
 			echo "1; userID=$userID";
