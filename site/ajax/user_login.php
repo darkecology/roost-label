@@ -15,10 +15,10 @@
 
 	if ($username == NULL && $hashedPassword == NULL && $userID != NULL) {
 
-		if($username == NULL || $hashedPassword == NULL || $_POST['password']){
+		/*if($username == NULL || $hashedPassword == NULL || $_POST['password']){
 			echo "0;5;login has to provide both username and password";
 			return;
-		}
+		}*/
 
 		$userIDSQL = "SELECT username, permission FROM users WHERE userID = '$userID'";
 
