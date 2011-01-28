@@ -208,7 +208,7 @@ Rendering.prototype.setStyle = function(property, value)
 //------------------------------------------------------------------------
 // class Circle
 //------------------------------------------------------------------------
-function Circle(cx, cy, r)
+function Circle(cx, cy, r, color)
 {
     Graphic.call(this, cx, cy);
     this.r = r;
@@ -216,8 +216,15 @@ function Circle(cx, cy, r)
     // default appearance properties
     this.strokeWidth = 6;
     this.strokeOpacity = 1;
-    this.strokeColor = "red";
-    this.fill = "none";
+	if(color == null)
+	{
+		this.strokeColor = "red";
+	}
+	else
+	{
+		this.strokeColor = color;
+	}
+	this.fill = "none";
     this.fillOpacity = 1; 
 	this.fixedScale = false;
 	this.fixedStrokeWidth = true;
@@ -415,7 +422,7 @@ function Point(x, y)
 
 function CircleMarker(x, y)
 {
-    Circle.call(this, x, y, 6);
+    Circle.call(this, x, y, 6, "red");
     this.strokeWidth = 0;
     this.fill = this.strokeColor;
 	this.fixedScale = true;
@@ -427,12 +434,12 @@ inherits(CircleMarker, Circle);
 // class RoostCircle: a circle that can be edited
 //------------------------------------------------------------------------
 
-function RoostCircle(cx, cy, r, roostSequence, scale)
+function RoostCircle(cx, cy, r, roostSequence, scale, color)
 {
     cx = parseFloat(cx.toFixed(3));
     cy = parseFloat(cy.toFixed(3));
     r = parseFloat(r.toFixed(3));
-    Circle.call(this, cx, cy, r);
+    Circle.call(this, cx, cy, r, color);
     this.deleteHandle = new XMarker(cx, cy, 12);
     this.radiusHandle = new CircleMarker(cx, cy - r);
     this.roostSequence = roostSequence;
@@ -765,7 +772,15 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 		var y = parseFloat(jsonSeq.circles[j].y);
 		var r = parseFloat(jsonSeq.circles[j].r);
 		var frame_number = this.tool.scantime2frameidx(jsonSeq.circles[j].scan_time);
-		var c = new RoostCircle(x, y, r, this, this.tool.scale);
+		if(user.checkPermission(this.userID, user.userAction.EditRoost))
+		{
+			color = "Red";
+		}
+		else
+		{
+			color = "Orange";
+		}
+		var c = new RoostCircle(x, y, r, this, this.tool.scale, color);
 		this.insertCircle(c, frame_number);
 	}
 };
