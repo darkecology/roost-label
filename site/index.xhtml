@@ -65,8 +65,6 @@
 	    <a id="nextButton" disabled="true" href="javascript:next();">Next</a>)
 	  </span>
 	  <div id="userLoginDiv" style="float:right; display:none">
-	    User Name: <input type="text" id="userName" size="9" maxlength="32"/>
-	    Password: <input type="password" id="password" size="9" maxlength="32"/>
 	    <button id="loginButton" class="button" type="button">Login</button>
 	    <button id="newUserButton" class="button" type="button">New User</button>
 	  </div>
@@ -200,7 +198,13 @@
 	User Name: <input type="text" id="newUserName" size="9" maxlength="32"/> <br> </br>
 	Password:  <input type="password" id="newUserPassword" size="9" maxlength="32"/> <br> </br>
 	<button id="newAccountButton" type="button">Create New Account</button>
-	<button id="cancelButton" type="button">Cancel</button>
+	<button id="newAccountCancelButton" type="button">Cancel</button>
+      </div>
+      <div id="loginDiv" style="text-align:center; display:none">
+	User Name: <input type="text" id="userName" size="9" maxlength="32"/> <br> </br>
+	Password:  <input type="password" id="password" size="9" maxlength="32"/> <br> </br>
+	<button id="userLoginButton" type="button">Login</button>
+	<button id="loginCancelButton" type="button">Cancel</button>
       </div>
       <div id="bottomButtons">
 	<button id="saveAllButton" class="right" type="button" disabled="disabled">Save All</button>

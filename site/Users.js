@@ -7,11 +7,13 @@ function User()
     this.userID = -1;
     this.userAction = actions;
     
-    document.getElementById("loginButton").onclick = bindEvent(this,"login");
-    document.getElementById("newUserButton").onclick = bindEvent(this,"newUser");
+    document.getElementById("loginButton").onclick = bindEvent(this,"loginEvent");
+    document.getElementById("userLoginButton").onclick = bindEvent(this,"login");
+    document.getElementById("newUserButton").onclick = bindEvent(this,"newUserEvent");
     document.getElementById("logoutButton").onclick = bindEvent(this,"logout");
     document.getElementById("newAccountButton").onclick = bindEvent(this, "newUserCreation");
-    document.getElementById("cancelButton").onclick = bindEvent(this, "cancelNewUserCreation");
+    document.getElementById("newAccountCancelButton").onclick = bindEvent(this, "cancelNewUserCreation");
+    document.getElementById("loginCancelButton").onclick = bindEvent(this, "cancelLogin");
     document.getElementById("userName").onkeydown = function(e) {stopPropagation(e); return true;};
     document.getElementById("password").onkeydown = function(e) {stopPropagation(e); return true;};
     document.getElementById("newUserName").onkeydown = function(e) {stopPropagation(e); return true;};
@@ -106,7 +108,7 @@ User.prototype.displayError = function(errorNum){
 	}
 };
 
-User.prototype.newUser = function()
+User.prototype.newUserEvent = function()
 {
     var newUserDiv = document.getElementById("newUserDiv");
     newUserDiv.style.display = 'block';
@@ -114,10 +116,21 @@ User.prototype.newUser = function()
     pageDivWrapper.style.display = 'none';
     var newAccountButton = document.getElementById("newAccountButton");
     newAccountButton.removeAttribute('disabled');
-    var cancelButton = document.getElementById("cancelButton");
+    var cancelButton = document.getElementById("newAccountCancelButton");
     cancelButton.removeAttribute('disabled');
 }
-
+User.prototype.loginEvent = function()
+{
+    var loginDiv = document.getElementById("loginDiv");
+    loginDiv.style.display = 'block';
+    var pageDivWrapper = document.getElementById("pageDivWrapper");
+    pageDivWrapper.style.display = 'none';
+    var newAccountButton = document.getElementById("userLoginButton");
+    newAccountButton.removeAttribute('disabled');
+    var cancelButton = document.getElementById("loginCancelButton");
+    cancelButton.removeAttribute('disabled');  
+    
+}
 User.prototype.newUserCreation = function()
 {
     var loginUserName = document.getElementById("newUserName").value;
@@ -147,12 +160,8 @@ User.prototype.newUserCreation = function()
     this.permission = 1;
     this.userID = splitArray[1].substr(8);
     this.storeUserID(this.userID);
-    this.updateDiv();
-    
-    var newUserDiv = document.getElementById("newUserDiv");
-    newUserDiv.style.display = 'none';
-    var pageDivWrapper = document.getElementById("pageDivWrapper");
-    pageDivWrapper.style.display = 'block';
+    window.onbeforeunload = "";
+    location.reload(true);
 };
 
 User.prototype.cancelNewUserCreation = function()
@@ -163,6 +172,13 @@ User.prototype.cancelNewUserCreation = function()
     pageDivWrapper.style.display = 'block';
 };
 
+User.prototype.cancelLogin = function()
+{
+    var loginDiv = document.getElementById("loginDiv");
+    loginDiv.style.display = 'none';
+    var pageDivWrapper = document.getElementById("pageDivWrapper");
+    pageDivWrapper.style.display = 'block';
+}
 User.prototype.login = function()
 {
     var loginUserName = document.getElementById("userName").value;
@@ -189,15 +205,9 @@ User.prototype.login = function()
     }
     
     this.userID = splitArray[1].substr(8);
-    this.permission = splitArray[2].substr(12);
-    this.userName = loginUserName;
     this.storeUserID(this.userID);
-    this.updateDiv();
-    tool.updateCanvas();
-    for(var i = 0; i < tool.roostSeqObj.length; i++)
-    {
-        tool.roostSeqObj[i].updateInfoBox();
-    }
+    window.onbeforeunload = "";
+    location.reload(true);
 }
 
 User.prototype.logout = function()
