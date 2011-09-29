@@ -13,20 +13,29 @@ header("Content-type: text/plain");
 $con = roostdb_connect();
 
 $sql =<<<EOF
-    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, scan_date, scan_time, x, y, r
-    FROM sequences s, circles c, stations st
+    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, c.scan_time, minutes_from_sunrise, x, y, r
+    FROM sequences s, circles c, stations st, scans
     WHERE s.sequence_id = c.sequence_id
     AND s.station = st.station
-    ORDER BY station, scan_date, s.sequence_id, scan_time
+    AND scans.station = s.station
+    AND scans.scan_date = s.scan_date
+    AND scans.scan_time = c.scan_time
+    ORDER BY station, s.scan_date, s.sequence_id, c.scan_time
 EOF;
 
 $result = mysql_query($sql, $con);
+
+if (!$result)
+{
+    die('Query failed: ' . mysql_error() . "\n");
+}
+
 
 /*----------------------------------------
  * Output header
  *----------------------------------------*/
 
-$names = array("sequence_id", "station", "scan_date", "scan_time", "lat", "lon", "r");
+$names = array("sequence_id", "station", "scan_date", "scan_time", "minute_from_sunrise", "lat", "lon", "r");
 printf("%s\n", implode(",", $names));
 
 /*----------------------------------------
@@ -66,7 +75,8 @@ while($row = mysql_fetch_array($result, MYSQL_ASSOC))
     $station = $row['station'];
     $scan_date = $row['scan_date'];
     $scan_time = $row['scan_time'];
-    print(implode(",", array($sequence_id, $station, $scan_date, $scan_time, $lat, $lon, $r_km)));
+    $minutes_from_sunrise = $row['minutes_from_sunrise'];
+    print(implode(",", array($sequence_id, $station, $scan_date, $scan_time, $minutes_from_sunrise, $lat, $lon, $r_km)));
     print "\n";
 }
 
