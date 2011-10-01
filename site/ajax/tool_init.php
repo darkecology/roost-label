@@ -109,6 +109,8 @@ while($row = mysql_fetch_array($result))
     $t = $row['scan_time'];
     $url = preg_replace('/\/nfs\/spectre\/u13\/d6\/sheldon\/radar\/stations/', 'images', $row['filename']);
     $url = preg_replace('/\/nfs\/spectre\/u19\/roosts\/stations/', 'images', $url);
+    $url = preg_replace('/\/nfs\/phantom\/u5\/sheldon\/spectre\/radar\/stations/', 'images', $url);
+
     $frames_array[$t]['products'][$row['product']] = $url;
 }
 
