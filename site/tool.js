@@ -1305,13 +1305,18 @@ RadarPane.prototype.updateFrame = function(frameInfo)
 	// Update the dropdown in case the available products have changed
 	for (var prod in this.products)
 	{
-		if (frameInfo.products[prod] == null)
+		if (frameInfo.products == undefined || frameInfo.products[prod] == null)
 		{
 			this.options[prod].setAttribute("disabled", "disabled");
 		}
 	}
 	
-	var url = frameInfo.products[this.productSelect.value];
+	var url = null;
+
+	if (frameInfo.products != null)
+	{
+		url = frameInfo.products[this.productSelect.value];
+	}
 	
 	if (url != null)
 		this.radarImage.src = url;
