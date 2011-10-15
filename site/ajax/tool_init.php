@@ -70,8 +70,8 @@ while($row = mysql_fetch_array($result))
 $frames_array = array();
 
 $frames_sql = <<<EOF
-    SELECT scan_time, sunrise_time, minutes_from_sunrise, vcp
-    FROM   scans
+    SELECT scan_id, scan_time, sunrise_time, minutes_from_sunrise, vcp
+    FROM   scans2
     WHERE  station = '$station'
     AND    scan_date = '$year-$month-$day'
     ORDER BY scan_time
@@ -85,17 +85,19 @@ if (!$result) {
 
 while($row = mysql_fetch_array($result))
 {
-    $t = $row['scan_time'];
-    $frames_array[$t]['scan_time'] = $t;
-    $frames_array[$t]['vcp'] = $row['vcp'];
-    $frames_array[$t]['minutes_from_sunrise'] = $row['minutes_from_sunrise'];
+    $id = $row['scan_id'];
+    $frames_array[$id]['scan_id'] = $id;
+    $frames_array[$id]['scan_time'] = $row['scan_time'];
+    $frames_array[$id]['vcp'] = $row['vcp'];
+    $frames_array[$id]['minutes_from_sunrise'] = $row['minutes_from_sunrise'];
 }
 
 $inventory_sql = <<<EOF
-    SELECT scan_time, product, filename
-    FROM  inventory
-    WHERE station = '$station'
-    AND   scan_date = '$year-$month-$day'
+    SELECT s.scan_id, product, i.filename
+    FROM  inventory2 i, scans2 s
+    WHERE i.scan_id = s.scan_id
+    AND   i.station = '$station'
+    AND   s.scan_date = '$year-$month-$day'
 EOF;
 
 $result = mysql_query($inventory_sql, $con);
@@ -106,12 +108,11 @@ if (!$result) {
 
 while($row = mysql_fetch_array($result))
 {
-    $t = $row['scan_time'];
-    $url = preg_replace('/\/nfs\/spectre\/u13\/d6\/sheldon\/radar\/stations/', 'images', $row['filename']);
-    $url = preg_replace('/\/nfs\/spectre\/u19\/roosts\/stations/', 'images', $url);
-    $url = preg_replace('/\/nfs\/phantom\/u5\/sheldon\/spectre\/radar\/stations/', 'images', $url);
-
-    $frames_array[$t]['products'][$row['product']] = $url;
+    $id = $row['scan_id'];
+    
+    $url = sprintf("images/%s/%04d/%02d/%02d/vis/%s", $station, $year, $month, $day, $row['filename']);
+    
+    $frames_array[$id]['products'][$row['product']] = $url;
 }
 
 /*----------------------------------------

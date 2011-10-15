@@ -49,8 +49,8 @@ EOF;
 // Add new circles
 foreach($roostobj->circles as $circle){
     $sql = <<<EOF
-	INSERT INTO circles (sequence_id, scan_time, x, y, r)
-	VALUES ($sequence_id, "$circle->scan_time", $circle->x, $circle->y, $circle->r)
+	INSERT INTO circles2 (sequence_id, scan_id, x, y, r)
+	VALUES ($sequence_id, "$circle->scan_id", $circle->x, $circle->y, $circle->r)
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());

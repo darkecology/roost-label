@@ -84,7 +84,7 @@ User.prototype.displayError = function(errorNum){
 		break;
 		
 	case 1:
-		alert("Username already exist");
+		alert("Username already exists");
 		break;
 
 	case 2:
@@ -96,7 +96,7 @@ User.prototype.displayError = function(errorNum){
 		break;
 		
 	case 4:
-		alert("usernaem and/or password do not match. Please try again");
+		alert("Username and/or password do not match. Please try again");
 		break;		
   
 	case 5:

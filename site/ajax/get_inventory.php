@@ -19,9 +19,9 @@ $inventory = array('station' => array("" => ""),
  * stations
  *------------------------------------------------------------*/
 $sql =<<<EOF
-    SELECT DISTINCT i.station, s.city, s.state 
-    FROM inventory i, stations s
-    WHERE i.station = s.station
+    SELECT DISTINCT i.station, st.city, st.state 
+    FROM inventory2 i, stations st
+    WHERE i.station = st.station
 EOF;
 $result = mysql_query($sql, $con);
 
@@ -42,8 +42,8 @@ while($row = mysql_fetch_array($result))
 if ($station != "")
 {
     $sql =<<<EOF
-	SELECT DISTINCT year(scan_date) year
-	FROM inventory
+	SELECT DISTINCT year
+	FROM inventory2 i
 	WHERE station = '$station'
 EOF;
     $result = mysql_query($sql, $con);
@@ -65,10 +65,10 @@ EOF;
 if ($station != "" && $year != "")
 {
     $sql =<<<EOF
-	SELECT DISTINCT month(scan_date) month
-	FROM inventory
+	SELECT DISTINCT month
+	FROM inventory2 i
 	WHERE station = '$station'
-	AND year(scan_date) = $year
+	AND year = $year
 EOF;
     $result = mysql_query($sql, $con);
 
@@ -89,11 +89,11 @@ EOF;
 if ($station != "" && $year != "" && $month != "")
 {
     $sql =<<<EOF
-	SELECT DISTINCT day(scan_date) day
-	FROM inventory
+	SELECT DISTINCT day
+	FROM inventory2 i
 	WHERE station = '$station'
-	AND year(scan_date) = $year
-	AND month(scan_date) = $month
+	AND year = $year
+	AND month = $month
 EOF;
     $result = mysql_query($sql, $con);
 

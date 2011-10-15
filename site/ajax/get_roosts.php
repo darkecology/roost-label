@@ -18,26 +18,27 @@ $con = roostdb_connect();
 if (isset($sequence_id))
 {
     $and_clause = <<<EOF
-	  AND s.sequence_id = '$sequence_id'
-	  AND u.userID = s.user_id
+	  AND seq.sequence_id = '$sequence_id'
+	  AND u.userID = seq.user_id
 EOF;
 }
 else
 {
     $and_clause = <<<EOF
-	AND s.station = '$station'
-	AND s.scan_date = '$year-$month-$day'
-	AND u.userID = s.user_id
+	AND seq.station = '$station'
+	AND seq.scan_date = '$year-$month-$day'
+	AND u.userID = seq.user_id
 EOF;
 	
 }
 
 $circle_sql = <<<EOF
-    SELECT s.sequence_id, s.comments, c.scan_time, c.x, c.y, c.r, s.user_id, u.username
-    FROM sequences s, circles c, users u
-    WHERE s.sequence_id = c.sequence_id
+    SELECT seq.sequence_id, seq.comments, s.scan_id, c.x, c.y, c.r, seq.user_id, u.username
+    FROM sequences seq, circles2 c, users u, scans2 s
+    WHERE seq.sequence_id = c.sequence_id
+    AND s.scan_id = c.scan_id
     $and_clause
-    ORDER BY s.sequence_id, c.scan_time
+    ORDER BY seq.sequence_id, s.scan_time
 EOF;
 
 $sequences = array();
@@ -56,10 +57,10 @@ while($row = mysql_fetch_array($result))
     $sequences[$sid]['sequence_id'] = $sid;
     $sequences[$sid]['comments'] = $row['comments'];
     $sequences[$sid]['user_id'] = $row['user_id'];
-	$sequences[$sid]['username'] = $row['username'];
+    $sequences[$sid]['username'] = $row['username'];
 
     $circle = array();
-    $circle['scan_time'] = $row['scan_time'];
+    $circle['scan_id'] = $row['scan_id'];
     $circle['x'] = $row['x'];
     $circle['y'] = $row['y'];
     $circle['r'] = $row['r'];

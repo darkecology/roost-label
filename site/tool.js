@@ -771,7 +771,7 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 		var x = parseFloat(jsonSeq.circles[j].x);
 		var y = parseFloat(jsonSeq.circles[j].y);
 		var r = parseFloat(jsonSeq.circles[j].r);
-		var frame_number = this.tool.scantime2frameidx(jsonSeq.circles[j].scan_time);
+		var frame_number = this.tool.scanid2frameidx(jsonSeq.circles[j].scan_id);
 		if(user.checkPermission(this.userID, user.userAction.EditRoost))
 		{
 			color = "Red";
@@ -797,8 +797,8 @@ RoostSequence.prototype.toJSONString = function()
     for(var i = this.seq_start; i <= this.seq_end; i++)
 	{
 		var c = this.circles[i];
-		var scan_time = this.tool.frameidx2scantime(i);
-		var cobj = {'scan_time':scan_time, 'x':c.x, 'y':c.y, 'r':c.r};
+		var scan_id = this.tool.frameidx2scanid(i);
+		var cobj = {'scan_id':scan_id, 'x':c.x, 'y':c.y, 'r':c.r};
 		obj.circles.push(cobj);
 	}
 	
@@ -1566,11 +1566,11 @@ RoostTool.prototype.ajaxInit = function()
 	 *  Build an index mapping timestamp to framenumber
 	 *----------------------------------------*/
 
-	this.scantime2frame = {};
+	this.scanid2frame = {};
 	for (var i = 0; i < this.frames.length; i++)
 	{
 		var frame = this.frames[i];
-		this.scantime2frame[frame.scan_time] = i;
+		this.scanid2frame[frame.scan_id] = i;
 	}
 
 	/*----------------------------------------
@@ -1598,17 +1598,17 @@ RoostTool.prototype.ajaxInit = function()
 /*--------------------------------------------------
  * Convert scan timestamp to frame index
  *--------------------------------------------------*/
-RoostTool.prototype.scantime2frameidx = function(scan_time)
+RoostTool.prototype.scanid2frameidx = function(scan_id)
 {
-	return this.scantime2frame[scan_time];
+	return this.scanid2frame[scan_id];
 };
 
 /*--------------------------------------------------
  * Convert frame index to scan timestamp
  *--------------------------------------------------*/
-RoostTool.prototype.frameidx2scantime = function(i)
+RoostTool.prototype.frameidx2scanid = function(i)
 {
-	return this.frames[i].scan_time;
+	return this.frames[i].scan_id;
 };
 
 /*--------------------------------------------------
