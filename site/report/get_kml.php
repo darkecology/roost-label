@@ -12,15 +12,42 @@ header('Content-type: application/vnd.google-earth.kml+xml');
  *----------------------------------------*/
 $con = roostdb_connect();
 
+$where_clause = '';
+if (isset($_GET['station']))
+{
+    $station = $_GET['station'];
+    $where_clause .= "AND s.station = '$station'\n";
+}
+
+if (isset($_GET['year']))
+{
+    $year = $_GET['year'];
+    $where_clause .= "AND year(s.scan_date) = $year\n";
+}
+
+if (isset($_GET['month']))
+{
+    $month = $_GET['month'];
+    $where_clause .= "AND month(s.scan_date) = $month\n";
+}
+
+
+
 $sql =<<<EOF
     SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station station, scan_date, scan_time, x, y, r
     FROM sequences s, circles c, stations st
     WHERE s.sequence_id = c.sequence_id
     AND s.station = st.station
+    $where_clause
     ORDER BY station, scan_date, s.sequence_id, scan_time
 EOF;
 
 $result = mysql_query($sql, $con);
+
+if (!$result) {
+    die('Invalid query: ' . mysql_error() . '\n' . $sql);
+}
+
 
 /*----------------------------------------
  * Output header
@@ -80,13 +107,18 @@ while($row = mysql_fetch_array($result, MYSQL_ASSOC))
 foreach ($sequences as $sequence_id => $rows)
 {
     $row = $rows[0];
+    $timestamp = '';
+
+    if (isset($_GET['animate']) && $_GET['animate'] == 'true')
+    {
+	$scan_date = $row['scan_date'];
+	$timestamp = "<TimeStamp><when>$scan_date</when></TimeStamp>";
+    }
     ?>
     <Folder>
 	<name>Roost <?php echo $sequence_id ?></name>
 	<description>Station=<?php echo $row['station'] ?>, scan_date=<?php echo $row['scan_date'] ?></description>
-	<TimeStamp>
-	  <when><?php echo $row['scan_date'] ?></when>
-	</TimeStamp>
+	<?php echo $timestamp ?>
 	<Placemark>
 	 <description>Roost <?php echo $sequence_id ?>, station=<?php echo $row['station'] ?>, scan_date=<?php echo $row['scan_date'] ?></description>
 	  <Point>

@@ -60,52 +60,66 @@ $result = mysql_query($sql, $con);
 </select>
     </li>
     
+    <!-- ****** YEARS ****** -->
+    <li>
+	Select years <br/>
+        Start:
+         <select name="start_year">
+        <?php
+        $curyear = date("Y");
+        for ($i=1991; $i < $curyear; $i++)
+        {
+	    printf("<option value=\"%d\">%04d</option>\n", $i, $i);
+	}
+        printf("<option value=\"%d\" selected=\"selected\">%04d</option>\n", $i, $i);
+        ?>
+        </select>
+
+        End:
+        <select name="end_year">
+        <?php
+        $curyear = date("Y");
+        for ($i=1991; $i < $curyear; $i++)
+        {
+	    printf("<option value=\"%d\">%04d</option>\n", $i, $i);
+	}
+        printf("<option value=\"%d\" selected=\"selected\">%04d</option>\n", $i, $i);
+        ?>
+        </select>
+    </li>
+
+
     <!-- ****** DATES ****** -->
     <li>
-	Select begin/end dates (yyyy-mm-dd) <br/>
-	Begin: <input type="text" name="begin_date"/>
+	Select date range (mm/dd) <br/>
+	Start: <input type="text" name="start_date"/>
         End: <input type="text" name="end_date"/> 
     </li>
     
     <!-- ****** TIMES ****** -->
     <li>
-    Select begin/end times
-    <input id="togglemins" type="radio" name="toggle" value="minutes" checked="checked" onchange="togglediv()"/> In minutes before/after sunrise
-    <input id="togglehours" type="radio" name="toggle" value="hours" onchange="togglediv()"/> In hours UTC
+    Select time range<br/>
+    Start:
+    <input type="text" name="start_time" />
+    Units:
+    <select name="start_time_units">
+    <option value="hours">Time of day in hours UTC time</option>
+    <option value="sunrise" selected="selected">Minutes from sunrise (e.g. -30, +60)</option>
+    <option value="sunset">Minutes from sunset (e.g. -30, +60)</option>
+    </select>
     <br/>
 
-    <!-- ****** TIMES in HOURS ****** -->
-    <div style="display:none" id="hours">
-    Begin:
-    <select name="begin_hour">
-    <option value="">--</option>
-    <?php
-    for ($i=0; $i<24; $i++)
-    {
-	printf("<option value=\"%d\">%02dZ</option>\n", $i, $i);
-    }
-    ?>
-    </select>
     End:
-    <select name="end_hour" >
-     <option value="">--</option>
-    <?php
-    for ($i=0; $i<24; $i++)
-    {
-	printf("<option value=\"%d\">%02dZ</option>\n", $i, $i);
-    }
-    ?>
+    <input type="text" name="end_time" />
+    Units:
+    <select name="end_time_units">
+    <option value="hours">Time of day in hours UTC time</option>
+    <option value="sunrise" selected="selected">Minutes from sunrise (e.g. -30, +60)</option>
+    <option value="sunset">Minutes from sunset (e.g. -30, +60)</option>
     </select>
-    </div>
+    <br/>
 
-    <!-- ****** TIMES in OFFSET FROM SUNRISE ****** -->
-    <div id="minutes">
-    Begin:
-    <input type="text" name="begin_mins_from_sunrise" />
-    End:
-    <input type="text" name="end_mins_from_sunrise" />
     </li>
-    </div>
 
     <li><button type="submit">Place order!</button> </li>
     </ol>

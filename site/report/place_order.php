@@ -3,7 +3,7 @@ require '../ajax/common.php';
 
 function check_date($date)
 {
-    return preg_match('/^\d\d\d\d-\d\d-\d\d$/', $date);
+    return preg_match('/\d+\/\d+$/', $date);
 }
 
 function check_int($field)
@@ -29,77 +29,78 @@ if (!isset($_GET['station']) || count($_GET['station']) == 0)
     err("Please select a station");
 }
 
-$begin_date = $_GET['begin_date'];
+$start_year = $_GET['start_year'];
+$end_year = $_GET['end_year'];
+if ($start_year > $end_year)
+{
+    err("Start year must precede end year");
+}
+
+$start_date = $_GET['start_date'];
 $end_date = $_GET['end_date'];
 
-if (! (check_date($begin_date) && check_date($end_date)))
+if (! (check_date($start_date) && check_date($end_date)))
 {
-    err("Begin date and end date required (yyyy-mm-dd)");
+    err("Start date and end date required (mm/dd)");
 }
 
-if ($_GET['toggle'] == 'minutes')
+if (! check_int("start_time"))
 {
-    if (! (check_int("begin_mins_from_sunrise") && check_int("end_mins_from_sunrise")))
-    {
-	err("Begin and end offsets (in minutes from sunrise) required!");
-    }
-}
-else
-{
-    if (! (check_int("begin_hour") && check_int("end_hour")))
-    {
-	err("Begin and end hours required!");
-    }
+    err("Start time is required");
 }
 
-$begin_hour = $_GET['begin_hour'];
-$end_hour   = $_GET['end_hour'];
-$begin_mins = $_GET['begin_mins_from_sunrise'];
-$end_mins   = $_GET['end_mins_from_sunrise'];
+if (! check_int("end_time"))
+{
+    err("End time is required");
+}
+
+$start_time       = $_GET['start_time'];
+$start_time_units = $_GET['start_time_units'];
+$end_time         = $_GET['end_time'];
+$end_time_units   = $_GET['end_time_units'];
 
 $con = roostdb_connect();
 
-foreach ($_GET['station'] as $station)
+$start_arr = explode('/', $start_date);
+$end_arr   = explode('/', $end_date);
+
+$start_month = $start_arr[0];
+$start_day   = $start_arr[1];
+$end_month   = $end_arr[0];
+$end_day     = $end_arr[1];
+
+for ($year = $start_year; $year <= $end_year; $year++)
 {
-    if ($_GET['toggle'] == 'minutes')
-    {
-	$sql =<<<EOF
-	    INSERT INTO ncdc_orders (station, 
-				     begin_date, 
-				     end_date, 
-				     begin_mins_from_sunrise,
-				     end_mins_from_sunrise)
-	    VALUES ('$station', 
-		    '$begin_date',
-		    '$end_date',
-		    $begin_mins,
-		    $end_mins);
-EOF;
-
-    }
-    else
-    {
-	$sql =<<<EOF
-	    INSERT INTO ncdc_orders (station, 
-				     begin_date, 
-				     end_date, 
-				     begin_hour,
-				     end_hour)
-	    VALUES ('$station',
-		    '$begin_date',
-		    '$end_date',
-		    $begin_hour,
-		    $end_hour)
-EOF;
-
-    }
-
-    $result = mysql_query($sql, $con);
+    if ($start_month <= $end_month && $start_day <= $end_day)
+	$year2 = $year;
+    else			/* date range spans Jan 1 */
+	$year2 = $year + 1;
     
-    if (!$result) {
-	die('Invalid query: ' . mysql_error() . '\n' . $sql);
+    foreach ($_GET['station'] as $station)
+    {
+	$sql =<<<EOF
+	    INSERT INTO ncdc_orders (station, 
+				     start_date, 
+				     end_date,
+				     start_time,
+				     start_time_units,
+				     end_time,
+				     end_time_units)
+	    VALUES ('$station', 
+		    '$year/$start_date',
+		    '$year2/$end_date',
+		    $start_time,
+		    '$start_time_units',
+		    $end_time,
+		    '$end_time_units');
+EOF;
+	
+	$result = mysql_query($sql, $con);
+	
+	if (!$result) {
+	    die('Invalid query: ' . mysql_error() . '\n' . $sql);
+	}
     }
-
 }
 ?>
 
