@@ -25,13 +25,13 @@ $conn = roostdb_connect();
 if (isset($sequence_id))
 {
     $sql = <<<EOF
-	REPLACE INTO sequences (sequence_id, station, scan_date, comments)
-	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments")
+	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id)
+	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());
 
-    $sql = "DELETE FROM circles WHERE sequence_id = $sequence_id";
+    $sql = "DELETE FROM circles2 WHERE sequence_id = $sequence_id";
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());
 }
