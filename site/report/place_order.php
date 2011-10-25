@@ -3,7 +3,14 @@ require '../ajax/common.php';
 
 function check_date($date)
 {
-    return preg_match('/\d+\/\d+$/', $date);
+    try {
+	$d = new DateTime("2011/$date");
+    }
+    catch (Exception $e)
+    {
+	return false;
+    }
+    return true;
 }
 
 function check_int($field)
@@ -24,6 +31,7 @@ function err($msg)
 <body>
 
 <?php
+
 if (!isset($_GET['station']) || count($_GET['station']) == 0)
 {
     err("Please select a station");
@@ -69,39 +77,65 @@ $start_day   = $start_arr[1];
 $end_month   = $end_arr[0];
 $end_day     = $end_arr[1];
 
-for ($year = $start_year; $year <= $end_year; $year++)
+$utc   = new DateTimeZone("UTC");
+
+foreach ($_GET['station'] as $station)
 {
-    if ($start_month <= $end_month && $start_day <= $end_day)
-	$year2 = $year;
-    else			/* date range spans Jan 1 */
-	$year2 = $year + 1;
-    
-    foreach ($_GET['station'] as $station)
+    for ($year = $start_year; $year <= $end_year; $year++)
     {
-	$sql =<<<EOF
-	    INSERT INTO ncdc_orders (station, 
-				     start_date, 
-				     end_date,
-				     start_time,
-				     start_time_units,
-				     end_time,
-				     end_time_units)
-	    VALUES ('$station', 
-		    '$year/$start_date',
-		    '$year2/$end_date',
-		    $start_time,
-		    '$start_time_units',
-		    $end_time,
-		    '$end_time_units');
+	$interval_start = new DateTime("$year/$start_date", $utc);
+	$interval_end   = new DateTime("$year/$end_date", $utc);
+
+	if (!($interval_start && $interval_end))
+	{
+	    err("Invalid dates");
+	}
+	
+	if ($interval_end < $interval_start)
+	{
+	    $interval_end->modify("+1 year");
+	}
+
+	for ($month_start = clone $interval_start; $month_start < $interval_end; $month_start->modify("+1 month"))
+	{
+	    
+	    $month_end = clone $month_start;
+	    $month_end->modify("+1 month");
+	    $month_end->modify("-1 day");
+
+	    if ($interval_end->format('Y-m-d') < $month_end->format('Y-m-d')) {
+		$month_end = $interval_end;
+	    }
+
+	    $month_start_str = $month_start->format("Y-m-d");
+	    $month_end_str = $month_end->format("Y-m-d");
+
+	    $sql =<<<EOF
+		INSERT INTO ncdc_orders (station, 
+					 start_date, 
+					 end_date,
+					 start_time,
+					 start_time_units,
+					 end_time,
+					 end_time_units)
+		VALUES ('$station', 
+			'$month_start_str',
+			'$month_end_str',
+			$start_time,
+			'$start_time_units',
+			$end_time,
+			'$end_time_units');
 EOF;
-	
-	$result = mysql_query($sql, $con);
-	
-	if (!$result) {
-	    die('Invalid query: ' . mysql_error() . '\n' . $sql);
+
+            $result = mysql_query($sql, $con);
+	    
+	    if (!$result) {
+		die('Invalid query: ' . mysql_error() . '\n' . $sql);
+	    }
 	}
     }
 }
+
 ?>
 
 Order placed!

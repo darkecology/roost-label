@@ -1,29 +1,58 @@
 <?php
 require '../ajax/common.php';
 $con = roostdb_connect();
+
+
+/*----------------------------------------
+ * display_orders
+ *----------------------------------------*/
+function display_orders($con, $status)
+{
+    if ($status == 'complete' || $status == 'error')
+    {
+	$ORDER_BY = 'ORDER BY last_updated DESC, order_id DESC';
+    }
+    else
+    {
+	$ORDER_BY = 'ORDER BY priority, order_id';	
+    }
+    
+    $sql =<<<EOF
+	SELECT order_id, station, start_date, end_date, priority, error
+	FROM ncdc_orders
+	WHERE status = '$status'
+	$ORDER_BY
+EOF;
+    
+    $result = mysql_query($sql, $con);
+    
+    if (!$result) {
+	die('Invalid query: ' . mysql_error() . '\n' . $sql);
+    }
+    
+    printf("<table class=\"$status\">\n");
+    printf(" <tr>\n");
+    printf("  <th>id</th>\n");
+    printf("  <th>station</th>\n");
+    printf("  <th>dates</th>\n");
+    if ($status == 'error') printf("  <th>message</th>\n");
+    printf(" </tr>\n");
+    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+    {
+	printf(" <tr>\n");
+	printf("  <td><a href=\"orders/%05d\">%d</a></td>\n", $row["order_id"], $row["order_id"]);
+	printf("  <td>%s</td>\n", $row["station"]);
+	printf("  <td>%s--%s</td>\n", $row["start_date"], $row["end_date"]);
+	if ($status == 'error') printf("  <td class=\"$status\">%s</td>\n", $row["error"]);
+	printf(" </tr>\n");
+    }
+    printf("</table>\n");
+}
+
 ?>
 
 <html>
 <head>
-<script>
-function togglediv()
-{
-    var e = document.getElementById("togglehours");
-    hdiv = document.getElementById("hours");
-    mdiv = document.getElementById("minutes");
-    if (e.checked)
-    {
-	hdiv.style.display = "inline";
-	mdiv.style.display = "none";
-    }
-    else
-    {
-	hdiv.style.display = "none";
-	mdiv.style.display = "inline";
-    }
-}
-
-</script>
 </head>
 <body>
 
@@ -125,6 +154,41 @@ $result = mysql_query($sql, $con);
     </ol>
     
 </form>
+
+
+<h2>Existing orders</h2>
+
+<style>
+th.q  {
+  font-size: 20px;
+}
+td.q  {
+  width: 20%;
+  border: 1px solid #ccc; 
+  vertical-align: top;
+}
+table.list td {
+}
+
+td.error { color:red; }
+</style>
+
+<table class="q">
+<tr>
+  <th class="q">New</th>
+  <th class="q">Ordered</th>
+  <th class="q">Downloading</th>
+  <th class="q">Error</th>
+  <th class="q">Complete</th>
+</tr>
+<tr>
+  <td class="q"><?php display_orders($con, 'new') ?></td>
+  <td class="q"><?php display_orders($con, 'ordered') ?></td>
+  <td class="q"><?php display_orders($con, 'downloading') ?></td>
+  <td class="q"><?php display_orders($con, 'error') ?></td>
+  <td class="q"><?php display_orders($con, 'complete') ?></td>
+</tr>
+</table>
 
 </body>
 </html>
