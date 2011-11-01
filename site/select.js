@@ -130,7 +130,6 @@ Selector.updateStationDropdown = function(select, optionGroups, selectedKey)
 		
 		for(key in optionGroups[group])
 		{
-
 			var opt = document.createElement('option');
 			opt.setAttribute("value", key);
 			opt.innerHTML = optionGroups[group][key];
