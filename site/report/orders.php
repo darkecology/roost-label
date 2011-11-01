@@ -70,7 +70,7 @@ $sql =<<<EOF
     FROM stations s, station_groups g, station_to_group sg
     WHERE s.station = sg.station
     AND sg.group_id = g.group_id
-    ORDER BY g.id
+    ORDER BY g.id, state
 EOF;
 
 $result = mysql_query($sql, $con);

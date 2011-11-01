@@ -91,7 +91,14 @@ Selector.prototype.inventoryCallback = function(xmlhttp)
 
 		for (key in inventory)
 		{
-			this[key] = Selector.updateDropdown(this.selectElts[key], inventory[key], this[key]);
+			if (key == "station")
+			{
+				this[key] = Selector.updateStationDropdown(this.selectElts[key], inventory[key], this[key]);
+			}
+			else
+			{
+				this[key] = Selector.updateDropdown(this.selectElts[key], inventory[key], this[key]);
+			}
 		}
 
 		if (this.day != "") {
@@ -102,6 +109,43 @@ Selector.prototype.inventoryCallback = function(xmlhttp)
 		this.installHandlers();
 	}
 };
+
+Selector.updateStationDropdown = function(select, optionGroups, selectedKey)
+{
+	// Remove all current options
+	while (select.hasChildNodes()) {
+		select.removeChild(select.lastChild);
+	}
+
+	while (select.length > 0)
+	{
+		select.remove(0);
+	}
+	
+	var hasSelection;
+	for (group in optionGroups)
+	{
+		var optgroup = document.createElement('optgroup');
+		optgroup.setAttribute("label", group);
+		
+		for(key in optionGroups[group])
+		{
+
+			var opt = document.createElement('option');
+			opt.setAttribute("value", key);
+			opt.innerHTML = optionGroups[group][key];
+			if (key == selectedKey)
+			{
+				opt.selected = true;
+				hasSelection = true;
+			}
+			optgroup.appendChild(opt);
+		}
+		select.add(optgroup, null);
+	}
+
+	return hasSelection ? selectedKey : "";
+}
 
 Selector.updateDropdown = function(select, optionValues, selectedKey)
 {

@@ -19,10 +19,15 @@ $inventory = array('station' => array("" => ""),
  * stations
  *------------------------------------------------------------*/
 $sql =<<<EOF
-    SELECT DISTINCT i.station, st.city, st.state 
-    FROM inventory2 i, stations st
-    WHERE i.station = st.station
+    SELECT g.group_name, i.station, st.city, st.state
+    FROM stations st, station_groups g, station_to_group sg,
+    (SELECT DISTINCT station FROM inventory2) i
+    WHERE i.station = sg.station
+    AND i.station = st.station
+    AND sg.group_id = g.group_id
+    ORDER BY g.id, st.state
 EOF;
+
 $result = mysql_query($sql, $con);
 
 if (!$result) {
@@ -31,9 +36,10 @@ if (!$result) {
 
 while($row = mysql_fetch_array($result))
 {
-    $key = $row['station'];
-    $display = $key . " - " . $row['city'] . ", " . $row['state'];
-    $inventory['station'][$key] = $display;
+    $group = $row['group_name'];
+    $thestation = $row['station'];
+    $display = $thestation . " - " . $row['city'] . ", " . $row['state'];
+    $inventory['station'][$group][$thestation] = $display;
 }
 
 /*------------------------------------------------------------
