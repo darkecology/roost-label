@@ -79,7 +79,9 @@ $end_day     = $end_arr[1];
 
 $utc   = new DateTimeZone("UTC");
 
-foreach ($_GET['station'] as $station)
+$stations = array_unique($_GET['station']);
+
+foreach ($stations as $station)
 {
     for ($year = $start_year; $year <= $end_year; $year++)
     {

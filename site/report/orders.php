@@ -66,12 +66,30 @@ EOF;
   * Get data from DB
   *----------------------------------------*/
 $sql =<<<EOF
-    SELECT station, city, state, lat, lon
-    FROM stations
-    ORDER BY station
+    SELECT g.group_id groupid, g.group_name groupname, s.station station, city, state, lat, lon
+    FROM stations s, station_groups g, station_to_group sg
+    WHERE s.station = sg.station
+    AND sg.group_id = g.group_id
+    ORDER BY g.id
 EOF;
 
 $result = mysql_query($sql, $con);
+
+$groups = array();
+$stations = array();
+
+while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+{
+    $group = $row['groupname'];
+    $station = $row['station'];
+    if (!isset($groups[$group]))
+    {
+	$groups[$group] = array();
+    }
+    array_push($groups[$group], $station);
+
+    $stations[$station] = $row;
+}
 ?>
 
 <form action="place_order.php" method="get">
@@ -81,9 +99,15 @@ $result = mysql_query($sql, $con);
     Select station(s):<br/>
     <select name="station[]" multiple="multiple" size="10">
     <?php 
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+    foreach (array_keys($groups) as $group)
     {
-	printf('<option value="%s">%s - %s, %s</option>\n', $row['station'], $row['station'], $row['city'], $row['state']);
+	printf('<optgroup label="%s">\n', $group);
+	foreach ($groups[$group] as $station)
+	{
+	    $row = $stations[$station];
+	    printf('<option value="%s">%s - %s, %s</option>\n', $row['station'], $row['station'], $row['city'], $row['state']);	    
+	}
+	printf('</optgroup>');
     }
 ?>
 </select>
