@@ -67,6 +67,8 @@ $start_time_units = $_GET['start_time_units'];
 $end_time         = $_GET['end_time'];
 $end_time_units   = $_GET['end_time_units'];
 
+$priority   = $_GET['priority'];
+
 $con = roostdb_connect();
 
 $start_arr = explode('/', $start_date);
@@ -119,14 +121,16 @@ foreach ($stations as $station)
 					 start_time,
 					 start_time_units,
 					 end_time,
-					 end_time_units)
+					 end_time_units,
+					 priority)
 		VALUES ('$station', 
 			'$month_start_str',
 			'$month_end_str',
 			$start_time,
 			'$start_time_units',
 			$end_time,
-			'$end_time_units');
+			'$end_time_units',
+			$priority);
 EOF;
 
             $result = mysql_query($sql, $con);

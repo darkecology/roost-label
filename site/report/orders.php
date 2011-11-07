@@ -32,6 +32,7 @@ EOF;
     
     printf("<table class=\"$status\">\n");
     printf(" <tr>\n");
+    printf("  <th>priority</th>\n");
     printf("  <th>id</th>\n");
     printf("  <th>station</th>\n");
     printf("  <th>dates</th>\n");
@@ -40,6 +41,7 @@ EOF;
     while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
     {
 	printf(" <tr>\n");
+	printf("  <td>%d</td>\n", $row["priority"]);
 	printf("  <td><a href=\"orders/%05d\">%d</a></td>\n", $row["order_id"], $row["order_id"]);
 	printf("  <td>%s</td>\n", $row["station"]);
 	printf("  <td>%s--%s</td>\n", $row["start_date"], $row["end_date"]);
@@ -145,15 +147,15 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
     <!-- ****** DATES ****** -->
     <li>
 	Select date range (mm/dd) <br/>
-	Start: <input type="text" name="start_date"/>
-        End: <input type="text" name="end_date"/> 
+	Start: <input type="text" size="8" name="start_date"/>
+        End: <input type="text" size="8" name="end_date"/> 
     </li>
     
     <!-- ****** TIMES ****** -->
     <li>
     Select time range<br/>
     Start:
-    <input type="text" name="start_time" />
+    <input type="text" name="start_time" size="4" value="-60" />
     Units:
     <select name="start_time_units">
     <option value="hours">Time of day in hours UTC time</option>
@@ -163,7 +165,7 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
     <br/>
 
     End:
-    <input type="text" name="end_time" />
+    <input type="text" name="end_time" size="4" value="90" />
     Units:
     <select name="end_time_units">
     <option value="hours">Time of day in hours UTC time</option>
@@ -174,6 +176,10 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
 
     </li>
 
+    <li>Priority: <input type="text" name="priority" size="4" value="100"/>
+	    (lower numbers get ordered first)
+    </li>
+
     <li><button type="submit">Place order!</button> </li>
     </ol>
     
@@ -181,18 +187,19 @@ while ($row = mysql_fetch_array($result, MYSQL_ASSOC))
 
 
 <h2>Existing orders</h2>
+<a href="orders/manager.log">NCDC manager logfile</a>
 
 <style>
 th.q  {
-  font-size: 20px;
+  font-size: 15;
 }
 td.q  {
   width: 20%;
   border: 1px solid #ccc; 
   vertical-align: top;
 }
-table.list td {
-}
+th { font-size: 12px; }
+td { font-size:10px; }
 
 td.error { color:red; }
 </style>
