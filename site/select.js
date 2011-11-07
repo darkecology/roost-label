@@ -159,21 +159,12 @@ Selector.updateDropdown = function(select, options, selectedKey)
 	
 Selector.emptyDropdown = function(select)
 {
+	select.options.length = 0;
+
 	// Remove all optgroups
-	optgroups = select.getElementsByTagName('optgroup');
-	for (i = 0; i < optgroups.length; i++)
-	{
-		var node = optgroups[i];
-		if (node && node.parentNode)
-		{
-			node.parentNode.removeChild(node);
-		}
+	while (select.firstChild) {
+		select.removeChild(select.firstChild);
 	}
-	
-	while (select.length > 0)
-	{
-		select.remove(0);
-	}	
 }
 
 
