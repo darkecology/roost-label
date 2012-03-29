@@ -1,12 +1,35 @@
 var reset_selection = "<option value=\"null\"/>";
 
 var selector;
-function starter()
+var mode;
+var currentEvalTestId = "";
+var currentEvalCircle;
+var evalSetOffset = 0;
+var evalCircleOffset = 0;
+var evalSet; 
+var totalEvalNum;
+var currentEvalNum = 1;
+function starter(modeInput)
 {
+	//set the mode
+	mode = modeInput;
 	UserInit();
 	ResetTool();
+	
 	selector = new Selector();
 	selector.updateAllDropdowns();
+	if(mode == 2){
+		if (user.userID == -1){
+			user.loginEvent();
+			return;
+		}
+		selector.getEvalTestId();	
+		
+		//remove unwanted table so it doesn't ruin the style
+		var rmNode = document.getElementById("roostSequenceTable");
+		var rmParent = rmNode.parentNode;
+		rmParent.removeChild(rmNode);
+	} 
 }
 
 function Selector()
@@ -20,9 +43,32 @@ function Selector()
 					   year:    document.getElementById("year_select"),
 					   month:   document.getElementById("month_select"),
 					   day:     document.getElementById("day_select") };
+	//if mode is 2, add the evaluationTestId to select element in order to catch changes in selection
+	if(mode==2){
+		this.selectElts['evalTestId'] =  document.getElementById("evalTestId_select");
+		this.evalTestId = getURL("day");
+	}
 
 	this.body = document.getElementById("body");
 }
+
+Selector.prototype.getEvalTestId = function()
+{
+	var url = "ajax/get_evalTestId.php";
+	ajax_get(url, bindEvent(this,"evalTestIdCallback")); 
+};
+
+Selector.prototype.evalTestIdCallback = function(xmlhttp)
+{
+	if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	{	
+		this.uninstallHandlers();
+		var inventory = JSON.parse(xmlhttp.responseText);
+		key = 'evalTestId'; 
+		this[key] = Selector.updateDropdown(this.selectElts[key], inventory[key], this[key]);
+		this.installHandlers();
+	} 
+};
 
 Selector.prototype.uninstallHandlers = function()
 {
@@ -43,30 +89,56 @@ Selector.prototype.installHandlers = function()
 // Called when user changes any of the boxes
 Selector.prototype.selectionChange = function()
 {
-	if(tool != null)
-	{
-		for (var i = 0; i < tool.roostSeqObj.length; i++)
+	if(mode ==2){
+		if(currentEvalTestId != this.selectElts.evalTestId.value){
+			currentEvalTestId = this.selectElts.evalTestId.value;
+			this.getEvalSet(currentEvalTestId);
+			currentEvalCircle = evalSet[evalSetOffset];
+
+			// keep a record of the total number of circles to be evaluated
+			totalEvalNum = 0;
+			for(i = 0 ; i<evalSet.length; i++){
+				totalEvalNum += evalSet[i].sequences.length;
+			}
+		}
+		this.station = currentEvalCircle['station'];
+		this.year = currentEvalCircle['year'];
+		this.month = currentEvalCircle['month'];
+		this.day = currentEvalCircle['day'];
+		ResetTool();
+	}else{		
+		if(tool != null)
 		{
-			if (tool.roostSeqObj[i].locallyChanged)
+			for (var i = 0; i < tool.roostSeqObj.length; i++)
 			{
-				var answer = confirm("There are unsaved changes. Are you sure you want to change the date?");
-				if(answer)
+				if (tool.roostSeqObj[i].locallyChanged)
 				{
-					break;
-				}
-				else
-				{
-					return;
+					var answer = confirm("There are unsaved changes. Are you sure you want to change the date?");
+					if(answer)
+					{
+						break;
+					}
+					else
+					{
+						return;
+					}
 				}
 			}
 		}
-	}
-	ResetTool();
-	for (var key in this.selectElts) {
-		this.selectElts[key].blur();
-		this[key] = this.selectElts[key].value;
+		ResetTool();
+		for (var key in this.selectElts) {
+			this.selectElts[key].blur();
+			this[key] = this.selectElts[key].value;
+		}
 	}
 	this.updateAllDropdowns();
+};
+
+Selector.prototype.getEvalSet = function(testId)
+{
+	var url = "ajax/get_evalSet2.php?run_id=169&thres=0.9&user_id=" + user.userID + "&evalTestId=" + testId;
+	xmlhttp = ajax_get(url);
+	evalSet = JSON.parse(xmlhttp.responseText); 
 };
 
 Selector.prototype.queryString = function()
@@ -95,7 +167,8 @@ Selector.prototype.inventoryCallback = function(xmlhttp)
 		}
 
 		if (this.day != "") {
-			window.location.hash = "#?" + this.queryString();
+			if(mode!=2)
+				window.location.hash = "#?" + this.queryString();
 			RoostToolInit();
 		}
 

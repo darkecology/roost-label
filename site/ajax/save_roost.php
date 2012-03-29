@@ -21,12 +21,16 @@ $userID = $roostobj->userID;
 $sequence_id = $roostobj->sequence_id;
 $conn = roostdb_connect();
 
+if(!isset($roostobj->score))
+{
+    $roostobj->score = 0;
+}
 // The following statement will insert or replace, as necessary
 if (isset($sequence_id))
 {
     $sql = <<<EOF
-	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id)
-	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID")
+	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id, score)
+	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());
@@ -38,8 +42,8 @@ EOF;
 else
 {
     $sql = <<<EOF
-	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id)
-	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID")
+	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id, score)
+	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());

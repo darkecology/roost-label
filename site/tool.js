@@ -699,7 +699,12 @@ function pointsToCircle(p)
 //------------------------------------------------------------------------
 function InfoBox(){
 
-    var template = document.getElementById("infoBoxTemplate");
+	if(mode==2){
+		var template = document.getElementById("infoBoxScoreTemplate");
+	}else{
+		var template = document.getElementById("infoBoxTemplate");	
+	}
+    
 	var parent = template.parentNode;
 
     this.infoBoxElt = template.cloneNode(true);
@@ -720,13 +725,18 @@ function InfoBox(){
 	this.lastTimeStamp = getElementByClassName("lastTimeStamp", this.infoBoxElt);
 	this.lastTimeSunrise = getElementByClassName("lastTimeSunrise", this.infoBoxElt);
     this.lastTime = getElementByClassName("lastTime", this.infoBoxElt);
-    this.extendBackward = getElementByClassName("extendBackward", this.infoBoxElt);
-    this.extendForward = getElementByClassName("extendForward", this.infoBoxElt);
-    this.username = getElementByClassName("username", this.infoBoxElt);
-    this.comments = getElementByClassName("comments", this.infoBoxElt);
-    this.saveButton = getElementByClassName("saveButton", this.infoBoxElt);
-    this.revertButton = getElementByClassName("revertButton", this.infoBoxElt);
-    this.deleteButton = getElementByClassName("deleteButton", this.infoBoxElt);
+	this.saveButton = getElementByClassName("saveButton", this.infoBoxElt);
+	if(mode ==2 ){
+		this.scoreSelect = getElementByClassName("scoreSelect", this.infoBoxElt);
+	}else{
+		this.extendBackward = getElementByClassName("extendBackward", this.infoBoxElt);
+		this.extendForward = getElementByClassName("extendForward", this.infoBoxElt);	
+		this.username = getElementByClassName("username", this.infoBoxElt);
+		this.comments = getElementByClassName("comments", this.infoBoxElt);
+		this.revertButton = getElementByClassName("revertButton", this.infoBoxElt);
+		this.deleteButton = getElementByClassName("deleteButton", this.infoBoxElt);
+this.score = getElementByClassName("score", this.infoBoxElt);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -760,11 +770,25 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 {
 	this.proCircleStart = 0;
 	this.proCircleEnd = 0;
-	this.databaseID = jsonSeq.sequence_id;
+
 	this.comments = jsonSeq.comments;
 	this.userID = jsonSeq.user_id;
 	this.username = jsonSeq.username;
-	
+	if(mode==2){
+		this.databaseID = jsonSeq.runs_roosts_id;
+		this.scoreSelect = jsonSeq.score_value;
+	}else{
+		this.databaseID = jsonSeq.sequence_id;
+	}
+    
+    if(tool.mode == 1)
+	{
+	    if(user.userID != this.userID || user.userID == -1)
+	    {
+		return;
+	    }
+	    this.score = jsonSeq.score;
+	}
 	
 	for (var j = 0; j < jsonSeq.circles.length; j++)
 	{
@@ -793,7 +817,10 @@ RoostSequence.prototype.toJSONString = function()
 	obj.comments = this.comments;
 	obj.circles = [];
 	obj.userID = this.userID;
-
+    if(mode==1){
+        obj.score = this.score;
+    }
+    
     for(var i = this.seq_start; i <= this.seq_end; i++)
 	{
 		var c = this.circles[i];
@@ -993,73 +1020,111 @@ RoostSequence.prototype.updateInfoBox = function()
     this.infoBox.lastTimeSunrise.onclick = bindEvent(this, "moveToLast");
 	this.infoBox.lastTimeSunrise.innerHTML = frame.minutes_from_sunrise;
 
-	this.infoBox.extendBackward.onclick = bindEvent(this, "extendBackward");
-	this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
-
-    // update extend links
-    if (!this.proCircleEnd && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost))) {
-        this.infoBox.extendForward.removeAttribute('disabled');
-    }
-    else
-    {
-	this.infoBox.extendForward.setAttribute('disabled', 'disabled');
-    }
+	if(mode == 2){
+		this.infoBox.saveButton.removeAttribute('disabled');
+		this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");			
+		this.infoBox.scoreSelect.onchange = bindEvent(this, "onChangeOnScoreSelect");
+		this.infoBox.scoreSelect.value = this.scoreSelect;
+	}
     
-    if(!this.proCircleStart && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost)))
-    {
-	this.infoBox.extendBackward.removeAttribute('disabled');
-    }
-    else
-    {
-	this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
-    }
-
-	//update username
+    
+    if(mode != 2){
+		this.infoBox.extendBackward.onclick = bindEvent(this, "extendBackward");
+		this.infoBox.extendForward.onclick = bindEvent(this, "extendForward");
 	
-	this.infoBox.username.innerHTML = this.username;
-
-    //update comments
-    this.infoBox.comments.textbox.onkeydown = function(e) {stopPropagation(e); return true;};
-    this.infoBox.comments.textbox.onkeyup = bindEvent(this, "onKeyDownOnComments");
-    this.infoBox.comments.textbox.onchange = bindEvent(this, "onChangeOnComments");
-    this.infoBox.comments.textbox.value = this.comments;
-    
-    //update buttons
-    if(this.locallyChanged){
-		if(user.checkPermission(this.userID, user.userAction.EditRoost) && user.checkPermission(this.userID, user.userAction.CreateRoost))
-		{
-			this.infoBox.saveButton.removeAttribute('disabled');
-			this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");			
+		// update extend links
+		if (!this.proCircleEnd && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost))) {
+			this.infoBox.extendForward.removeAttribute('disabled');
 		}
 		else
 		{
-			this.infoBox.saveButton.setAttribute('disabled', 'disabled');
+			this.infoBox.extendForward.setAttribute('disabled', 'disabled');
 		}
-        if (this.databaseID != null)
-        {
-            this.infoBox.revertButton.removeAttribute('disabled');
-        }
-        else
-        {
-            this.infoBox.revertButton.setAttribute('disabled', 'disabled');
-        }
-        this.infoBox.revertButton.onclick = bindEvent(this, "revertEvent" );
-
-    }
-    else {
-        this.infoBox.saveButton.setAttribute('disabled', 'disabled');
-        this.infoBox.revertButton.setAttribute('disabled', 'disabled');
-    }
     
-    if(user != null && user.checkPermission(this.userID, user.userAction.EditRoost))
-    {
-		this.infoBox.deleteButton.removeAttribute('disabled');
-    }
-    else
-    {
-		this.infoBox.deleteButton.setAttribute('disabled', 'disabled');
-    }
-	this.infoBox.deleteButton.onclick = bindEvent(this, "deleteEvent");
+		if(!this.proCircleStart && (user != null && user.checkPermission(this.userID, user.userAction.EditRoost)))
+		{
+			this.infoBox.extendBackward.removeAttribute('disabled');
+		}
+		else
+		{
+			this.infoBox.extendBackward.setAttribute('disabled', 'disabled');
+		}
+
+		//update username
+		
+		this.infoBox.username.innerHTML = this.username;
+
+		
+        //update comments
+        if(tool.mode != 1)
+        {
+            this.infoBox.comments.textbox.onkeydown = function(e) {stopPropagation(e); return true;};
+            this.infoBox.comments.textbox.onkeyup = bindEvent(this, "onKeyDownOnComments");
+            this.infoBox.comments.textbox.onchange = bindEvent(this, "onChangeOnComments");
+            this.infoBox.comments.textbox.value = this.comments;
+    
+        }
+        if(tool.mode == 1)
+        {
+            this.infoBox.score.scoreGroup[this.score].checked = true;
+            this.infoBox.score.onchange = bindEvent(this, "onClickOnScores");
+        }
+		
+		//update buttons
+		if(this.locallyChanged){
+			if(user.checkPermission(this.userID, user.userAction.EditRoost) && user.checkPermission(this.userID, user.userAction.CreateRoost))
+			{
+				this.infoBox.saveButton.removeAttribute('disabled');
+				this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");			
+			}
+			else
+			{
+				this.infoBox.saveButton.setAttribute('disabled', 'disabled');
+			}
+			if (this.databaseID != null)
+			{
+				this.infoBox.revertButton.removeAttribute('disabled');
+			}
+			else
+			{
+				this.infoBox.revertButton.setAttribute('disabled', 'disabled');
+			}
+			this.infoBox.revertButton.onclick = bindEvent(this, "revertEvent" );
+			
+		}
+		else {
+			this.infoBox.saveButton.setAttribute('disabled', 'disabled');
+			this.infoBox.revertButton.setAttribute('disabled', 'disabled');
+		}
+		
+		if(user != null && user.checkPermission(this.userID, user.userAction.EditRoost))
+		{
+			this.infoBox.deleteButton.removeAttribute('disabled');
+		}
+		else
+		{
+			this.infoBox.deleteButton.setAttribute('disabled', 'disabled');
+		}
+		this.infoBox.deleteButton.onclick = bindEvent(this, "deleteEvent");
+	}
+};
+
+RoostSequence.prototype.onClickOnScores = function()
+{   
+        this.locallyChanged = 1;
+	
+	for(i = 0; i < this.infoBox.score.scoreGroup.length; i++)
+	{
+	    if(this.infoBox.score.scoreGroup[i].checked == true)
+	    {
+		this.score = i;
+	    }
+	}
+        this.infoBox.saveButton.removeAttribute('disabled');
+        this.infoBox.saveButton.onclick = bindEvent(this, "saveEvent");
+        this.infoBox.revertButton.removeAttribute('disabled');
+        this.infoBox.revertButton.onclick = bindEvent(this, "revertEvent" );    
+	this.tool.updateButtons();
 };
 
 RoostSequence.prototype.onKeyDownOnComments = function()
@@ -1082,26 +1147,43 @@ RoostSequence.prototype.onChangeOnComments= function(){
 	this.tool.updateButtons();
 };
 
+RoostSequence.prototype.onChangeOnScoreSelect= function(){
+    this.scoreSelect = this.infoBox.scoreSelect.value;
+	currentEvalCircle.sequences[evalCircleOffset].score_value = this.infoBox.scoreSelect.value; 
+};
+
+
 RoostSequence.prototype.saveRoostSequence = function() 
 {
-	var roostString = this.toJSONString();
-
-	var url = "ajax/save_roost.php?station=" + this.tool.station + "&year=" + this.tool.year + "&month=" + this.tool.month + "&day=" + this.tool.day;
-
-	xmlhttp= new XMLHttpRequest();	
-	xmlhttp.open("POST", url, false);
-	xmlhttp.setRequestHeader("Content-Type", "text/plain");
-	xmlhttp.send(roostString);
-	var retval = JSON.parse(xmlhttp.responseText);
-	this.databaseID = retval.sequence_id;
+	if(mode==2){
+		var url = "ajax/save_scores.php?runs_roosts_id=" + this.databaseID + "&score_value=" + this.scoreSelect + "&user_id=" + user.userID;
+		xmlhttp= new XMLHttpRequest();
+		xmlhttp.open("GET", url, true);	
+		xmlhttp.send();
+	}else{
+		var roostString = this.toJSONString();
+		var url = "ajax/save_roost.php?station=" + this.tool.station + "&year=" + this.tool.year + "&month=" + this.tool.month + "&day=" + this.tool.day;
+		
+		xmlhttp= new XMLHttpRequest();	
+		xmlhttp.open("POST", url, false);
+		xmlhttp.setRequestHeader("Content-Type", "text/plain");
+		xmlhttp.send(roostString);
+		var retval = JSON.parse(xmlhttp.responseText);
+		this.databaseID = retval.sequence_id;
+	}
 };
 
 RoostSequence.prototype.saveEvent = function()
 {
-	var confirmation=confirm("Would you like to save?");
-	if (confirmation) this.save();
-	this.infoBox.saveButton.blur();
-	return confirmation;
+	if(mode==2){
+		this.save();
+		this.infoBox.saveButton.blur();
+	}else{
+		var confirmation=confirm("Would you like to save?");
+		if (confirmation) this.save();
+		this.infoBox.saveButton.blur();
+		return confirmation;
+	}
 };
 
 RoostSequence.prototype.save = function()
@@ -1655,9 +1737,12 @@ RoostTool.prototype.destroy = function(){
 		this.roostSeqObj[i].destroy();
 	}
 	this.roostSeqObj = [];
-
-    document.getElementById("roostSequenceTable").style.visibility = "hidden";
-
+	if(mode==2){
+		document.getElementById("roostScoreTable").style.visibility = "hidden";
+	}else{
+		document.getElementById("roostSequenceTable").style.visibility = "hidden";
+	}
+    
 	// empty drawing elements
 	for(var i = 0; i < this.panes.length; i++)
 	{
@@ -1678,20 +1763,34 @@ RoostTool.prototype.onbeforeunload = function()
 }
 
 RoostTool.prototype.getSequences = function() {
-
-    var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;
-	
-	xmlhttp = ajax_get(url);
-
-    var sequences = JSON.parse(xmlhttp.responseText);
-	
-	for (var i = 0; i < sequences.length; i++)
-	{		
-        var s = new RoostSequence();
-		s.populateFromJSON(sequences[i]);
+	if(mode ==2){
+		//move to first frame
+		tool.moveToFrame(tool.scanid2frameidx(currentEvalCircle.sequences[evalCircleOffset].circles[0].scan_id));
+		
+		//set up sequences using available evalSet struct
+		var sequences = currentEvalCircle.sequences[evalCircleOffset];
+		var s = new RoostSequence();
+		s.populateFromJSON(sequences);
+		while(tool.roostSeqObj[0] !=undefined){
+			tool.removeSequence(tool.roostSeqObj[0]);
+		}
 		this.addSequence(s);
-    }
-    this.updateCanvas();
+		this.updateCanvas();
+	}else{
+		var url = "ajax/get_roosts.php?station=" + this.station +"&year=" + this.year + "&month=" + this.month + "&day=" + this.day;
+		xmlhttp = ajax_get(url);
+		var sequences = JSON.parse(xmlhttp.responseText);
+		for (var i = 0; i < sequences.length; i++)
+		{		
+			var s = new RoostSequence();
+			s.populateFromJSON(sequences[i]);
+			if(s.circles.length != 0)
+			{
+				this.addSequence(s);
+			}
+		}
+		this.updateCanvas();
+	}
 };
 
 RoostTool.prototype.updateCanvas = function() 
@@ -1754,7 +1853,11 @@ RoostTool.prototype.addSequence = function(s)
 {
 	s.newInfoBox();
 	this.roostSeqObj.push(s);
-	document.getElementById("roostSequenceTable").style.visibility = "visible";
+	if(mode ==2){
+		document.getElementById("roostScoreTable").style.visibility = "visible";
+	}else{
+		document.getElementById("roostSequenceTable").style.visibility = "visible";	
+	}
     this.updateCanvas();
 };
 
@@ -1773,7 +1876,11 @@ RoostTool.prototype.removeSequence = function(obj)
 
 	if (this.roostSeqObj.length == 0)
 	{
-		document.getElementById("roostSequenceTable").style.visibility = "hidden";
+		if(mode==2){
+			document.getElementById("roostScoreTable").style.visibility = "hidden";
+		}else{
+			document.getElementById("roostSequenceTable").style.visibility = "hidden";
+		}
 	}
 };
 
@@ -1808,11 +1915,16 @@ RoostTool.prototype.loadFrame = function(idx) {
 	frameTitle.style.visibility = "visible";
 	frameNum.innerHTML = this.frame + 1;
 	totalFrames.innerHTML = this.frames.length;
+	if(mode ==2){
+		frameNum.innerHTML = currentEvalNum;
+		totalFrames.innerHTML = totalEvalNum;
+	}
 	timestamp.innerHTML = frameData.scan_time;
 	vcp.innerHTML = frameData.vcp;
 	minutesFromSunrise.innerHTML = frameData.minutes_from_sunrise;
-
-    if (this.frame == 0)
+	
+	
+    if (this.frame == 0 || (mode==2 && (typeof currentEvalCircle.sequences[evalCircleOffset-1]  == 'undefined') && (typeof evalSet[evalSetOffset-1]  == 'undefined')))
     {
         prev.setAttribute("disabled", "true");
     }
@@ -1821,7 +1933,7 @@ RoostTool.prototype.loadFrame = function(idx) {
         prev.removeAttribute("disabled");
     }
 
-    if (this.frame >= this.frames.length - 1)
+    if (this.frame >= this.frames.length - 1 || (mode==2 && (typeof currentEvalCircle.sequences[evalCircleOffset+1]  == 'undefined') && (typeof evalSet[evalSetOffset+1]  == 'undefined')))
     {
         next.setAttribute("disabled", "true");
     }
@@ -1840,7 +1952,30 @@ RoostTool.prototype.loadFrame = function(idx) {
 };
 
 RoostTool.prototype.prevFrame = function() {
-    if (this.frame > 0 )
+    if (mode==2)
+	{
+		//document.getElementsByClassName('scoreSelect')[1].blur();
+		tool.roostSeqObj[0].save();
+		if ((typeof currentEvalCircle.sequences[evalCircleOffset-1]  != 'undefined') || (typeof evalSet[evalSetOffset-1]  != 'undefined'))
+		{
+			this.resetZoom();
+			currentEvalNum -= 1;
+			evalCircleOffset -= 1;
+			if((typeof currentEvalCircle.sequences[evalCircleOffset]  == 'undefined'))
+			{
+				evalSetOffset -= 1;
+				currentEvalCircle = evalSet[evalSetOffset];
+				evalCircleOffset = currentEvalCircle.sequences.length - 1;
+				selector.selectionChange();
+			}else{
+				tool.getSequences();
+				//document.getElementsByClassName('scoreSelect')[1].focus();
+				//tool.moveToFrame(tool.scanid2frameidx(currentEvalCircle.sequences[evalCircleOffset].circles[0].scan_id));
+			}
+		}
+		return;
+	}
+	if (this.frame > 0 )
     {
         this.loadFrame(--this.frame);
         this.updateCanvas();
@@ -1848,6 +1983,29 @@ RoostTool.prototype.prevFrame = function() {
 };
 
 RoostTool.prototype.nextFrame = function() {
+	if (mode==2)
+	{
+		//document.getElementsByClassName('scoreSelect')[1].blur();
+		tool.roostSeqObj[0].save();
+		if ((typeof currentEvalCircle.sequences[evalCircleOffset+1]  != 'undefined') || (typeof evalSet[evalSetOffset+1]  != 'undefined'))
+		{
+			this.resetZoom();
+			currentEvalNum += 1;
+			evalCircleOffset += 1;
+			if((typeof currentEvalCircle.sequences[evalCircleOffset]  == 'undefined'))
+			{
+				evalSetOffset += 1;
+				currentEvalCircle = evalSet[evalSetOffset];
+				evalCircleOffset = 0;
+				selector.selectionChange();
+			}else{
+				tool.getSequences();
+				//document.getElementsByClassName('scoreSelect')[1].focus();
+				//tool.moveToFrame(tool.scanid2frameidx(currentEvalCircle.sequences[evalCircleOffset].circles[0].scan_id));
+			}
+		}
+		return;
+	}
     if (this.frame < this.frames.length - 1 )
     {
         this.loadFrame(++this.frame);
@@ -1996,6 +2154,7 @@ function RoostToolInit()
     GetBrowserInfo();
     if (tool != null) tool.destroy();
 	tool = new RoostTool();
+    tool.mode = mode;
     tool.getSequences();
     window.onkeydown = keydown;    
     window.focus();
@@ -2030,6 +2189,29 @@ function keydown(e)
     else if (e.keyCode == 37)	// left arrow
     {
         prev();
+        return false;
+    }
+    else if (e.keyCode == 38)	// Up arrow
+    {
+		document.getElementsByClassName('scoreSelect')[1].blur();
+		var currIdx =  document.getElementsByClassName('scoreSelect')[1].selectedIndex;
+		if(currIdx ==0){
+			return false;
+		}
+		document.getElementsByClassName('scoreSelect')[1].selectedIndex = --currIdx;
+		tool.roostSeqObj[0].onChangeOnScoreSelect();
+		return false;
+    }
+    else if (e.keyCode == 40)	// Down arrow
+    {
+		document.getElementsByClassName('scoreSelect')[1].blur();
+        var currIdx =  document.getElementsByClassName('scoreSelect')[1].selectedIndex;
+		var optLength =  document.getElementsByClassName('scoreSelect')[1].length;
+		if(currIdx == optLength-1){
+			return false;
+		}
+        document.getElementsByClassName('scoreSelect')[1].selectedIndex = ++currIdx;
+		tool.roostSeqObj[0].onChangeOnScoreSelect();
         return false;
     }
     else if(e.keyCode == 67)	// c
@@ -2133,4 +2315,12 @@ var user;
 function UserInit()
 {
 	user = new User();
+}
+function countProperties(obj) {
+    var count = 0;
+    for(var prop in obj) {	
+        if(obj.hasOwnProperty(prop))
+            ++count;
+    }
+    return count;
 }

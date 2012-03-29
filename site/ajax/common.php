@@ -14,7 +14,7 @@ function roostdb_connect()
 	die('Could not connect: ' . mysql_error());
     }
 
-    if (! mysql_select_db('roostdb_dev', $con))
+    if (! mysql_select_db('roostdb', $con))
     {
 	die('Failed to select database');
     }

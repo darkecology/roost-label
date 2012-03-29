@@ -174,6 +174,9 @@ User.prototype.cancelNewUserCreation = function()
 
 User.prototype.cancelLogin = function()
 {
+	if(mode==2){
+		return;
+	}
     var loginDiv = document.getElementById("loginDiv");
     loginDiv.style.display = 'none';
     var pageDivWrapper = document.getElementById("pageDivWrapper");

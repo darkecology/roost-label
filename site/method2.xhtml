@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:v="urn:schemas-microsoft-com:vml" 
+      xmlns:svg="http://www.w3.org/2000/svg" 
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />    
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+    
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+    
+    <title>Roost Labeling</title>
+
+    <!-- Yahoo YUI (for getElementsByClassName) -->
+    <script src="http://yui.yahooapis.com/2.8.1/build/yahoo/yahoo-min.js"></script>
+    <script src="http://yui.yahooapis.com/2.8.1/build/dom/dom-min.js"></script>
+    
+    <!-- Proj4js map projections -->
+    <script type="text/javascript" src="proj4js/lib/proj4js-compressed.js"></script>
+
+    <script type="text/javascript" src="ajax.js"></script>
+    <script type="text/javascript" src="tool.js"></script>
+    <script type="text/javascript" src="select.js"></script>
+    <script type="text/javascript" src="Users.js"></script>
+
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-26230878-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    
+  </head>
+  
+  <body id="body" onload="starter(2);">
+    
+    <div id="wrapper">
+
+      <div id="header">
+        <h2 id="title"> Roost Labeling </h2>
+      </div>
+      <div id="pageDivWrapper" style="display:block">
+	<div id="controlBar">
+  
+	  <strong>Evaluation Test ID:</strong>
+	  <select id="evalTestId_select">
+	    <option value="null"></option>
+	  </select>
+
+  	  <strong>Station:</strong>
+	  <select id="station_select" disabled="disabled">
+	    <option value="null"></option>
+	  </select>
+	  
+	  <strong>Year:</strong>
+	  <select id="year_select" disabled="disabled">
+	    <option value="null"></option>
+	  </select>
+	  
+	  <strong>Month:</strong>
+	  <select id="month_select" disabled="disabled">
+	    <option value="null"></option>
+	  </select>
+	  
+	  <strong>Day:</strong>
+	  <select id="day_select" disabled="disabled">
+	    <option value="null"></option>
+	  </select>
+	  
+	  <span id="frameCounter" style="visibility:hidden">
+	    <strong>Roost</strong>: <span id="frameNum"></span> of <span id="totalFrames">27</span>
+	    (<a id="prevButton" disabled="true" href="javascript:prev();">Prev</a>
+	    <a id="nextButton" disabled="true" href="javascript:next();">Next</a>)
+	  </span>
+	  <div id="userLoginDiv" style="float:right; display:none">
+	    <button id="loginButton" class="button" type="button">Login</button>
+	    <button id="newUserButton" class="button" type="button">New User</button>
+	  </div>
+	  <div id="userLogoutDiv" style="float:right; display:none">
+	    Hello! <span id="helloSpan"> </span>
+	    <button id="logoutButton" class="button" type="button">Logout</button>
+	  </div>
+	</div> <!-- end #controlBar -->
+	
+	<div id="frameInfoBar">
+  
+	  <span class="left">
+	    
+	    <span style="text-decoration:underline">C</span>ircles 
+	    <input type="checkbox" id="circleToggle" value="true" checked="checked" onchange="updateLayers();"/>
+	    <span style="text-decoration:underline">M</span>aps 
+	    <input type="checkbox" id="mapToggle" value="true" checked="checked" onchange="updateLayers();"/>
+	  </span>
+  
+	  <div id="frameTitle" style="visibility:hidden">
+	    <strong>Minutes from sunrise:</strong> <span id="minutesFromSunrise"></span>,
+	    <strong>Scan time:</strong> <span id="frameTimeStamp"></span> UTC, 
+	    <strong>VCP:</strong> <span id="vcp"></span>
+	  </div>
+	</div>
+
+	<div id="radarCanvas">
+  
+	  <table>
+	    <tr>
+	      <td id="radarPaneTemplate" class="radarPane hidden">
+		<span>
+		  Product:
+		  <select class="productSelect">
+		  </select>
+		</span>
+		<br class="clearing"/>
+  
+		<div id="viewport" class="viewport">
+		  <div class="panZoomControls">
+		    <img class="zoomIn" src="http://openlayers.org/api/img/zoom-plus-mini.png"/>
+		    <img class="resetZoom" src="http://openlayers.org/api/img/zoom-world-mini.png"/>
+		    <img class="zoomOut" src="http://openlayers.org/api/img/zoom-minus-mini.png"/>
+		    <img class="panNorth" src="http://openlayers.org/api/img/north-mini.png"/>
+		    <img class="panSouth" src="http://openlayers.org/api/img/south-mini.png"/>
+		    <img class="panEast"  src="http://openlayers.org/api/img/east-mini.png"/>
+		    <img class="panWest"  src="http://openlayers.org/api/img/west-mini.png"/>
+		  </div>
+  
+		  <div class="radarLayer">
+		    <img class="radarImage map" src=""/>
+		  </div>
+		  <div class="mapLayer">
+		    <img class="mapImage map" src=""/>
+		  </div>
+		  <div class="canvas">
+		    <svg:svg>
+		      <svg:g transform="translate(0,0)" class="translateGroup">
+			<svg:g transform="scale(0)" class="scaleGroup">
+			  <svg:g class="svg"/>
+			</svg:g>
+		      </svg:g>
+		    </svg:svg>
+		  </div>
+		</div>
+	      </td>
+  
+	    </tr>
+	  </table>
+	</div>
+  
+	<div id="infoPanel">
+	  
+	  <table id="roostSequenceTable" class="pretty" style="visibility:hidden">
+	    <tr>
+	      <th rowspan="2">ID</th>
+	      <th colspan="2">Image Location</th>
+	      <th colspan="2" >Map Location</th>
+	      <th colspan="3">First Appears</th>
+	      <th colspan="3">Last Appears</th>
+		  <th rowspan="2">Username</th>
+	      <th rowspan="2">Comments</th>
+	      <th colspan="3">Actions</th>
+	    </tr>
+  
+	    <tr>
+	      <th>x</th>
+	      <th>y</th>
+	      <th>lat</th>
+	      <th>lon</th>
+	      <th>UTC</th>
+	      <th>sunrise</th>
+	      <th>extend</th>
+	      <th>UTC</th>
+	      <th>sunrise</th>
+	      <th>extend</th>
+	      <th>Delete</th>
+	      <th>Revert</th>
+	      <th>Save</th>
+	    </tr>
+  
+	    <tr class="hidden" id="infoBoxTemplate">
+	      <td class="sequenceId">ID</td>
+	      <td class="xcoord">x</td>
+	      <td class="ycoord">y</td>
+	      <td><a target="_googlemaps" class="lat">y</a></td>
+	      <td><a target="_googlemaps" class="lon">x</a></td>
+	      <td><a class="firstTimeStamp" href="">00:00:00</a></td>
+	      <td><a class="firstTimeSunrise" href="">-3</a></td>
+	      <td><button type="button" class="button extendBackward">Go</button></td>
+	      <td><a class="lastTimeStamp" href="">00:00:00</a></td>
+	      <td><a class="lastTimeSunrise" href="">-3</a></td>
+	      <td><button type="button" class="button extendForward">Go</button></td>
+	      <td class="username">username</td>
+		  <td>
+		<form class="comments"> 
+		  <input name="textbox" size="30" maxlength="1024"/> 
+		</form> 
+	      </td>
+	      <td><button class="button deleteButton" type="button">Delete</button></td>
+	      <td><button class="button revertButton" type="button">Revert</button></td>
+	      <td><button class="button saveButton" type="button">Save</button></td>
+	    </tr>
+  
+	  </table>
+  
+	  
+	  <table id="roostScoreTable" class="pretty" style="visibility:hidden">
+	    <tr>
+	      <th rowspan="2">ID</th>
+	      <th colspan="2">Image Location</th>
+	      <th colspan="2" >Map Location</th>
+	      <th colspan="2">First Appears</th>
+	      <th colspan="2">Last Appears</th>
+		  
+	      <th rowspan="2">User Score</th>
+	      <th colspan="1">Actions</th>
+	    </tr>
+  
+	    <tr>
+	      <th>x</th>
+	      <th>y</th>
+	      <th>lat</th>
+	      <th>lon</th>
+	      <th>UTC</th>
+	      <th>sunrise</th>
+	      
+	      <th>UTC</th>
+	      <th>sunrise</th>
+	      
+		  <th>Save</th>
+	    </tr>
+  
+	    <tr class="hidden" id="infoBoxScoreTemplate">
+	      <td class="sequenceId">ID</td>
+	      <td class="xcoord">x</td>
+	      <td class="ycoord">y</td>
+	      <td><a target="_googlemaps" class="lat">y</a></td>
+	      <td><a target="_googlemaps" class="lon">x</a></td>
+	      <td><a class="firstTimeStamp" href="">00:00:00</a></td>
+	      <td><a class="firstTimeSunrise" href="">-3</a></td>
+		  <td><a class="lastTimeStamp" href="">00:00:00</a></td>
+	      <td><a class="lastTimeSunrise" href="">-3</a></td>
+		  <td>
+			<select class="scoreSelect">
+			  <option value="0">not selected</option>
+			  <option value="1">Full Cirlce</option>
+			  <option value="2">Half Circle</option>
+			  <option value="3">No Circle</option>
+			  <option value="4">Not a roost</option>
+			</select>
+		  </td>
+		  <td><button class="button saveButton" type="button">Save</button></td>
+	    </tr>
+  
+	  </table>
+  
+  
+	</div>
+      </div>
+      
+      <div id="newUserDiv" style="text-align:center; display:none">
+	User Name: <input type="text" id="newUserName" size="9" maxlength="32"/> <br> </br>
+	Password:  <input type="password" id="newUserPassword" size="9" maxlength="32"/> <br> </br>
+	<button id="newAccountButton" type="button">Create New Account</button>
+	<button id="newAccountCancelButton" type="button">Cancel</button>
+      </div>
+      <div id="loginDiv" style="text-align:center; display:none">
+	User Name: <input type="text" id="userName" size="9" maxlength="32"/> <br> </br>
+	Password:  <input type="password" id="password" size="9" maxlength="32"/> <br> </br>
+	<button id="userLoginButton" type="button">Login</button>
+	<button id="loginCancelButton" type="button">Cancel</button>
+      </div>
+      <div id="bottomButtons">
+	<button id="saveAllButton" class="right" type="button" disabled="disabled">Save All</button>
+	<button id="resetButton" class="right" type="button" disabled="disabled">Reset</button>
+	<br class="clearing"/>
+      </div>      
+      
+    </div> <!-- End #wrapper -->
+    
+  </body>
+
+</html>

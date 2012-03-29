@@ -33,7 +33,7 @@ EOF;
 }
 
 $circle_sql = <<<EOF
-    SELECT seq.sequence_id, seq.comments, s.scan_id, c.x, c.y, c.r, seq.user_id, u.username
+    SELECT seq.sequence_id, seq.comments, s.scan_id, c.x, c.y, c.r, seq.score, seq.user_id, u.username
     FROM sequences seq, circles2 c, users u, scans2 s
     WHERE seq.sequence_id = c.sequence_id
     AND s.scan_id = c.scan_id
@@ -58,7 +58,8 @@ while($row = mysql_fetch_array($result))
     $sequences[$sid]['comments'] = $row['comments'];
     $sequences[$sid]['user_id'] = $row['user_id'];
     $sequences[$sid]['username'] = $row['username'];
-
+    $sequences[$sid]['score'] = $row['score'];
+    
     $circle = array();
     $circle['scan_id'] = $row['scan_id'];
     $circle['x'] = $row['x'];
