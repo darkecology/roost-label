@@ -1066,7 +1066,8 @@ RoostSequence.prototype.updateInfoBox = function()
         }
         if(tool.mode == 1)
         {
-            this.infoBox.score.scoreGroup[this.score].checked = true;
+			if(this.score != undefined)
+				this.infoBox.score.scoreGroup[this.score].checked = true;
             this.infoBox.score.onchange = bindEvent(this, "onClickOnScores");
         }
 		
