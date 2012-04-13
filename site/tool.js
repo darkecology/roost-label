@@ -817,8 +817,10 @@ RoostSequence.prototype.toJSONString = function()
 	obj.comments = this.comments;
 	obj.circles = [];
 	obj.userID = this.userID;
+	obj.valid_flag = 1;
     if(mode==1){
         obj.score = this.score;
+	obj.valid_flag = 0;
     }
     
     for(var i = this.seq_start; i <= this.seq_end; i++)

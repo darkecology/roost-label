@@ -29,8 +29,8 @@ if(!isset($roostobj->score))
 if (isset($sequence_id))
 {
     $sql = <<<EOF
-	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id, score)
-	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score")
+	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id, score, valid_flag)
+	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score", "$roostobj->valid_flag")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());
@@ -42,8 +42,8 @@ EOF;
 else
 {
     $sql = <<<EOF
-	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id, score)
-	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score")
+	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id, score, valid_flag)
+	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score", "$roostobj->valid_flag")
 EOF;
     $result = mysql_query($sql);
     if (!$result) die('Invalid query: ' . mysql_error());
