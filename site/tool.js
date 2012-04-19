@@ -768,12 +768,17 @@ RoostSequence.prototype.destroy = function()
 
 RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 {
+	if(jsonSeq.valid_flag == 0) 
+	{
+		return;
+	}
 	this.proCircleStart = 0;
 	this.proCircleEnd = 0;
 
 	this.comments = jsonSeq.comments;
 	this.userID = jsonSeq.user_id;
 	this.username = jsonSeq.username;
+	
 	if(mode==2){
 		this.databaseID = jsonSeq.runs_roosts_id;
 		this.scoreSelect = jsonSeq.score_value;
@@ -787,7 +792,7 @@ RoostSequence.prototype.populateFromJSON = function(jsonSeq)
 	    {
 		return;
 	    }
-	    this.score = jsonSeq.score;
+	    this.score = jsonSeq.score-1;
 	}
 	
 	for (var j = 0; j < jsonSeq.circles.length; j++)
@@ -819,7 +824,7 @@ RoostSequence.prototype.toJSONString = function()
 	obj.userID = this.userID;
 	obj.valid_flag = 1;
     if(mode==1){
-        obj.score = this.score;
+        obj.score = this.score + 1;
 	obj.valid_flag = 0;
     }
     
@@ -1068,7 +1073,7 @@ RoostSequence.prototype.updateInfoBox = function()
         }
         if(tool.mode == 1)
         {
-			if(this.score != undefined)
+			if(this.score != undefined && this.score != -1)
 				this.infoBox.score.scoreGroup[this.score].checked = true;
             this.infoBox.score.onchange = bindEvent(this, "onClickOnScores");
         }
@@ -2196,6 +2201,7 @@ function keydown(e)
     }
     else if (e.keyCode == 38)	// Up arrow
     {
+	if(mode == 2) {
 		document.getElementsByClassName('scoreSelect')[1].blur();
 		var currIdx =  document.getElementsByClassName('scoreSelect')[1].selectedIndex;
 		if(currIdx ==0){
@@ -2204,9 +2210,11 @@ function keydown(e)
 		document.getElementsByClassName('scoreSelect')[1].selectedIndex = --currIdx;
 		tool.roostSeqObj[0].onChangeOnScoreSelect();
 		return false;
+	}
     }
     else if (e.keyCode == 40)	// Down arrow
     {
+	if(mode == 2){
 		document.getElementsByClassName('scoreSelect')[1].blur();
         var currIdx =  document.getElementsByClassName('scoreSelect')[1].selectedIndex;
 		var optLength =  document.getElementsByClassName('scoreSelect')[1].length;
@@ -2216,6 +2224,7 @@ function keydown(e)
         document.getElementsByClassName('scoreSelect')[1].selectedIndex = ++currIdx;
 		tool.roostSeqObj[0].onChangeOnScoreSelect();
         return false;
+	}
     }
     else if(e.keyCode == 67)	// c
     {
