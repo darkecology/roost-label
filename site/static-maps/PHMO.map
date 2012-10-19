@@ -1,0 +1,68 @@
+
+MAP
+
+  NAME PHMO
+  IMAGECOLOR 0 0 0
+  TRANSPARENT ON  
+
+  EXTENT 540061.39 2186522.38 840061.39 2486522.38
+  SIZE 600 600
+
+  PROJECTION
+   'proj=utm'
+   'ellps=WGS84'
+   'datum=WGS84'
+   'zone=4'
+   'no_defs'
+  END
+
+  LAYER
+      NAME 'counties'
+      TYPE POLYGON
+      STATUS ON
+      DATA '/nfs/guille/tgd/users/sheldon/work/convert/maps/c_15jl09.shp'
+      METADATA
+	'wms_title' 'counties'
+      END
+      TRANSPARENCY 100
+      PROJECTION
+	'proj=longlat'
+	'ellps=WGS84'
+	'datum=WGS84'
+	'no_defs'
+      END
+
+      CLASS
+	 STYLE
+	   SYMBOL 0
+           WIDTH  1
+           OUTLINECOLOR 128 128 128
+	 END
+      END
+  END
+
+
+  LAYER
+      NAME 'states'
+      TYPE POLYGON
+      STATUS ON
+      DATA '/nfs/guille/tgd/users/sheldon/work/convert/maps/s_01au07.shp'
+      METADATA
+	'wms_title' 'states'
+      END
+      TRANSPARENCY 100
+      PROJECTION
+      'proj=longlat'
+      'ellps=WGS84'
+      'datum=WGS84'
+      'no_defs'
+      END
+      CLASS
+	 STYLE
+	   SYMBOL 0
+	   WIDTH 1
+	   OUTLINECOLOR 255 255 255
+	 END
+      END
+  END 
+END
