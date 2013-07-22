@@ -2,25 +2,52 @@
 
 require '../ajax/common.php';
 
+if (defined('STDIN')) {
+    parse_str(implode('&', array_slice($argv, 1)), $_GET);
+}
+
 /*----------------------------------------
  * Set the correct content-type header
  *----------------------------------------*/
 header("Content-type: text/plain");
 
 /*----------------------------------------
+ * Parse parameters
+ *----------------------------------------*/
+
+$station = get_param('station', "");
+$year    = get_param('year', "");
+$month   = get_param('month', "");
+
+/*----------------------------------------
  * Get data from DB
  *----------------------------------------*/
 $con = roostdb_connect();
 
+$station_clause = "";
+$year_clause = "";
+$month_clause = "";
+
+if ($station != "") {
+    $station_clause = "AND s.station = '$station'";
+}
+if ($year != "") {
+    $year_clause = "AND year(s.scan_date) = $year";
+}
+if ($month != "") {
+    $month_clause = "AND month(s.scan_date) = $month";
+}
+
 $sql =<<<EOF
-    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, c.scan_time, minutes_from_sunrise, x, y, r
-    FROM sequences s, circles c, stations st, scans
+    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, scans.scan_time, minutes_from_sunrise, x, y, r
+    FROM sequences s, circles2 c, stations st, scans2 scans
     WHERE s.sequence_id = c.sequence_id
     AND s.station = st.station
-    AND scans.station = s.station
-    AND scans.scan_date = s.scan_date
-    AND scans.scan_time = c.scan_time
-    ORDER BY station, s.scan_date, s.sequence_id, c.scan_time
+    AND scans.scan_id = c.scan_id
+    $station_clause
+    $year_clause
+    $month_clause
+    ORDER BY station, s.scan_date, s.sequence_id, scans.scan_time
 EOF;
 
 $result = mysql_query($sql, $con);
