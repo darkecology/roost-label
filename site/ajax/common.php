@@ -37,7 +37,7 @@ function get_param($name, $default = NULL)
  ************************************************************/
 function lonlat_to_utm($lon, $lat)
 {
-    $PATH = getenv('PATH') . ':/nfs/phantom/u5/sheldon/local/bin:/usr/bin';
+    $PATH = getenv('PATH') . ':/nfs/guille/tgd/users/sheldon/local/bin:/usr/bin';
     $zone = floor( ($lon + 180.0) / 6.0 ) + 1;
     $cmd = "PATH=$PATH echo \"$lon $lat\" | proj +proj=utm +zone=$zone +datum=WGS84";
     $xy = system($cmd, $retval);
@@ -55,7 +55,7 @@ function lonlat_to_utm($lon, $lat)
  ************************************************************/
 function utm_to_lonlat($x, $y, $zone)
 {
-    $PATH = getenv('PATH') . ':/nfs/phantom/u5/sheldon/local/bin:/usr/bin';
+    $PATH = getenv('PATH') . ':/nfs/guille/tgd/users/sheldon/local/bin:/usr/bin';
     
     $cmd = "PATH=$PATH echo \"$x $y\" | proj -I -f '%.6f' +proj=utm +zone=$zone +datum=WGS84";
     
