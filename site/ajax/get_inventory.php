@@ -28,13 +28,13 @@ $sql =<<<EOF
     ORDER BY g.id, st.state
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $group = $row['group_name'];
     $thestation = $row['station'];
@@ -52,13 +52,13 @@ if ($station != "")
 	FROM inventory2 i
 	WHERE station = '$station'
 EOF;
-    $result = mysql_query($sql, $con);
+    $result = mysqli_query($con, $sql);
 
     if (!$result) {
-	die('Invalid query: ' . mysql_error());
+	die('Invalid query: ' . mysqli_error($con));
     }
 
-    while($row = mysql_fetch_array($result))
+    while($row = mysqli_fetch_array($result))
     {
 	$y = $row['year'];
 	$inventory['year'][$y] = $y;
@@ -76,13 +76,13 @@ if ($station != "" && $year != "")
 	WHERE station = '$station'
 	AND year = $year
 EOF;
-    $result = mysql_query($sql, $con);
+    $result = mysqli_query($con, $sql);
 
     if (!$result) {
-	die('Invalid query: ' . mysql_error());
+	die('Invalid query: ' . mysqli_error($con));
     }
 
-    while($row = mysql_fetch_array($result))
+    while($row = mysqli_fetch_array($result))
     {
 	$m = $row['month'];
 	$inventory['month'][$m] = $m;
@@ -101,20 +101,20 @@ if ($station != "" && $year != "" && $month != "")
 	AND year = $year
 	AND month = $month
 EOF;
-    $result = mysql_query($sql, $con);
+    $result = mysqli_query($con, $sql);
 
     if (!$result) {
-	die('Invalid query: ' . mysql_error());
+	die('Invalid query: ' . mysqli_error($con));
     }
 
-    while($row = mysql_fetch_array($result))
+    while($row = mysqli_fetch_array($result))
     {
 	$d = $row['day'];
 	$inventory['day'][$d] = $d;
     }
 }
 
-mysql_close($con);
+mysqli_close($con);
 print json_encode($inventory);
 
 ?>

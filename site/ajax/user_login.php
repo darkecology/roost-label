@@ -22,16 +22,16 @@
 
 		$userIDSQL = "SELECT username, permission FROM users WHERE userID = '$userID'";
 
-		$result = mysql_query($userIDSQL);
+		$result = mysqli_query($con, $userIDSQL);
 		if (!$result) {		
-			echo "0; 2; Invalid query: " . mysql_error() . "";
+			echo "0; 2; Invalid query: " . mysqli_error($con) . "";
 			return;
-		}elseif(!mysql_num_rows($result)){
+		}elseif(!mysqli_num_rows($result)){
 			echo "0; 3; userID does not exist in the database";
 			return;
 		}else{
 		
-			while($row = mysql_fetch_row($result)) {
+			while($row = mysqli_fetch_row($result)) {
 		
     		    		
 				$username = $row[0];
@@ -46,16 +46,16 @@
 	}elseif ($username != NULL && $hashedPassword != NULL) {
 
 		$userLoginSQL = "SELECT userID, permission FROM users WHERE username = '$username' AND password = '$hashedPassword'";
-		$result = mysql_query($userLoginSQL);
+		$result = mysqli_query($con, $userLoginSQL);
 		if (!$result) {		
-			echo "0;2;Invalid query: " . mysql_error() . "";
+			echo "0;2;Invalid query: " . mysqli_error($con) . "";
 			return;
-		}elseif(!mysql_num_rows($result)){
+		}elseif(!mysqli_num_rows($result)){
 			echo "0;4; username and/or password do not match";
 			return;
 		}else{
 		
-			while($row = mysql_fetch_row($result)) {
+			while($row = mysqli_fetch_row($result)) {
 
     		
 			$userID = $row[0];
@@ -67,7 +67,7 @@
 
 	}
 	
-	mysql_close($con);
+	mysqli_close($con);
 /*
 */
 ?>

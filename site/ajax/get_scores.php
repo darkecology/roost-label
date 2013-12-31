@@ -17,13 +17,13 @@ $runs_sql = <<<EOF
     ORDER BY r.run_id
 EOF;
 
-$result = mysql_query($runs_sql, $con);
+$result = mysqli_query($con, $runs_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $rid = $row['runs_roosts_id'];
     $runs[$rid]['runs_roosts_id'] = $rid;
@@ -44,13 +44,13 @@ $scores_sql = <<<EOF
     ORDER BY r.run_id
 EOF;
 
-$result = mysql_query($scores_sql, $con);
+$result = mysqli_query($con, $scores_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $rid = $row['runs_roosts_id'];
     $runs[$rid]['score_value'] = $row['score_value'];
@@ -59,5 +59,5 @@ while($row = mysql_fetch_array($result))
 
 print json_encode(array_values($runs));
 
-mysql_close($con);
+mysqli_close($con);
 ?>

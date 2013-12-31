@@ -21,28 +21,28 @@
 
 	$usernameCheckSQL = "SELECT username FROM users	WHERE username = '$username'";
 		
-	$result = mysql_query($usernameCheckSQL);
+	$result = mysqli_query($con, $usernameCheckSQL);
 		
 	if (!$result) {
-		echo "0; 2;Invalid query: " . mysql_error() . "";
+		echo "0; 2;Invalid query: " . mysqli_error($con) . "";
 		return;
-	}elseif(mysql_num_rows($result)){
+	}elseif(mysqli_num_rows($result)){
 		echo "0; 1; username is already used, try another username";
 	}else{
 		//else enter the username and hashed password in the database
 
 		$newUsernameSQL = "INSERT INTO users(username, password, permission)  values ('$username', '$hashedPassword', '1')";
 		
-		$result = mysql_query($newUsernameSQL);
+		$result = mysqli_query($con, $newUsernameSQL);
 		
 		if (!$result) {
-			echo "0;2;Invalid query: " . mysql_error();
+			echo "0;2;Invalid query: " . mysqli_error($con);
 		}else{
-			$userID = mysql_insert_id();
+			$userID = mysqli_insert_id($con);
 			echo "1; userID=$userID";
 		}	
 		
-		mysql_close($con);
+		mysqli_close($con);
 
 	}
 ?>

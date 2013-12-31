@@ -43,15 +43,15 @@ EOF;
 
 $sequences = array();
 
-$result = mysql_query($circle_sql);
+$result = mysqli_query($con, $circle_sql);
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
 //$username_sql = "Select username From users where userID = '$row['user_id']'";
 
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $sid = $row['sequence_id'];
     $sequences[$sid]['sequence_id'] = $sid;
@@ -69,7 +69,7 @@ while($row = mysql_fetch_array($result))
     $sequences[$sid]['circles'][] = $circle;
 }
 
-mysql_close($con);
+mysqli_close($con);
 print json_encode(array_values($sequences));
 
 ?>

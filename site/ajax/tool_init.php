@@ -27,15 +27,15 @@ $sql = <<<EOF
     FROM   products
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
 $products = array();
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $products[$row['product']] = $row['description'];
 }
@@ -50,15 +50,15 @@ $sql = <<<EOF
     WHERE station = '$station'
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
 // only one row
 $stationInfo = array();
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $stationInfo = $row;
 }
@@ -77,13 +77,13 @@ $frames_sql = <<<EOF
     ORDER BY scan_time
 EOF;
 
-$result = mysql_query($frames_sql, $con);
+$result = mysqli_query($con, $frames_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $id = $row['scan_id'];
     $frames_array[$id]['scan_id'] = $id;
@@ -100,13 +100,13 @@ $inventory_sql = <<<EOF
     AND   s.scan_date = '$year-$month-$day'
 EOF;
 
-$result = mysql_query($inventory_sql, $con);
+$result = mysqli_query($con, $inventory_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $id = $row['scan_id'];
     
@@ -123,7 +123,7 @@ $ret = array('frames' => array_values($frames_array),
 	     'products' => $products,
 	     'stationInfo' => $stationInfo);
 
-mysql_close($con);
+mysqli_close($con);
 print json_encode($ret);
 
 ?>

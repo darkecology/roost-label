@@ -19,13 +19,13 @@ $runs_sql = <<<EOF
   ORDER BY station, year, month, day, scan_id
 EOF;
 
-$result = mysql_query($runs_sql, $con);
+$result = mysqli_query($con, $runs_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $station = $row['station'];
     $year = $row['year'];
@@ -64,13 +64,13 @@ $runs_sql = <<<EOF
   ORDER BY station, year, month, day, scan_id
 EOF;
 
-$result = mysql_query($runs_sql, $con);
+$result = mysqli_query($con, $runs_sql);
 
 if (!$result) {
-    die('Invalid query: ' . mysql_error());
+    die('Invalid query: ' . mysqli_error($con));
 }
 
-while($row = mysql_fetch_array($result))
+while($row = mysqli_fetch_array($result))
 {
     $station = $row['station'];
     $year = $row['year'];
@@ -122,73 +122,7 @@ function array_searchRecursive( $needle, $haystack, $strict=false, $path=array()
   return false; 
 } 
 
-/*
-    $rid = $row['runs_roosts_id'];
-    $runs[$rid]['runs_roosts_id'] = $rid;
-    $runs[$rid]['scan_id'] = $row['scan_id'];
-    $runs[$rid]['x'] = $row['x'];
-    $runs[$rid]['y'] = $row['y'];
-    $runs[$rid]['r'] = $row['r'];
-}
-
-
-
-
-while($row = mysql_fetch_array($result))
-  {
-    $sid = $row['sequence_id'];
-    $sequences[$sid]['sequence_id'] = $sid;
-    $sequences[$sid]['comments'] = $row['comments'];
-    $sequences[$sid]['user_id'] = $row['user_id'];
-    $sequences[$sid]['username'] = $row['username'];
-    $sequences[$sid]['score'] = $row['score'];
-    
-    $circle = array();
-    $circle['scan_id'] = $row['scan_id'];
-    $circle['x'] = $row['x'];
-    $circle['y'] = $row['y'];
-    $circle['r'] = $row['r'];
-
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-$scores_sql = <<<EOF
-    SELECT ru.runs_roosts_id, s.score_value, u.username
-    FROM runs_roosts r, `runs_roosts-users` ru, scores s, users u
-    WHERE r.run_id = $run_id
-    AND ru.runs_roosts_id = r.runs_roosts_id
-    AND ru.score_id = s.score_id
-    AND ru.userID = u.userID
-    ORDER BY r.run_id
-EOF;
-
-$result = mysql_query($scores_sql, $con);
-
-if (!$result) {
-    die('Invalid query: ' . mysql_error());
-}
-
-while($row = mysql_fetch_array($result))
-{
-    $rid = $row['runs_roosts_id'];
-    $runs[$rid]['score_value'] = $row['score_value'];
-    $runs[$rid]['username'] = $row['username'];
-}
-*/
 print json_encode(array_values($evalSet));
 
-mysql_close($con);
+mysqli_close($con);
 ?>

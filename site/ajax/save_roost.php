@@ -19,7 +19,7 @@ $roostobj = json_decode($request);
 $userID = $roostobj->userID;
 
 $sequence_id = $roostobj->sequence_id;
-$conn = roostdb_connect();
+$con = roostdb_connect();
 
 if(!isset($roostobj->score))
 {
@@ -32,12 +32,12 @@ if (isset($sequence_id))
 	REPLACE INTO sequences (sequence_id, station, scan_date, comments, user_id, score, valid_flag)
 	VALUES ($sequence_id, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score", "$roostobj->valid_flag")
 EOF;
-    $result = mysql_query($sql);
-    if (!$result) die('Invalid query: ' . mysql_error());
+    $result = mysqli_query($con, $sql);
+    if (!$result) die('Invalid query: ' . mysqli_error($con));
 
     $sql = "DELETE FROM circles2 WHERE sequence_id = $sequence_id";
-    $result = mysql_query($sql);
-    if (!$result) die('Invalid query: ' . mysql_error());
+    $result = mysqli_query($con, $sql);
+    if (!$result) die('Invalid query: ' . mysqli_error($con));
 }
 else
 {
@@ -45,9 +45,9 @@ else
 	INSERT INTO sequences (sequence_id, station, scan_date, comments, user_id, score, valid_flag)
 	VALUES (NULL, "$station", "$year-$month-$day", "$roostobj->comments", "$userID", "$roostobj->score", "$roostobj->valid_flag")
 EOF;
-    $result = mysql_query($sql);
-    if (!$result) die('Invalid query: ' . mysql_error());
-    $sequence_id = mysql_insert_id();
+    $result = mysqli_query($con, $sql);
+    if (!$result) die('Invalid query: ' . mysqli_error($con));
+    $sequence_id = mysqli_insert_id($con);
 }
 
 // Add new circles
@@ -56,11 +56,11 @@ foreach($roostobj->circles as $circle){
 	INSERT INTO circles2 (sequence_id, scan_id, x, y, r)
 	VALUES ($sequence_id, "$circle->scan_id", $circle->x, $circle->y, $circle->r)
 EOF;
-    $result = mysql_query($sql);
-    if (!$result) die('Invalid query: ' . mysql_error());
+    $result = mysqli_query($con, $sql);
+    if (!$result) die('Invalid query: ' . mysqli_error($con));
 }
 
-mysql_close($conn);
+mysqli_close($con);
 
 $msg = "";
 

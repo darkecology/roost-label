@@ -8,15 +8,10 @@
  ************************************************************/
 function roostdb_connect()
 {
-    $con = mysql_connect('mysql.cs.orst.edu', 'roostdb', 'swallow');
+    $con = mysqli_connect('radar.cs.umass.edu', 'roostdb', 'swallow', 'roostdb');
     if (!$con)
     {
-	die('Could not connect: ' . mysql_error());
-    }
-
-    if (! mysql_select_db('roostdb', $con))
-    {
-	die('Failed to select database');
+	die('Could not connect: ' . mysqli_error($con));
     }
     
     return $con;
