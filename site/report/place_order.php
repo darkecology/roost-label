@@ -133,10 +133,10 @@ foreach ($stations as $station)
 			$priority);
 EOF;
 
-            $result = mysql_query($sql, $con);
+            $result = mysqli_query($con, $sql);
 	    
 	    if (!$result) {
-		die('Invalid query: ' . mysql_error() . '\n' . $sql);
+		die('Invalid query: ' . mysql_error($con) . '\n' . $sql);
 	    }
 	}
     }

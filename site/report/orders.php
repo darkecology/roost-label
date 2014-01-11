@@ -24,10 +24,10 @@ function display_orders($con, $status)
 	$ORDER_BY
 EOF;
     
-    $result = mysql_query($sql, $con);
+    $result = mysqli_query($con, $sql);
     
     if (!$result) {
-	die('Invalid query: ' . mysql_error() . '\n' . $sql);
+	die('Invalid query: ' . mysqli_error($con) . '\n' . $sql);
     }
     
     printf("<table class=\"$status\">\n");
@@ -38,7 +38,7 @@ EOF;
     printf("  <th>dates</th>\n");
     if ($status == 'error') printf("  <th>message</th>\n");
     printf(" </tr>\n");
-    while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+    while ($row = mysqli_fetch_array($result, MYSQL_ASSOC)) 
     {
 	printf(" <tr>\n");
 	printf("  <td>%d</td>\n", $row["priority"]);
@@ -75,12 +75,12 @@ $sql =<<<EOF
     ORDER BY g.id, state
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
 $groups = array();
 $stations = array();
 
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) 
+while ($row = mysqli_fetch_array($result, MYSQL_ASSOC)) 
 {
     $group = $row['groupname'];
     $station = $row['station'];
