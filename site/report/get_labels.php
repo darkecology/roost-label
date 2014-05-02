@@ -50,11 +50,11 @@ $sql =<<<EOF
     ORDER BY station, s.scan_date, s.sequence_id, scans.scan_time
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
 if (!$result)
 {
-    die('Query failed: ' . mysql_error() . "\n");
+    die('Query failed: ' . mysqli_error($con) . "\n");
 }
 
 
@@ -78,7 +78,7 @@ $M_PER_PIXEL = 2*$RANGE/$DIM;
  * Read the data
  *----------------------------------------*/
 
-while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+while($row = mysqli_fetch_array($result, MYSQL_ASSOC))
 {
     // convert from images coordinates to UTM and then lat/long
     $station_x = $row['utm_x'];

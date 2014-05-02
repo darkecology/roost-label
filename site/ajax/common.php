@@ -26,15 +26,15 @@ function get_param($name, $default = NULL)
     return isset($_GET[$name]) ? $_GET[$name] : $default;
 }
 
+
 /************************************************************
  * Convert longitude and latitude to UTM coordinates using PROJ.4
  *   (UTM zone is automatically computed if not specified)
  ************************************************************/
 function lonlat_to_utm($lon, $lat)
 {
-    $PATH = getenv('PATH') . ':/nfs/guille/tgd/users/sheldon/local/bin:/usr/bin';
     $zone = floor( ($lon + 180.0) / 6.0 ) + 1;
-    $cmd = "PATH=$PATH echo \"$lon $lat\" | proj +proj=utm +zone=$zone +datum=WGS84";
+    $cmd = "/bin/echo \"$lon $lat\" | /sw/bin/proj +proj=utm +zone=$zone +datum=WGS84";
     $xy = system($cmd, $retval);
     if ($retval)
     {
@@ -50,9 +50,7 @@ function lonlat_to_utm($lon, $lat)
  ************************************************************/
 function utm_to_lonlat($x, $y, $zone)
 {
-    $PATH = getenv('PATH') . ':/nfs/guille/tgd/users/sheldon/local/bin:/usr/bin';
-    
-    $cmd = "PATH=$PATH echo \"$x $y\" | proj -I -f '%.6f' +proj=utm +zone=$zone +datum=WGS84";
+    $cmd = "/bin/echo \"$x $y\" | /sw/bin/proj -I -f '%.6f' +proj=utm +zone=$zone +datum=WGS84";
     
     $output = array();
     $retval = 0;
