@@ -145,5 +145,8 @@ EOF;
 ?>
 
 Order placed!
+
+<a href="orders.php">Check status or place another order.</a>
+
 </body>
 </html>
