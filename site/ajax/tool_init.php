@@ -70,7 +70,7 @@ while($row = mysqli_fetch_array($result))
 $frames_array = array();
 
 $frames_sql = <<<EOF
-    SELECT scan_id, scan_time, sunrise_time, minutes_from_sunrise, vcp
+    SELECT scan_id, scan_time, sunrise_time, minutes_from_sunrise, vcp, filename
     FROM   scans2
     WHERE  station = '$station'
     AND    scan_date = '$year-$month-$day'
@@ -90,6 +90,7 @@ while($row = mysqli_fetch_array($result))
     $frames_array[$id]['scan_time'] = $row['scan_time'];
     $frames_array[$id]['vcp'] = $row['vcp'];
     $frames_array[$id]['minutes_from_sunrise'] = $row['minutes_from_sunrise'];
+    $frames_array[$id]['filename'] = $row['filename'];
 }
 
 $inventory_sql = <<<EOF

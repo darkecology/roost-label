@@ -1916,8 +1916,9 @@ RoostTool.prototype.loadFrame = function(idx) {
 	var timestamp = document.getElementById("frameTimeStamp");
 	var minutesFromSunrise = document.getElementById("minutesFromSunrise");
 	var vcp = document.getElementById("vcp");
-    var prev = document.getElementById("prevButton");
-    var next = document.getElementById("nextButton");
+	var prev = document.getElementById("prevButton");
+	var next = document.getElementById("nextButton");
+	var download = document.getElementById("download");
 
 	frameCounter.style.visibility = "visible";
 	frameTitle.style.visibility = "visible";
@@ -1930,7 +1931,7 @@ RoostTool.prototype.loadFrame = function(idx) {
 	timestamp.innerHTML = frameData.scan_time;
 	vcp.innerHTML = frameData.vcp;
 	minutesFromSunrise.innerHTML = frameData.minutes_from_sunrise;
-	
+	download.href = sprintf("images/%s/%04d/%02d/%02d/%s", this.station, this.year, this.month, this.day, frameData.filename);
 	
     if (this.frame == 0 || (mode==2 && (typeof currentEvalCircle.sequences[evalCircleOffset-1]  == 'undefined') && (typeof evalSet[evalSetOffset-1]  == 'undefined')))
     {
@@ -2020,6 +2021,12 @@ RoostTool.prototype.nextFrame = function() {
         this.updateCanvas();
     }
 };
+
+
+RoostTool.prototype.download = function() {
+    
+}
+
 
 function setThreePointMode(){
     tool.threePointMode();
@@ -2259,6 +2266,11 @@ function prev()
 function next()
 {
     tool.nextFrame();
+}
+
+function download()
+{
+    tool.download();
 }
 
 function trim (str, charlist) {
