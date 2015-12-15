@@ -18,12 +18,6 @@ function check_int($field)
     return isset($_GET[$field]) && preg_match('/^-?\d+$/', $_GET[$field]);
 }
 
-function check_time($field)
-{
-    return isset($_GET[$field]) && preg_match('/-?^\d+(:\d+)?$/', $_GET[$field]);
-}
-
-
 function err($msg)
 {
     die("<font color=\"red\">$msg</font>");
@@ -58,14 +52,14 @@ if (! (check_date($start_date) && check_date($end_date)))
     err("Start date and end date required (mm/dd)");
 }
 
-if (! check_time("start_time"))
+if (! check_int("start_time"))
 {
-    err("Start time is required");
+    err("Start time is required and must be a whole number");
 }
 
-if (! check_time("end_time"))
+if (! check_int("end_time"))
 {
-    err("End time is required");
+    err("End time is required and must be a whole number");
 }
 
 $start_time       = $_GET['start_time'];

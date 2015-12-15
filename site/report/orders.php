@@ -158,7 +158,7 @@ while ($row = mysqli_fetch_array($result, MYSQL_ASSOC))
     <input type="text" name="start_time" size="4" value="-60" />
     Units:
     <select name="start_time_units">
-    <option value="hours">Time of day in hours UTC time</option>
+    <option value="hours">Time of day in hours UTC time (integer from 0 to 24)</option>
     <option value="sunrise" selected="selected">Minutes from sunrise (e.g. -30, +60)</option>
     <option value="sunset">Minutes from sunset (e.g. -30, +60)</option>
     </select>
@@ -168,7 +168,7 @@ while ($row = mysqli_fetch_array($result, MYSQL_ASSOC))
     <input type="text" name="end_time" size="4" value="90" />
     Units:
     <select name="end_time_units">
-    <option value="hours">Time of day in hours UTC time</option>
+    <option value="hours">Time of day in hours UTC time (integer from 0 to 24)</option>
     <option value="sunrise" selected="selected">Minutes from sunrise (e.g. -30, +60)</option>
     <option value="sunset">Minutes from sunset (e.g. -30, +60)</option>
     </select>
