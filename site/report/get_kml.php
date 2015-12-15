@@ -2,52 +2,61 @@
 
 require '../ajax/common.php';
 
+if (defined('STDIN')) {
+    parse_str(implode('&', array_slice($argv, 1)), $_GET);
+}
+
 /*----------------------------------------
  * Set the correct content-type header
  *----------------------------------------*/
 header('Content-type: application/vnd.google-earth.kml+xml');
 
 /*----------------------------------------
+ * Parse parameters
+ *----------------------------------------*/
+
+$station = get_param('station', "");
+$year    = get_param('year', "");
+$month   = get_param('month', "");
+$animate = get_param('animate', "");
+
+/*----------------------------------------
  * Get data from DB
  *----------------------------------------*/
 $con = roostdb_connect();
 
-$where_clause = '';
-if (isset($_GET['station']))
-{
-    $station = $_GET['station'];
-    $where_clause .= "AND s.station = '$station'\n";
+$station_clause = "";
+$year_clause = "";
+$month_clause = "";
+
+if ($station != "") {
+    $station_clause = "AND s.station = '$station'";
 }
-
-if (isset($_GET['year']))
-{
-    $year = $_GET['year'];
-    $where_clause .= "AND year(s.scan_date) = $year\n";
+if ($year != "") {
+    $year_clause = "AND year(s.scan_date) = $year";
 }
-
-if (isset($_GET['month']))
-{
-    $month = $_GET['month'];
-    $where_clause .= "AND month(s.scan_date) = $month\n";
+if ($month != "") {
+    $month_clause = "AND month(s.scan_date) = $month";
 }
-
-
 
 $sql =<<<EOF
-    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station station, scan_date, scan_time, x, y, r
-    FROM sequences s, circles c, stations st
+    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, scans.scan_time, minutes_from_sunrise, x, y, r
+    FROM sequences s, circles2 c, stations st, scans2 scans
     WHERE s.sequence_id = c.sequence_id
     AND s.station = st.station
-    $where_clause
-    ORDER BY station, scan_date, s.sequence_id, scan_time
+    AND scans.scan_id = c.scan_id
+    $station_clause
+    $year_clause
+    $month_clause
+    ORDER BY station, s.scan_date, s.sequence_id, scans.scan_time
 EOF;
 
-$result = mysql_query($sql, $con);
+$result = mysqli_query($con, $sql);
 
-if (!$result) {
-    die('Invalid query: ' . mysql_error() . '\n' . $sql);
+if (!$result)
+{
+    die('Query failed: ' . mysqli_error($con) . "\n");
 }
-
 
 /*----------------------------------------
  * Output header
@@ -75,7 +84,7 @@ $M_PER_PIXEL = 2*$RANGE/$DIM;
 
 $i = 0;
 $sequences = array();
-while($row = mysql_fetch_array($result, MYSQL_ASSOC))
+while($row = mysqli_fetch_array($result, MYSQL_ASSOC))
 {
     // convert from images coordinates to UTM and then lat/long
     $station_x = $row['utm_x'];
@@ -109,7 +118,7 @@ foreach ($sequences as $sequence_id => $rows)
     $row = $rows[0];
     $timestamp = '';
 
-    if (isset($_GET['animate']) && $_GET['animate'] == 'true')
+    if ($animate == 'true')
     {
 	$scan_date = $row['scan_date'];
 	$timestamp = "<TimeStamp><when>$scan_date</when></TimeStamp>";
