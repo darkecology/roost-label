@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Roost Viewer</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+    <script src="roostview.js"></script>
+  </head>
+  <body>
+    <strong>Station:</strong>
+    <select id="station_select"><optgroup label="BirdCast 2011 NE"><option value="KDOX">KDOX - DOVER_AFB, DE</option><option value="KBOX">KBOX - BOSTON, MA</option><option value="KCBW">KCBW - HOULTON, ME</option><option value="KGYX">KGYX - PORTLAND, ME</option><option value="KOKX">KOKX - NEW_YORK_CITY, NY</option><option value="KBGM">KBGM - BINGHAMTON, NY</option><option value="KENX">KENX - ALBANY, NY</option><option value="KTYX">KTYX - MONTAGUE, NY</option><option value="KBUF">KBUF - BUFFALO, NY</option><option value="KCCX">KCCX - STATE_COLLEGE, PA</option><option value="KDIX">KDIX - PHILADELPHIA, PA</option><option value="KLWX">KLWX - STERLING, VA</option><option value="KCXX">KCXX - BURLINGTON, VT</option></optgroup><optgroup label="Gulf coast"><option value="KMOB">KMOB - MOBILE, AL</option><option value="KEVX">KEVX - EGLIN_AFB, FL</option><option value="KTLH">KTLH - TALLAHASSEE, FL</option><option value="KAMX">KAMX - MIAMI, FL</option><option value="KMLB">KMLB - MELBOURNE, FL</option><option value="KJAX">KJAX - JACKSONVILLE, FL</option><option value="KTBW">KTBW - TAMPA, FL</option><option value="KLIX">KLIX - NEW_ORLEANS, LA</option><option value="KLCH">KLCH - LAKE_CHARLES, LA</option><option value="KHGX">KHGX - HOUSTON, TX</option><option value="KBRO">KBRO - BROWNSVILLE, TX</option><option value="KCRP">KCRP - CORP_CHRISTI, TX</option></optgroup><optgroup label="Eastern US"><option value="KBMX">KBMX - BIRMINGHAM, AL</option><option value="KHTX">KHTX - HUNTSVILLE, AL</option><option value="KMOB">KMOB - MOBILE, AL</option><option value="KLZK">KLZK - LITTLE_ROCK, AR</option><option value="KSRX">KSRX - W_ARKANSAS, AR</option><option value="KDOX">KDOX - DOVER_AFB, DE</option><option value="KTBW">KTBW - TAMPA, FL</option><option value="KAMX">KAMX - MIAMI, FL</option><option value="KBYX">KBYX - KEY_WEST, FL</option><option value="KJAX">KJAX - JACKSONVILLE, FL</option><option value="KTLH">KTLH - TALLAHASSEE, FL</option><option value="KEVX">KEVX - EGLIN_AFB, FL</option><option value="KMLB">KMLB - MELBOURNE, FL</option><option value="KFFC">KFFC - ATLANTA, GA</option><option value="KJGX">KJGX - ROBINS_AFB, GA</option><option value="KDMX">KDMX - DES_MOINES, IA</option><option value="KDVN">KDVN - DAVENPORT, IA</option><option value="KILX">KILX - LINCOLN, IL</option><option value="KLOT">KLOT - CHICAGO, IL</option><option value="KIWX">KIWX - N_INDIANA, IN</option><option value="KVWX">KVWX - EVANSVILLE, IN</option><option value="KIND">KIND - INDIANAPOLIS, IN</option><option value="KICT">KICT - WICHITA, KS</option><option value="KTWX">KTWX - TOPEKA, KS</option><option value="KLVX">KLVX - LOUISVILLE, KY</option><option value="KPAH">KPAH - PADUCAH, KY</option><option value="KJKL">KJKL - JACKSON, KY</option><option value="KLCH">KLCH - LAKE_CHARLES, LA</option><option value="KLIX">KLIX - NEW_ORLEANS, LA</option><option value="KSHV">KSHV - SHREVEPORT, LA</option><option value="KBOX">KBOX - BOSTON, MA</option><option value="KGYX">KGYX - PORTLAND, ME</option><option value="KCBW">KCBW - HOULTON, ME</option><option value="KGRR">KGRR - GRAND_RAPIDS, MI</option><option value="KMQT">KMQT - MARQUETTE, MI</option><option value="KAPX">KAPX - GAYLORD, MI</option><option value="KDTX">KDTX - DETROIT, MI</option><option value="KMPX">KMPX - MINNEAPOLIS, MN</option><option value="KDLH">KDLH - DULUTH, MN</option><option value="KEAX">KEAX - KANSAS_CITY, MO</option><option value="KSGF">KSGF - SPRINGFIELD, MO</option><option value="KLSX">KLSX - ST_LOUIS, MO</option><option value="KDGX">KDGX - JACKSON, MS</option><option value="KGWX">KGWX - COLUMBUS_AFB, MS</option><option value="KLTX">KLTX - WILMINGTON, NC</option><option value="KMHX">KMHX - MOREHEAD_CITY, NC</option><option value="KRAX">KRAX - RALEIGH/DUR, NC</option><option value="KMVX">KMVX - GRAND_FORKS, ND</option><option value="KOAX">KOAX - OMAHA, NE</option><option value="KBGM">KBGM - BINGHAMTON, NY</option><option value="KBUF">KBUF - BUFFALO, NY</option><option value="KTYX">KTYX - MONTAGUE, NY</option><option value="KENX">KENX - ALBANY, NY</option><option value="KOKX">KOKX - NEW_YORK_CITY, NY</option><option value="KILN">KILN - CINCINNATI, OH</option><option value="KCLE">KCLE - CLEVELAND, OH</option><option value="KOUN">KOUN - NORMAN, OK</option><option value="KTLX">KTLX - OKLAHOMA_CITY, OK</option><option value="KINX">KINX - TULSA, OK</option><option value="KCCX">KCCX - STATE_COLLEGE, PA</option><option value="KDIX">KDIX - PHILADELPHIA, PA</option><option value="KPBZ">KPBZ - PITTSBURGH, PA</option><option value="KCAE">KCAE - COLUMBIA, SC</option><option value="KCLX">KCLX - CHARLESTON, SC</option><option value="KGSP">KGSP - GREER, SC</option><option value="KFSD">KFSD - SIOUX_FALLS, SD</option><option value="KNQA">KNQA - MEMPHIS, TN</option><option value="KMRX">KMRX - KNOXVILLE, TN</option><option value="KOHX">KOHX - NASHVILLE, TN</option><option value="KGRK">KGRK - FORT_HOOD, TX</option><option value="KHGX">KHGX - HOUSTON, TX</option><option value="KFWS">KFWS - DALLAS/FTW, TX</option><option value="KBRO">KBRO - BROWNSVILLE, TX</option><option value="KCRP">KCRP - CORP_CHRISTI, TX</option><option value="KAKQ">KAKQ - NORFOLK/RICH, VA</option><option value="KLWX">KLWX - STERLING, VA</option><option value="KFCX">KFCX - ROANOKE, VA</option><option value="KCXX">KCXX - BURLINGTON, VT</option><option value="KMKX">KMKX - MILWAUKEE, WI</option><option value="KARX">KARX - LA_CROSSE, WI</option><option value="KGRB">KGRB - GREEN_BAY, WI</option><option value="KRLX">KRLX - CHARLESTON, WV</option></optgroup><optgroup label="Western US"><option value="KYUX">KYUX - YUMA, AZ</option><option value="KEMX">KEMX - TUCSON, AZ</option><option value="KHNX">KHNX - SAN_JOAQUIN_V, CA</option><option value="KBBX"tion></optgroup></select>
+    
+    <strong>Year:</strong>
+    <select id="year_select">
+      <option value="">all</option>
+      <option value="1995">1995</option><option value="1996">1996</option><option value="1997">1997</option><option value="1998">1998</option><option value="1999">1999</option><option value="2000">2000</option><option value="2001">2001</option><option value="2002">2002</option><option value="2003">2003</option><option value="2004">2004</option><option value="2005">2005</option><option value="2006">2006</option><option value="2007">2007</option><option value="2008">2008</option><option value="2009">2009</option><option value="2010">2010</option><option value="2011">2011</option><option value="2012">2012</option><option value="2013">2013</option><option value="2014">2014</option><option value="2015">2015</option></select>
+    
+    <strong>Month:</strong>
+    <select id="month_select"><option value="">all</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value=""></option></select>
+
+    <button onclick="loadKML();">Load Map</button>
+
+    <div style="float: right;">
+      <a id="getKML" target="_blank" href="">Get KML</a>
+      <a id="getCSV" target="_blank" href="">Get CSV (lat / lon)</a>
+      <a id="getCSV-meters" target="_blank" href="">Get CSV (meters)</a>
+    </div>
+    
+    <div id="map"></div>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?signed_in=true&callback=initPage"></script>
+
+  </body>
+</html>
