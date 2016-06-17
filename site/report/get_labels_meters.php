@@ -92,9 +92,9 @@ $M_PER_PIXEL = 2*$RANGE/$DIM;
 
 while($row = mysqli_fetch_array($result, MYSQL_ASSOC))
 {    
-    $row['x'] = ($row['x'] - $CENTER) * $M_PER_PIXEL;
-    $row['y'] = ($row['y'] - $CENTER) * $M_PER_PIXEL;
-    $row['r'] = $row['r'] * $M_PER_PIXEL;
+    $row['x'] =   ($row['x'] - $CENTER) * $M_PER_PIXEL;
+    $row['y'] = - ($row['y'] - $CENTER) * $M_PER_PIXEL;
+    $row['r'] =    $row['r'] * $M_PER_PIXEL;
 
     print(implode(",", $row));
     print "\n";
