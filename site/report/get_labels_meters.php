@@ -42,20 +42,23 @@ $sql =<<<EOF
 SELECT
   s.scan_id,
   filename,
-  sequence_id,
-  station,
-  year(scan_date) as year,
-  month(scan_date) as month,
-  day(scan_date) as day,
-  hour(scan_time) as hour,
-  minute(scan_time) as minute,
-  second(scan_time) as second,
+  seq.sequence_id,
+  s.station,
+  year(s.scan_date) as year,
+  month(s.scan_date) as month,
+  day(s.scan_date) as day,
+  hour(s.scan_time) as hour,
+  minute(s.scan_time) as minute,
+  second(s.scan_time) as second,
   minutes_from_sunrise,
   x,
   y,
-  r
-  FROM scans s, circles c
+  r,
+  u.username
+  FROM scans s, circles c, sequences seq, users u
 WHERE s.scan_id = c.scan_id
+AND c.sequence_id = seq.sequence_id
+AND seq.user_id = u.userID
 $station_clause
 $year_clause
 $month_clause
@@ -74,7 +77,7 @@ if (!$result)
  * Output header
  *----------------------------------------*/
 
-$names = array("scan_id", "filename", "sequence_id", "station", "year", "month", "day", "hour", "minute", "second", "minutes_from_sunrise","x", "y", "r");
+$names = array("scan_id", "filename", "sequence_id", "station", "year", "month", "day", "hour", "minute", "second", "minutes_from_sunrise","x", "y", "r", "username");
 printf("%s\n", implode(",", $names));
 
 /*----------------------------------------

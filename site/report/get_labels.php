@@ -39,11 +39,12 @@ if ($month != "") {
 }
 
 $sql =<<<EOF
-    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, scans.scan_time, minutes_from_sunrise, x, y, r
-    FROM sequences s, circles2 c, stations st, scans2 scans
+    SELECT st.utm_x, st.utm_y, st.utm_zone, s.sequence_id, s.station, s.scan_date, scans.scan_time, minutes_from_sunrise, x, y, r, u.username
+    FROM sequences s, circles2 c, stations st, scans2 scans, users u
     WHERE s.sequence_id = c.sequence_id
     AND s.station = st.station
     AND scans.scan_id = c.scan_id
+    AND s.user_id = u.userID
     $station_clause
     $year_clause
     $month_clause
@@ -62,7 +63,7 @@ if (!$result)
  * Output header
  *----------------------------------------*/
 
-$names = array("sequence_id", "station", "scan_date", "scan_time", "minute_from_sunrise", "lat", "lon", "r");
+$names = array("sequence_id", "station", "scan_date", "scan_time", "minute_from_sunrise", "lat", "lon", "r", "username");
 printf("%s\n", implode(",", $names));
 
 /*----------------------------------------
@@ -103,7 +104,8 @@ while($row = mysqli_fetch_array($result, MYSQL_ASSOC))
     $scan_date = $row['scan_date'];
     $scan_time = $row['scan_time'];
     $minutes_from_sunrise = $row['minutes_from_sunrise'];
-    print(implode(",", array($sequence_id, $station, $scan_date, $scan_time, $minutes_from_sunrise, $lat, $lon, $r_km)));
+    $username = $row['username'];
+    print(implode(",", array($sequence_id, $station, $scan_date, $scan_time, $minutes_from_sunrise, $lat, $lon, $r_km, $username)));
     print "\n";
 }
 
