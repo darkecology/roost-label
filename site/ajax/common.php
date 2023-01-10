@@ -8,7 +8,7 @@
  ************************************************************/
 function roostdb_connect()
 {
-    $con = mysqli_connect('doppler.cs.umass.edu', 'roostdb', 'IA7iZJ2c2pllKaPa', 'roostdb');
+    $con = mysqli_connect('localhost', 'roostdb', 'IA7iZJ2c2pllKaPa', 'roostdb');
     if (!$con)
     {
 	die('Could not connect: ' . mysqli_error($con));
